@@ -2,21 +2,32 @@ let handPose;
 let video;
 let hands = [];
 
-let flowerOpen = 0;
-let targetOpen = 0;
+let openness = 0;
+let targetOpenness = 0;
+let grain = [];
 
 function preload() {
   handPose = ml5.handPose({ flipped: true });
 }
 
 function setup() {
-  createCanvas(800, 600);
+  createCanvas(900, 620);
 
   video = createCapture(VIDEO);
   video.size(width, height);
   video.hide();
 
   handPose.detectStart(video, gotHands);
+
+  randomSeed(5);
+
+  for (let i = 0; i < 380; i++) {
+    grain.push({
+      x: random(width),
+      y: random(height),
+      alpha: random(4, 16)
+    });
+  }
 }
 
 function gotHands(results) {
@@ -24,49 +35,40 @@ function gotHands(results) {
 }
 
 function draw() {
-  background(30, 43, 40);
+  drawBackground();
 
-  drawCameraBackground();
-  drawGardenBackground();
-
-  targetOpen = 0;
+  targetOpenness = 0;
 
   if (hands.length > 0) {
     const hand = hands[0];
-    const openness = getHandOpenness(hand);
+    targetOpenness = getHandOpenness(hand);
 
-    targetOpen = openness;
-    drawHandPoints(hand);
+    const palm = hand.keypoints[0];
+
+    noStroke();
+    fill(231, 228, 209, 100);
+    circle(palm.x, palm.y, 7);
   }
 
-  flowerOpen = lerp(flowerOpen, targetOpen, 0.08);
+  openness = lerp(openness, targetOpenness, 0.06);
 
-  drawFlower(width / 2, height / 2 + 40, flowerOpen);
-  drawText();
+  drawUnfoldingForm(width / 2, height * 0.55, openness);
+  drawInstruction();
 }
 
-function drawCameraBackground() {
-  push();
-  translate(width, 0);
-  scale(-1, 1);
-  tint(185, 205, 190, 60);
-  image(video, 0, 0, width, height);
-  pop();
+function drawBackground() {
+  background(15, 24, 22);
 
-  fill(20, 35, 31, 150);
-  rect(0, 0, width, height);
-}
-
-function drawGardenBackground() {
   noStroke();
 
-  for (let i = 0; i < 18; i++) {
-    const x = (i * 71) % width;
-    const y = height - 40 - (i % 4) * 28;
-
-    fill(82, 112, 82, 45);
-    ellipse(x, y, 90, 40);
+  for (const dot of grain) {
+    fill(212, 216, 193, dot.alpha);
+    circle(dot.x, dot.y, 1);
   }
+
+  stroke(205, 210, 189, 24);
+  strokeWeight(1);
+  line(58, height - 55, width - 58, height - 55);
 }
 
 function getHandOpenness(hand) {
@@ -75,7 +77,6 @@ function getHandOpenness(hand) {
   const wrist = points[0];
   const indexBase = points[5];
   const pinkyBase = points[17];
-
   const palmSize = dist(
     indexBase.x,
     indexBase.y,
@@ -83,11 +84,11 @@ function getHandOpenness(hand) {
     pinkyBase.y
   );
 
-  const tipIndexes = [4, 8, 12, 16, 20];
-  let totalDistance = 0;
+  const fingertipIndexes = [4, 8, 12, 16, 20];
+  let distanceTotal = 0;
 
-  for (let index of tipIndexes) {
-    totalDistance += dist(
+  for (const index of fingertipIndexes) {
+    distanceTotal += dist(
       wrist.x,
       wrist.y,
       points[index].x,
@@ -95,74 +96,84 @@ function getHandOpenness(hand) {
     );
   }
 
-  const averageDistance = totalDistance / tipIndexes.length;
-  const opennessRatio = averageDistance / palmSize;
+  const averageDistance = distanceTotal / fingertipIndexes.length;
+  const ratio = averageDistance / palmSize;
 
-  // Closed hand = 0, open palm = 1
-  return constrain(map(opennessRatio, 1.15, 2.65, 0, 1), 0, 1);
+  return constrain(map(ratio, 1.15, 2.65, 0, 1), 0, 1);
 }
 
-function drawFlower(x, y, openness) {
-  const petalLength = lerp(12, 128, openness);
-  const petalWidth = lerp(8, 54, openness);
-  const petalCount = 8;
+function drawUnfoldingForm(centerX, centerY, amount) {
+  const lineCount = 94;
+  const time = frameCount * 0.0035;
 
-  // Stem
-  stroke(105, 151, 102);
-  strokeWeight(7);
-  line(x, y + 25, x, height);
+  for (let i = 0; i < lineCount; i++) {
+    const angle = (i / lineCount) * TWO_PI;
+    const variation = noise(i * 0.13);
+    const length = lerp(7, 178, amount) * (0.72 + variation * 0.38);
 
-  // Leaves
-  noStroke();
-  fill(105, 151, 102, 190);
-  ellipse(x - 35, y + 115, 72, 25);
-  ellipse(x + 35, y + 150, 72, 25);
+    if (i % 5 === 0) {
+      stroke(214, 191, 158, 12 + amount * 68);
+    } else {
+      stroke(171, 194, 154, 14 + amount * 82);
+    }
 
-  // Petals
-  push();
-  translate(x, y);
+    strokeWeight(0.45 + variation * 0.8);
+    noFill();
 
-  for (let i = 0; i < petalCount; i++) {
-    push();
-    rotate((TWO_PI / petalCount) * i);
+    beginShape();
 
-    fill(230, 169 + openness * 45, 176, 220);
-    ellipse(petalLength * 0.48, 0, petalLength, petalWidth);
+    for (let step = 0; step <= 28; step++) {
+      const progress = step / 28;
+      const radius = length * progress;
 
-    pop();
+      const drift =
+        sin(
+          progress * PI * 1.4 +
+            angle * 3 +
+            time * 4 +
+            variation * TWO_PI
+        ) *
+        (3 + amount * 28) *
+        sin(progress * PI);
+
+      const x =
+        centerX +
+        cos(angle) * radius -
+        sin(angle) * drift;
+
+      const y =
+        centerY +
+        sin(angle) * radius +
+        cos(angle) * drift;
+
+      curveVertex(x, y);
+    }
+
+    endShape();
   }
 
-  fill(235, 190, 98);
-  ellipse(0, 0, lerp(16, 44, openness));
-
-  pop();
-}
-
-function drawHandPoints(hand) {
-  const points = hand.keypoints;
-
   noStroke();
-  fill(239, 237, 220, 180);
-
-  for (let point of points) {
-    circle(point.x, point.y, 7);
-  }
+  fill(225, 220, 195, 110 + amount * 85);
+  circle(centerX, centerY, lerp(9, 21, amount));
 }
 
-function drawText() {
-  fill(239, 237, 220);
+function drawInstruction() {
   textAlign(CENTER);
 
-  textSize(22);
-  text("Open your hand slowly", width / 2, 48);
+  fill(228, 228, 213, 170);
+  textSize(15);
+  text("Unfold slowly", width / 2, 42);
 
-  textSize(14);
-  fill(239, 237, 220, 180);
-  text("The flower grows with a gentle, open palm.", width / 2, 75);
+  fill(228, 228, 213, 95);
+  textSize(12);
 
   if (hands.length === 0) {
-    textSize(16);
-    fill(239, 237, 220, 220);
-    text("Show one hand to the camera", width / 2, height - 32);
+    text("Show one hand to the camera", width / 2, height - 26);
+  } else {
+    text(
+      "Allow your palm to open at its own pace",
+      width / 2,
+      height - 26
+    );
   }
 }

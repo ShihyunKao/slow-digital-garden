@@ -2,9 +2,10 @@ let handPose;
 let video;
 let hands = [];
 
-let gardenLayer;
+let inkLayer;
+let streams = [];
 let previousPoint = null;
-let lastLeafFrame = 0;
+let grain = [];
 
 function preload() {
   handPose = ml5.handPose({ flipped: true });
@@ -19,8 +20,18 @@ function setup() {
 
   handPose.detectStart(video, gotHands);
 
-  gardenLayer = createGraphics(width, height);
-  gardenLayer.clear();
+  inkLayer = createGraphics(width, height);
+  inkLayer.clear();
+
+  randomSeed(9);
+
+  for (let i = 0; i < 420; i++) {
+    grain.push({
+      x: random(width),
+      y: random(height),
+      alpha: random(5, 18)
+    });
+  }
 }
 
 function gotHands(results) {
@@ -29,116 +40,147 @@ function gotHands(results) {
 
 function draw() {
   drawBackground();
-  image(gardenLayer, 0, 0);
+  updateStreams();
+  image(inkLayer, 0, 0);
 
   if (hands.length > 0) {
-    const indexTip = hands[0].keypoints[8];
-    growTrail(indexTip);
+    const point = hands[0].keypoints[8];
+    releaseStreams(point);
 
     noStroke();
-    fill(224, 228, 204, 170);
-    circle(indexTip.x, indexTip.y, 8);
+    fill(229, 226, 204, 115);
+    circle(point.x, point.y, 6);
   } else {
     previousPoint = null;
   }
 
-  drawInterface();
+  drawInstruction();
 }
 
 function drawBackground() {
-  background(16, 28, 25);
+  background(15, 24, 22);
 
   noStroke();
-  fill(78, 99, 80, 20);
-  ellipse(width * 0.2, height * 0.82, 580, 230);
 
-  fill(157, 169, 130, 12);
-  ellipse(width * 0.78, height * 0.2, 500, 320);
+  for (const dot of grain) {
+    fill(212, 216, 193, dot.alpha);
+    circle(dot.x, dot.y, 1);
+  }
 
-  stroke(207, 213, 188, 24);
+  stroke(205, 210, 189, 24);
   strokeWeight(1);
-  line(70, height - 92, width - 70, height - 92);
+  line(58, height - 55, width - 58, height - 55);
 }
 
-function growTrail(point) {
+function releaseStreams(point) {
   if (previousPoint === null) {
     previousPoint = { x: point.x, y: point.y };
     return;
   }
 
-  const speed = dist(point.x, point.y, previousPoint.x, previousPoint.y);
+  const speed = dist(
+    point.x,
+    point.y,
+    previousPoint.x,
+    previousPoint.y
+  );
 
-  if (speed < 52) {
-    const calmness = map(speed, 0, 52, 1, 0);
-    const strokeSize = lerp(1.1, 3.8, calmness);
+  if (speed < 42 && frameCount % 2 === 0) {
+    const calmness = map(speed, 0, 42, 1, 0);
+    const amount = floor(lerp(1, 4, calmness));
 
-    gardenLayer.stroke(177, 191, 145, 70 + calmness * 95);
-    gardenLayer.strokeWeight(strokeSize);
-    gardenLayer.line(
-      previousPoint.x,
-      previousPoint.y,
-      point.x,
-      point.y
-    );
-
-    const leafInterval = floor(lerp(34, 12, calmness));
-
-    if (frameCount - lastLeafFrame > leafInterval) {
-      const angle = atan2(
-        point.y - previousPoint.y,
-        point.x - previousPoint.x
-      );
-
-      drawLeaf(point.x, point.y, angle, calmness);
-      lastLeafFrame = frameCount;
+    for (let i = 0; i < amount; i++) {
+      streams.push({
+        x: point.x + random(-4, 4),
+        y: point.y + random(-4, 4),
+        previousX: point.x,
+        previousY: point.y,
+        seed: random(1000),
+        life: 0,
+        maxLife: random(75, 175),
+        speed: random(0.45, 1.15),
+        weight: random(0.45, 1.6),
+        tone: random()
+      });
     }
   }
 
   previousPoint = { x: point.x, y: point.y };
 }
 
-function drawLeaf(x, y, angle, calmness) {
-  const size = lerp(7, 18, calmness);
-  const side = random() > 0.5 ? 1 : -1;
+function updateStreams() {
+  for (let i = streams.length - 1; i >= 0; i--) {
+    const stream = streams[i];
 
-  gardenLayer.push();
-  gardenLayer.translate(x, y);
-  gardenLayer.rotate(angle + side * HALF_PI);
+    stream.previousX = stream.x;
+    stream.previousY = stream.y;
 
-  gardenLayer.noStroke();
-  gardenLayer.fill(195, 202, 159, 75 + calmness * 100);
-  gardenLayer.ellipse(size * 0.45, 0, size * 1.8, size * 0.48);
+    const flowAngle =
+      noise(
+        stream.x * 0.003,
+        stream.y * 0.003,
+        frameCount * 0.002 + stream.seed
+      ) *
+      TWO_PI *
+      2.2;
 
-  gardenLayer.fill(223, 190, 155, 48 + calmness * 55);
-  gardenLayer.ellipse(size * 0.8, 0, size * 0.62, size * 0.25);
+    stream.x += cos(flowAngle) * stream.speed;
+    stream.y += sin(flowAngle) * stream.speed;
+    stream.life++;
 
-  gardenLayer.pop();
+    const remaining = 1 - stream.life / stream.maxLife;
+    const alpha = remaining * 65;
+
+    if (stream.tone < 0.55) {
+      inkLayer.stroke(177, 195, 153, alpha);
+    } else {
+      inkLayer.stroke(213, 190, 156, alpha * 0.75);
+    }
+
+    inkLayer.strokeWeight(stream.weight);
+    inkLayer.line(
+      stream.previousX,
+      stream.previousY,
+      stream.x,
+      stream.y
+    );
+
+    if (
+      stream.life > stream.maxLife ||
+      stream.x < 0 ||
+      stream.x > width ||
+      stream.y < 0 ||
+      stream.y > height
+    ) {
+      streams.splice(i, 1);
+    }
+  }
+
+  if (streams.length > 850) {
+    streams.splice(0, streams.length - 850);
+  }
 }
 
-function drawInterface() {
+function drawInstruction() {
   textAlign(CENTER);
 
-  fill(230, 231, 216, 215);
-  textSize(18);
-  text("Leave a trace slowly", width / 2, 48);
+  fill(228, 228, 213, 170);
+  textSize(15);
+  text("Move slowly to leave a trace", width / 2, 42);
 
-  fill(230, 231, 216, 125);
-  textSize(13);
-  text(
-    "Move one index finger through the space. Slow movement lets the garden grow.",
-    width / 2,
-    74
-  );
+  fill(228, 228, 213, 95);
+  textSize(12);
 
   if (hands.length === 0) {
-    fill(230, 231, 216, 135);
-    textSize(14);
-    text("Show one hand to the camera", width / 2, height - 48);
+    text("Show one hand to the camera", width / 2, height - 26);
+  } else {
+    text("Press R to begin again", width / 2, height - 26);
   }
 }
 
 function keyPressed() {
   if (key === "r" || key === "R") {
-    gardenLayer.clear();
+    inkLayer.clear();
+    streams = [];
   }
 }

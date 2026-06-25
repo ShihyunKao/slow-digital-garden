@@ -2,9 +2,9 @@ let handPose;
 let video;
 let hands = [];
 
-let gardenStems = [];
 let breath = 0;
 let targetBreath = 0;
+let grain = [];
 
 function preload() {
   handPose = ml5.handPose({ flipped: true });
@@ -19,15 +19,13 @@ function setup() {
 
   handPose.detectStart(video, gotHands);
 
-  randomSeed(12);
+  randomSeed(18);
 
-  for (let i = 0; i < 100; i++) {
-    gardenStems.push({
-      x: random(70, width - 70),
-      height: random(0.35, 1),
-      phase: random(TWO_PI),
-      weight: random(0.6, 1.8),
-      tone: random()
+  for (let i = 0; i < 320; i++) {
+    grain.push({
+      x: random(width),
+      y: random(height),
+      alpha: random(4, 16)
     });
   }
 }
@@ -42,130 +40,133 @@ function draw() {
   targetBreath = 0;
 
   if (hands.length >= 2) {
-    const leftHand = hands[0].keypoints[0];
-    const rightHand = hands[1].keypoints[0];
+    const firstHand = hands[0].keypoints[0];
+    const secondHand = hands[1].keypoints[0];
 
     const handDistance = dist(
-      leftHand.x,
-      leftHand.y,
-      rightHand.x,
-      rightHand.y
+      firstHand.x,
+      firstHand.y,
+      secondHand.x,
+      secondHand.y
     );
 
     targetBreath = constrain(
-      map(handDistance, 70, 520, 0, 1),
+      map(handDistance, 70, 540, 0, 1),
       0,
       1
     );
 
-    drawHandConnection(leftHand, rightHand);
+    drawHandMarkers(firstHand, secondHand);
   }
 
-  breath = lerp(breath, targetBreath, 0.055);
+  breath = lerp(breath, targetBreath, 0.045);
 
-  drawGarden();
-  drawInterface();
+  drawContourGarden();
+  drawInstruction();
 }
 
 function drawBackground() {
-  background(15, 26, 24);
+  background(15, 24, 22);
 
   noStroke();
 
-  fill(121, 138, 108, 14 + breath * 15);
-  ellipse(width / 2, height * 0.36, 600 + breath * 220, 360);
+  for (const dot of grain) {
+    fill(211, 215, 194, dot.alpha);
+    circle(dot.x, dot.y, 1);
+  }
 
-  fill(225, 209, 173, 8 + breath * 14);
-  ellipse(width / 2, height * 0.18, 280 + breath * 180, 180);
-
-  stroke(208, 214, 190, 25);
+  stroke(205, 210, 189, 24);
   strokeWeight(1);
-  line(65, height - 74, width - 65, height - 74);
+  line(58, height - 55, width - 58, height - 55);
 }
 
-function drawGarden() {
-  const baseY = height - 74;
-  const time = frameCount * 0.018;
+function drawContourGarden() {
+  const centerX = width / 2;
+  const centerY = height * 0.56;
+  const spread = lerp(10, 210, breath);
+  const widthScale = lerp(65, width * 0.88, breath);
+  const time = frameCount * 0.004;
 
-  for (const stem of gardenStems) {
-    const stemHeight = lerp(18, 250, breath) * stem.height;
-    const sway = sin(time + stem.phase) * (4 + breath * 17);
+  noFill();
 
-    if (stem.tone < 0.55) {
-      stroke(145, 169, 126, 35 + breath * 115);
+  for (let i = 0; i < 78; i++) {
+    const band = map(i, 0, 77, -1, 1);
+    const verticalPosition = centerY + band * spread;
+    const curveWidth =
+      widthScale * (0.58 + 0.42 * (1 - abs(band)));
+
+    const warmTone = noise(i * 0.14) > 0.62;
+
+    if (warmTone) {
+      stroke(214, 193, 158, 18 + breath * 45);
     } else {
-      stroke(205, 188, 151, 22 + breath * 86);
+      stroke(169, 192, 154, 22 + breath * 64);
     }
 
-    strokeWeight(stem.weight);
-    noFill();
+    strokeWeight(0.55 + (1 - abs(band)) * 0.75);
 
     beginShape();
 
-    for (let step = 0; step <= 12; step++) {
-      const progress = step / 12;
-      const x =
-        stem.x +
-        sway * progress +
-        sin(time * 0.7 + stem.phase + progress * 4) * breath * 8;
+    for (let step = 0; step <= 80; step++) {
+      const u = map(step, 0, 80, -1, 1);
+      const edge = 1 - u * u;
 
-      const y = baseY - stemHeight * progress;
+      const wave =
+        sin(u * 6 + i * 0.19 + time * 5) *
+        (1.5 + breath * 4.5);
+
+      const subtleNoise =
+        noise(
+          step * 0.075,
+          i * 0.08,
+          time + i * 0.01
+        ) *
+          5 -
+        2.5;
+
+      const x = centerX + u * curveWidth;
+      const y =
+        verticalPosition +
+        wave * edge +
+        subtleNoise * edge +
+        band * edge * breath * 18;
 
       curveVertex(x, y);
     }
 
     endShape();
   }
-
-  if (breath > 0.12) {
-    drawPollen(baseY);
-  }
 }
 
-function drawPollen(baseY) {
+function drawHandMarkers(firstHand, secondHand) {
   noStroke();
 
-  for (let i = 0; i < 36; i++) {
-    const x = (i * 83 + frameCount * (0.15 + breath * 0.35)) % width;
-    const y =
-      baseY -
-      30 -
-      ((i * 47 + frameCount * 0.22) % (60 + breath * 230));
+  fill(231, 228, 209, 110);
+  circle(firstHand.x, firstHand.y, 7);
+  circle(secondHand.x, secondHand.y, 7);
 
-    fill(224, 214, 177, 12 + breath * 65);
-    circle(x, y, 1.2 + breath * 2.2);
-  }
-}
-
-function drawHandConnection(leftHand, rightHand) {
-  stroke(230, 231, 213, 45);
+  stroke(231, 228, 209, 24);
   strokeWeight(1);
-  line(leftHand.x, leftHand.y, rightHand.x, rightHand.y);
-
-  noStroke();
-  fill(230, 231, 213, 140);
-  circle(leftHand.x, leftHand.y, 7);
-  circle(rightHand.x, rightHand.y, 7);
+  line(firstHand.x, firstHand.y, secondHand.x, secondHand.y);
 }
 
-function drawInterface() {
+function drawInstruction() {
   textAlign(CENTER);
 
-  fill(230, 231, 216, 215);
-  textSize(18);
-  text("Let the garden breathe", width / 2, 48);
+  fill(228, 228, 213, 170);
+  textSize(15);
+  text("Let the field expand", width / 2, 42);
 
-  fill(230, 231, 216, 125);
-  textSize(13);
-  text(
-    "Bring your hands together, then slowly allow them to move apart.",
-    width / 2,
-    74
-  );
+  fill(228, 228, 213, 95);
+  textSize(12);
 
   if (hands.length < 2) {
-    fill(230, 231, 216, 135);
-    textSize(14);
-    text("Show both hands to the camera", width / 2, height - 48);
+    text("Show both hands to the camera", width / 2, height - 26);
+  } else {
+    text(
+      "Bring your hands close, then slowly allow them to move apart",
+      width / 2,
+      height - 26
+    );
   }
 }
