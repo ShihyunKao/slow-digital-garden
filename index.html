@@ -110,6 +110,23 @@
       font-size: 13px;
     }
 
+    .version-links {
+      display: flex;
+      gap: 16px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+     .version-links a {
+      color: #d5d8c6;
+      font-size: 13px;
+      text-decoration: none;
+    }
+
+     .version-links a:hover {
+      text-decoration: underline;
+    }
+    
     footer {
       max-width: 1200px;
       margin: 0 auto;
@@ -149,20 +166,23 @@
 
   <main>
     <section class="sketch-grid">
-      <a class="sketch" href="./open/v01-unfolding-form/">
-        <span class="number">01 / OPEN</span>
+      <div class="sketch">
+  <span class="number">01 / OPEN</span>
 
-        <div class="sketch-content">
-          <h2>Unfolding Form</h2>
+  <div class="sketch-content">
+    <h2>Unfolding Form</h2>
 
-          <p>
-            The gradual opening of one hand unfolds a compact seed into a
-            generative structure.
-          </p>
+    <p>
+      The gradual opening of one hand unfolds a compact seed into a
+      generative structure.
+    </p>
 
-          <span class="open">Open sketch →</span>
-        </div>
-      </a>
+    <div class="version-links">
+      <a href="./open/v01-unfolding-form/">Open v01 →</a>
+      <a href="./open/v02-layered-bloom/">Open v02 →</a>
+    </div>
+  </div>
+</div>
 
       <a class="sketch" href="./trail/v01-hand-trail/">
         <span class="number">02 / TRAIL</span>
@@ -191,8 +211,7 @@
           </p>
 
           <span class="open">Open sketch →</span>
-          <br>
-          <a class="open" href="./open/v02-layered-bloom/">Open v02 →</a>
+          
         </div>
       </a>
     </section>
