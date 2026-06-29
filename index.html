@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Slow Digital Garden</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #111a18;
+      color: #e2e2d5;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    header {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 90px 32px 55px;
+    }
+
+    .label {
+      margin-bottom: 18px;
+      color: #aeb99c;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(42px, 7vw, 76px);
+      font-weight: 400;
+      line-height: 1.05;
+    }
+
+    .introduction {
+      max-width: 650px;
+      margin: 28px 0 0;
+      color: #aeb3aa;
+      font-size: 17px;
+      line-height: 1.7;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px 90px;
+    }
+
+    .sketch-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .sketch {
+      min-height: 310px;
+      padding: 25px;
+      border: 1px solid #34423c;
+      color: inherit;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      transition:
+        background 250ms ease,
+        border-color 250ms ease,
+        transform 250ms ease;
+    }
+
+    .sketch:hover {
+      background: #17231f;
+      border-color: #89977f;
+      transform: translateY(-4px);
+    }
+
+    .number {
+      color: #8f9d87;
+      font-size: 13px;
+    }
+
+    .sketch-content {
+      margin-top: auto;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 25px;
+      font-weight: 400;
+    }
+
+    .sketch p {
+      margin: 0;
+      color: #9ca49c;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .open {
+      display: inline-block;
+      margin-top: 24px;
+      color: #d5d8c6;
+      font-size: 13px;
+    }
+
+    footer {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 32px 45px;
+      border-top: 1px solid #29342f;
+      color: #77817b;
+      font-size: 12px;
+    }
+
+    @media (max-width: 760px) {
+      header {
+        padding-top: 55px;
+      }
+
+      .sketch-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sketch {
+        min-height: 230px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="label">Computational Arts Practice</div>
+
+    <h1>Slow Digital Garden</h1>
+
+    <p class="introduction">
+      A growing collection of gesture-based sketches exploring slowness,
+      gentle bodily movement and generative visual traces.
+    </p>
+  </header>
+
+  <main>
+    <section class="sketch-grid">
+      <a class="sketch" href="./01-opening-flower/">
+        <span class="number">01 / OPEN</span>
+
+        <div class="sketch-content">
+          <h2>Unfolding Form</h2>
+
+          <p>
+            The gradual opening of one hand unfolds a compact seed into a
+            generative structure.
+          </p>
+
+          <span class="open">Open sketch →</span>
+        </div>
+      </a>
+
+      <a class="sketch" href="./02-hand-trail/">
+        <span class="number">02 / TRAIL</span>
+
+        <div class="sketch-content">
+          <h2>Hand Trail</h2>
+
+          <p>
+            Slow movement releases delicate traces that accumulate into a
+            visual record of the body.
+          </p>
+
+          <span class="open">Open sketch →</span>
+        </div>
+      </a>
+
+      <a class="sketch" href="./03-breathing-garden/">
+        <span class="number">03 / BOTH HANDS</span>
+
+        <div class="sketch-content">
+          <h2>Breathing Garden</h2>
+
+          <p>
+            The distance between two hands expands and contracts a quiet
+            generative field.
+          </p>
+
+          <span class="open">Open sketch →</span>
+        </div>
+      </a>
+    </section>
+  </main>
+
+  <footer>
+    Shihyun Kao · MA Computational Arts · Goldsmiths, University of London
+  </footer>
+</body>
+</html>
