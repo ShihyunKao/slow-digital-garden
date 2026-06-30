@@ -32,3 +32,14 @@ This sketch explores the hand not as a cursor, but as a slow drawing instrument.
 
 ## Next development
 Test a version where multiple previous movements remain as a permanent garden archive rather than fading away.
+
+## Reflection
+This version tested a different visual direction for the trail movement. I tried moving away from direct line drawing toward ink diffusion, silk-like traces and ripple-field disturbance.
+
+The experiments showed that simulating ink or atmospheric traces in p5.js can easily become visually messy, too graphic, or too similar to drawing with a pen. The most useful insight is that the trail movement may need a clearer visual system, rather than only changing surface texture.
+
+For the next version, I want to explore a more designed and structured visual language, such as:
+- slow-growing contour gardens
+- layered botanical paths
+- soft architectural lines
+- traces that accumulate into a composed field
