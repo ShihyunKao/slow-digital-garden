@@ -234,7 +234,7 @@ function drawInterface() {
   noStroke();
   fill(232, 229, 210, 155);
   textSize(13);
-  text("BOTH HANDS / V02 / BREATHING POND", 38, 42);
+  text("BOTH HANDS / V02 / BREATHING COSMOS", 38, 42);
 
   textAlign(RIGHT);
   fill(232, 229, 210, 115);
@@ -253,7 +253,7 @@ function drawInterface() {
   textSize(12);
 
   if (inputMode === "mouse") {
-    text("Move the mouse horizontally to open and close the pond.", width / 2, height - 28);
+    text("Move the mouse horizontally to open and close the cosmos.", width / 2, height - 28);
   } else if (!modelLoading && hands.length < 2) {
     text("Show both hands to the camera.", width / 2, height - 28);
   } else if (!modelLoading) {

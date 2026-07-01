@@ -1,4 +1,4 @@
-# Both Hands V02: Breathing Pond
+# Both Hands V02: Breathing Cosmos
 
 ## Question
 Can the distance between two hands control a slow visual breathing system?
@@ -30,3 +30,6 @@ This sketch focuses on calm, symmetrical and slow interaction. The user is not d
 
 ## Next development
 Test a version where each breath cycle leaves a subtle memory, so the pond slowly becomes a garden archive.
+
+## Reflection
+This version shifted from a garden or pond metaphor toward a cosmic breathing field. The two-hand distance creates a sense of spatial opening, contraction and return, which feels more coherent than the previous trail experiments.
