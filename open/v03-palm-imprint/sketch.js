@@ -36,7 +36,7 @@ function draw() {
   drawBackground();
 
   targetOpenness = getOpenness();
-  openness = lerp(openness, targetOpenness, 0.075);
+  openness = lerp(openness, targetOpenness, 0.16);
 
   detectImprint();
 
@@ -73,16 +73,16 @@ function getHandOpenness(hand) {
     total += dist(wrist.x, wrist.y, tip.x, tip.y);
   }
 
-  return constrain(map(total / tips.length, 72, 210, 0, 1), 0, 1);
+  return constrain(map(total / tips.length, 55, 165, 0, 1), 0, 1);
 }
 
 function detectImprint() {
-  if (openness > 0.84 && canStamp) {
+  if (openness > 0.68 && canStamp) {
     addImprint();
     canStamp = false;
   }
 
-  if (openness < 0.42) {
+  if (openness < 0.38) {
     canStamp = true;
   }
 }
@@ -418,6 +418,11 @@ function drawInterface() {
   } else if (!modelLoading) {
     text("Open your palm fully to leave an imprint.", width / 2, height - 28);
   }
+
+  textAlign(LEFT);
+  fill(232, 229, 210, 90);
+  textSize(11);
+  text("openness: " + nf(openness, 1, 2), 38, height - 28);
 }
 
 function keyPressed() {

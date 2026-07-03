@@ -1,4 +1,4 @@
-# Open V03: Stellar Unfurl
+# Open V03: Palm Imprint
 
 ## Question
 Can the opening of one hand unfold a small cosmic field and leave a memory of the gesture?
