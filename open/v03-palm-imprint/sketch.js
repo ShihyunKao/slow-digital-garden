@@ -14,9 +14,20 @@ let targetOpenness = 0;
 let canStamp = true;
 let imprints = [];
 let driftStars = [];
+let showHelp = true;
+let handDisplayMode = 1;
+
+const HAND_CONNECTIONS = [
+  [0, 1], [1, 2], [2, 3], [3, 4],
+  [0, 5], [5, 6], [6, 7], [7, 8],
+  [0, 9], [9, 10], [10, 11], [11, 12],
+  [0, 13], [13, 14], [14, 15], [15, 16],
+  [0, 17], [17, 18], [18, 19], [19, 20],
+  [5, 9], [9, 13], [13, 17]
+];
 
 function setup() {
-  createCanvas(900, 620);
+  createCanvas(windowWidth, windowHeight);
   pixelDensity(1);
   randomSeed(451);
   noiseSeed(451);
@@ -38,16 +49,21 @@ function draw() {
   targetOpenness = getOpenness();
   openness = lerp(openness, targetOpenness, 0.16);
 
-  detectImprint();
+  if (showHelp) {
+    canStamp = true;
+  } else {
+    detectImprint();
+  }
 
   drawImprints();
-  drawCurrentPalmPreview();
+  drawHandDisplay();
   drawInterface();
 }
 
 function getOpenness() {
   if (inputMode === "mouse") {
-    return constrain(map(mouseX, 120, width - 120, 0, 1), 0, 1);
+    const sidePadding = min(width * 0.12, 145);
+    return constrain(map(mouseX, sidePadding, width - sidePadding, 0, 1), 0, 1);
   }
 
   if (hands.length > 0) {
@@ -58,31 +74,32 @@ function getOpenness() {
 }
 
 function getHandOpenness(hand) {
-  const wrist = hand.keypoints[0];
-  const tips = [
-    hand.keypoints[4],
-    hand.keypoints[8],
-    hand.keypoints[12],
-    hand.keypoints[16],
-    hand.keypoints[20]
-  ];
+  const points = hand.keypoints;
+  const wrist = points[0];
+  const palmWidth = dist(points[5].x, points[5].y, points[17].x, points[17].y);
 
-  let total = 0;
+  if (palmWidth < 1) return 0;
 
-  for (const tip of tips) {
-    total += dist(wrist.x, wrist.y, tip.x, tip.y);
+  const tips = [4, 8, 12, 16, 20];
+  let totalDistance = 0;
+
+  for (const index of tips) {
+    totalDistance += dist(wrist.x, wrist.y, points[index].x, points[index].y);
   }
 
-  return constrain(map(total / tips.length, 55, 165, 0, 1), 0, 1);
+  const opennessRatio = totalDistance / tips.length / palmWidth;
+
+  // The ratio stays stable even when the hand moves nearer to or further from the camera.
+  return constrain(map(opennessRatio, 1.15, 2.25, 0, 1), 0, 1);
 }
 
 function detectImprint() {
-  if (openness > 0.68 && canStamp) {
+  if (openness > 0.6 && canStamp) {
     addImprint();
     canStamp = false;
   }
 
-  if (openness < 0.38) {
+  if (openness < 0.42) {
     canStamp = true;
   }
 }
@@ -302,30 +319,33 @@ function drawPalmParticles(imprint, fade, appear) {
   }
 }
 
-function drawCurrentPalmPreview() {
+function drawHandDisplay() {
   if (inputMode === "mouse") {
     drawMousePreview();
     return;
   }
 
-  if (hands.length === 0) return;
+  if (hands.length === 0 || handDisplayMode === 0) return;
 
   const hand = hands[0];
-  const pts = [4, 8, 12, 16, 20, 0].map((index) => hand.keypoints[index]);
+  const points = hand.keypoints;
 
-  noFill();
-  stroke(230, 226, 204, 35 + openness * 70);
-  strokeWeight(0.7);
+  if (handDisplayMode === 2) {
+    noFill();
+    stroke(230, 226, 204, 75);
+    strokeWeight(1);
 
-  for (let i = 0; i < 5; i++) {
-    line(pts[5].x, pts[5].y, pts[i].x, pts[i].y);
+    for (const [a, b] of HAND_CONNECTIONS) {
+      line(points[a].x, points[a].y, points[b].x, points[b].y);
+    }
   }
 
   noStroke();
+  fill(246, 238, 198, 55 + openness * 105);
+  const displayPoints = handDisplayMode === 1 ? [8] : points.map((_, index) => index);
 
-  for (let i = 0; i < 5; i++) {
-    fill(246, 238, 198, 45 + openness * 80);
-    circle(pts[i].x, pts[i].y, 4 + openness * 3);
+  for (const index of displayPoints) {
+    circle(points[index].x, points[index].y, handDisplayMode === 1 ? 8 : 4);
   }
 }
 
@@ -385,47 +405,152 @@ function drawBackground() {
   }
 
   fill(240, 232, 205, 5);
-  rect(34, 34, width - 68, height - 68);
+  rect(22, 22, width - 44, height - 44);
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  if (video) video.size(width, height);
 }
 
 function drawInterface() {
-  textAlign(LEFT);
-  noStroke();
-  fill(232, 229, 210, 155);
-  textSize(13);
-  text("OPEN / V03 / PALM IMPRINT", 38, 42);
-
-  textAlign(RIGHT);
-  fill(232, 229, 210, 115);
-  textSize(12);
-
-  if (inputMode === "mouse") {
-    text("M  SWITCH TO HANDPOSE    R  RESET", width - 38, 42);
-  } else if (modelLoading) {
-    text("LOADING HANDPOSE...", width - 38, 42);
+  if (showHelp) {
+    drawHelpScreen();
   } else {
-    text("M  SWITCH TO MOUSE    R  RESET", width - 38, 42);
+    drawExhibitionCaption();
   }
+}
 
-  textAlign(CENTER);
-  fill(232, 229, 210, 95);
-  textSize(12);
+function drawExhibitionCaption() {
+  cursor(ARROW);
+  const inset = 28;
+  const display = ["HIDDEN", "POINTS", "SKELETON"][handDisplayMode];
+  const input = modelLoading ? "LOADING" : inputMode === "mouse" ? "CAMERA" : "MOUSE";
 
-  if (inputMode === "mouse") {
-    text("Open the palm shape fully to leave an imprint.", width / 2, height - 28);
-  } else if (!modelLoading && hands.length === 0) {
-    text("Show one hand to the camera.", width / 2, height - 28);
-  } else if (!modelLoading) {
-    text("Open your palm fully to leave an imprint.", width / 2, height - 28);
-  }
+  noStroke();
+  textAlign(LEFT, TOP);
+  fill(239, 236, 217, 220);
+  textSize(14);
+  text("PALM IMPRINT", inset, 27);
 
-  textAlign(LEFT);
-  fill(232, 229, 210, 90);
+  fill(168, 187, 163, 130);
+  textSize(10);
+  text("GESTURE STUDY 03  /  OPEN PALM MEMORY", inset, 47);
+
+  textAlign(RIGHT, TOP);
+  fill(211, 216, 198, 128);
+  textSize(10);
+  text(`M ${input}   ·   P ${display}   ·   R RESET   ·   ? HELP`, width - inset, 32);
+
+  stroke(199, 210, 188, 25);
+  strokeWeight(1);
+  line(inset, 66, width - inset, 66);
+}
+
+function getHelpPanelMetrics() {
+  const panelWidth = min(620, width - 40);
+  const panelHeight = min(500, height - 40);
+
+  return {
+    x: (width - panelWidth) / 2,
+    y: (height - panelHeight) / 2,
+    width: panelWidth,
+    height: panelHeight,
+    buttonX: width / 2 - 92,
+    buttonY: (height - panelHeight) / 2 + panelHeight - 78,
+    buttonWidth: 184,
+    buttonHeight: 42
+  };
+}
+
+function drawHelpScreen() {
+  const panel = getHelpPanelMetrics();
+  const compact = panel.height < 440;
+  const left = panel.x + (compact ? 34 : 54);
+  const contentWidth = panel.width - (compact ? 68 : 108);
+
+  noStroke();
+  fill(5, 12, 11, 205);
+  rect(0, 0, width, height);
+
+  drawingContext.save();
+  drawingContext.shadowBlur = 40;
+  drawingContext.shadowColor = "rgba(0, 0, 0, 0.45)";
+  fill(15, 29, 25, 246);
+  stroke(177, 192, 167, 52);
+  strokeWeight(1);
+  rect(panel.x, panel.y, panel.width, panel.height, 4);
+  drawingContext.restore();
+
+  noStroke();
+  textAlign(LEFT, TOP);
+  fill(174, 191, 166, 180);
   textSize(11);
-  text("openness: " + nf(openness, 1, 2), 38, height - 28);
+  text("GESTURE STUDY 03", left, panel.y + (compact ? 25 : 38));
+
+  fill(238, 235, 216, 240);
+  textSize(compact ? 28 : 36);
+  text("Palm Imprint", left, panel.y + (compact ? 48 : 68));
+
+  fill(201, 207, 191, 175);
+  textSize(compact ? 13 : 15);
+  textLeading(compact ? 19 : 22);
+  text(
+    "Each fully opened palm leaves a temporary constellation-like imprint.",
+    left,
+    panel.y + (compact ? 90 : 120),
+    contentWidth
+  );
+
+  const stepsY = panel.y + (compact ? 128 : 174);
+  const stepGap = compact ? 42 : 54;
+  drawHelpStep("01", "Press M to switch from mouse to camera input.", left, stepsY);
+  drawHelpStep("02", "Show one hand and open your palm slowly.", left, stepsY + stepGap);
+  drawHelpStep("03", "Relax your hand, then open again to leave another imprint.", left, stepsY + stepGap * 2);
+
+  fill(174, 191, 166, 135);
+  textSize(11);
+  text("M  CAMERA / MOUSE     P  HAND DISPLAY     R  RESET     ?  HELP", left, panel.buttonY - (compact ? 31 : 40));
+
+  const hovering =
+    mouseX >= panel.buttonX && mouseX <= panel.buttonX + panel.buttonWidth &&
+    mouseY >= panel.buttonY && mouseY <= panel.buttonY + panel.buttonHeight;
+
+  cursor(hovering ? HAND : ARROW);
+  fill(hovering ? color(220, 224, 203, 235) : color(188, 202, 178, 210));
+  rect(panel.buttonX, panel.buttonY, panel.buttonWidth, panel.buttonHeight, 2);
+
+  fill(18, 31, 27, 245);
+  textAlign(CENTER, CENTER);
+  textSize(12);
+  text("BEGIN", width / 2, panel.buttonY + panel.buttonHeight / 2);
+
+  fill(205, 210, 194, 105);
+  textSize(10);
+  text("or press Enter / Space", width / 2, panel.buttonY + panel.buttonHeight + 16);
+}
+
+function drawHelpStep(number, label, x, y) {
+  fill(174, 191, 166, 125);
+  textAlign(LEFT, TOP);
+  textSize(10);
+  text(number, x, y + 2);
+  fill(229, 228, 211, 205);
+  textSize(13);
+  text(label, x + 38, y);
 }
 
 function keyPressed() {
+  if (key === "?" || keyCode === 191) {
+    showHelp = !showHelp;
+    return false;
+  }
+
+  if (showHelp && (keyCode === ENTER || key === " " || keyCode === ESCAPE)) {
+    showHelp = false;
+    return false;
+  }
+
   if (key === "m" || key === "M") {
     if (inputMode === "mouse") {
       startHandMode();
@@ -438,6 +563,21 @@ function keyPressed() {
     imprints = [];
     canStamp = true;
   }
+
+  if (key === "p" || key === "P") {
+    handDisplayMode = (handDisplayMode + 1) % 3;
+  }
+}
+
+function mousePressed() {
+  if (!showHelp) return;
+
+  const panel = getHelpPanelMetrics();
+  const insideButton =
+    mouseX >= panel.buttonX && mouseX <= panel.buttonX + panel.buttonWidth &&
+    mouseY >= panel.buttonY && mouseY <= panel.buttonY + panel.buttonHeight;
+
+  if (insideButton) showHelp = false;
 }
 
 function startHandMode() {
@@ -451,8 +591,8 @@ function startHandMode() {
   video = createCapture(
     {
       video: {
-        width: 900,
-        height: 620
+        width,
+        height
       },
       audio: false
     },
