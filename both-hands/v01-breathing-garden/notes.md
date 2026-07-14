@@ -16,3 +16,6 @@ The visual reference is not a literal flower garden. It draws instead from raked
 
 ## Next possible development
 Connect the expansion to sound, such as a subtle low-frequency tone, soft wind, or sparse bell-like texture.
+
+## Tutor-feedback refinement
+This version was adjusted after feedback that the field remained too broad when hands were close together. The interaction now measures the distance between both index fingertips rather than both wrists. The number, width, and height of the contour lines also reduce together, so touching the fingertips creates a near-closed centre.
