@@ -2,7 +2,6 @@ let handPose;
 let video;
 let hands = [];
 
-let inputMode = "mouse";
 let modelReady = false;
 let videoReady = false;
 let detectionStarted = false;
@@ -10,41 +9,70 @@ let modelLoading = false;
 
 let blooms = [];
 let previousPoint = null;
+let lastGestureFrame = -1000;
+let showHelp = true;
+let handDisplayMode = 1; // 0 hidden, 1 points, 2 skeleton
+let backgroundPoints = [];
+
+const HAND_CONNECTIONS = [
+  [0, 1], [1, 2], [2, 3], [3, 4],
+  [0, 5], [5, 6], [6, 7], [7, 8],
+  [0, 9], [9, 10], [10, 11], [11, 12],
+  [0, 13], [13, 14], [14, 15], [15, 16],
+  [0, 17], [17, 18], [18, 19], [19, 20],
+  [5, 9], [9, 13], [13, 17]
+];
+const MAX_BLOOMS = 80;
+const CAMERA_WIDTH = 640;
+const CAMERA_HEIGHT = 480;
 
 function setup() {
-  createCanvas(900, 620);
+  createCanvas(windowWidth, windowHeight);
   pixelDensity(1);
   noiseSeed(12);
   randomSeed(12);
+  createBackgroundPoints();
 }
 
 function draw() {
   drawWarmPaper();
 
-  const point = getInputPoint();
+  if (!showHelp) {
+    const point = getInputPoint();
 
-  if (point) {
-    updateInk(point);
-  } else {
-    previousPoint = null;
+    if (point) {
+      updateInk(point);
+    } else {
+      previousPoint = null;
+    }
   }
 
   drawBlooms();
-  drawCursor(point);
-  drawInterface();
+
+  if (!showHelp) {
+    drawHandDisplay();
+    drawInterface();
+  } else {
+    drawHelpScreen();
+  }
 }
 
 function getInputPoint() {
-  if (inputMode === "mouse") {
-    return { x: mouseX, y: mouseY };
-  }
-
   if (hands.length > 0) {
-    const fingertip = hands[0].keypoints[8];
-    return { x: fingertip.x, y: fingertip.y };
+    return toCanvasPoint(hands[0].keypoints[8]);
   }
 
   return null;
+}
+
+function toCanvasPoint(point) {
+  const sourceWidth = video ? video.width : CAMERA_WIDTH;
+  const sourceHeight = video ? video.height : CAMERA_HEIGHT;
+
+  return {
+    x: point.x * (width / sourceWidth),
+    y: point.y * (height / sourceHeight)
+  };
 }
 
 function updateInk(point) {
@@ -52,11 +80,16 @@ function updateInk(point) {
 
   if (previousPoint === null) {
     previousPoint = { x: point.x, y: point.y };
+    lastGestureFrame = frameCount;
     addBloom(point.x, point.y, 0.7);
     return;
   }
 
   const movement = dist(point.x, point.y, previousPoint.x, previousPoint.y);
+
+  if (movement > 1.2) {
+    lastGestureFrame = frameCount;
+  }
 
   if (movement > 18) {
     const slowness = constrain(map(movement, 0, 80, 1, 0.22), 0.22, 1);
@@ -76,7 +109,9 @@ function addBloom(x, y, slowness) {
     x: x + random(-4, 4),
     y: y + random(-4, 4),
     age: 0,
-    life: random(420, 680),
+    fadeAge: 0,
+    growLife: random(180, 280),
+    life: random(900, 1350),
     startRadius: random(4, 10),
     endRadius: random(70, 135) * slowness,
     strength: random(0.35, 0.72) * slowness,
@@ -84,17 +119,23 @@ function addBloom(x, y, slowness) {
     seed: random(1000)
   });
 
-  if (blooms.length > 45) {
+  if (blooms.length > MAX_BLOOMS) {
     blooms.shift();
   }
 }
 
 function drawBlooms() {
+  const gestureIsActive = frameCount - lastGestureFrame < 24;
+
   for (let i = blooms.length - 1; i >= 0; i--) {
     const bloom = blooms[i];
     bloom.age++;
 
-    if (bloom.age > bloom.life) {
+    if (!gestureIsActive) {
+      bloom.fadeAge++;
+    }
+
+    if (bloom.fadeAge > bloom.life) {
       blooms.splice(i, 1);
       continue;
     }
@@ -104,9 +145,8 @@ function drawBlooms() {
 }
 
 function drawMistBloom(bloom) {
-  const t = bloom.age / bloom.life;
-  const grow = easeOutQuart(constrain(t * 2.4, 0, 1));
-  const fade = 1 - easeInCubic(constrain(t, 0, 1));
+  const grow = easeOutQuart(constrain(bloom.age / bloom.growLife, 0, 1));
+  const fade = 1 - pow(constrain(bloom.fadeAge / bloom.life, 0, 1), 5);
 
   const radius = lerp(bloom.startRadius, bloom.endRadius, grow);
   const alpha = 34 * bloom.strength * fade;
@@ -184,68 +224,230 @@ function drawWarmPaper() {
     rect(0, y, width, 4);
   }
 
+  for (const point of backgroundPoints) {
+    const flicker = sin(frameCount * 0.012 + point.phase) * 0.5 + 0.5;
+    fill(123, 116, 95, point.alpha * (0.65 + flicker * 0.35));
+    circle(point.x, point.y, point.size);
+  }
+
   fill(215, 207, 188, 16);
   rect(28, 28, width - 56, height - 56);
 }
 
-function drawCursor(point) {
-  if (!point) return;
+function drawHandDisplay() {
+  if (hands.length === 0 || handDisplayMode === 0) return;
 
-  noFill();
-  stroke(70, 74, 68, 80);
-  strokeWeight(1);
-  circle(point.x, point.y, 14);
+  const points = hands[0].keypoints.map(toCanvasPoint);
+
+  if (handDisplayMode === 1) {
+    const tip = points[8];
+
+    noFill();
+    stroke(70, 74, 68, 80);
+    strokeWeight(1);
+    circle(tip.x, tip.y, 14);
+    return;
+  }
+
+  stroke(70, 74, 68, 55);
+  strokeWeight(0.7);
+
+  for (const [a, b] of HAND_CONNECTIONS) {
+    line(points[a].x, points[a].y, points[b].x, points[b].y);
+  }
+
+  noStroke();
+  fill(70, 74, 68, 95);
+
+  for (const point of points) {
+    circle(point.x, point.y, 3.5);
+  }
 }
 
 function drawInterface() {
-  textAlign(LEFT);
+  textAlign(LEFT, TOP);
   noStroke();
-  fill(74, 76, 67, 150);
-  textSize(13);
-  text("TRAIL / V02 / SOFT INK WASH", 38, 42);
+  fill(74, 76, 67, 180);
+  textSize(14);
+  text("SOFT INK WASH", 38, 27);
 
-  textAlign(RIGHT);
+  fill(100, 105, 91, 125);
+  textSize(10);
+  text("GESTURE STUDY 02 / DIFFUSION TRACE", 38, 47);
+
+  textAlign(RIGHT, TOP);
+  fill(74, 76, 67, 125);
+  textSize(11);
+  const controls = modelLoading
+    ? `CAMERA LOADING · P ${handDisplayLabel()} · R RESET · ? HELP`
+    : `P ${handDisplayLabel()} · R RESET · ? HELP`;
+  text(controls, width - 38, 30);
+
+  stroke(74, 76, 67, 24);
+  strokeWeight(1);
+  line(38, 70, width - 38, 70);
+
+  textAlign(CENTER);
   fill(74, 76, 67, 115);
   textSize(12);
 
-  if (inputMode === "mouse") {
-    text("M  SWITCH TO HANDPOSE    R  RESET", width - 38, 42);
-  } else if (modelLoading) {
-    text("LOADING HANDPOSE...", width - 38, 42);
-  } else {
-    text("M  SWITCH TO MOUSE    R  RESET", width - 38, 42);
-  }
-
-  textAlign(CENTER);
-  fill(74, 76, 67, 95);
-  textSize(12);
-
-  if (inputMode === "mouse") {
-    text("Move slowly and pause. The wash expands after the gesture.", width / 2, height - 28);
-  } else if (!modelLoading && hands.length === 0) {
+  if (!modelLoading && hands.length === 0) {
     text("Show one hand to the camera.", width / 2, height - 28);
   } else if (!modelLoading) {
     text("Move your index finger slowly, then pause.", width / 2, height - 28);
   }
 }
 
+function handDisplayLabel() {
+  if (handDisplayMode === 0) return "HIDDEN";
+  if (handDisplayMode === 1) return "POINTS";
+  return "SKELETON";
+}
+
+function getHelpPanelMetrics() {
+  const panelWidth = min(620, width - 40);
+  const panelHeight = min(510, height - 40);
+
+  return {
+    x: (width - panelWidth) / 2,
+    y: (height - panelHeight) / 2,
+    width: panelWidth,
+    height: panelHeight,
+    buttonX: width / 2 - 92,
+    buttonY: (height - panelHeight) / 2 + panelHeight - 78,
+    buttonWidth: 184,
+    buttonHeight: 42
+  };
+}
+
+function drawHelpScreen() {
+  const panel = getHelpPanelMetrics();
+  const compact = panel.height < 440;
+  const left = panel.x + (compact ? 34 : 54);
+  const contentWidth = panel.width - (compact ? 68 : 108);
+
+  noStroke();
+  fill(5, 12, 11, 205);
+  rect(0, 0, width, height);
+
+  drawingContext.save();
+  drawingContext.shadowBlur = 40;
+  drawingContext.shadowColor = "rgba(0, 0, 0, 0.45)";
+  fill(15, 29, 25, 246);
+  stroke(177, 192, 167, 52);
+  strokeWeight(1);
+  rect(panel.x, panel.y, panel.width, panel.height, 4);
+  drawingContext.restore();
+
+  noStroke();
+  textAlign(LEFT, TOP);
+  fill(174, 191, 166, 180);
+  textSize(11);
+  text("GESTURE STUDY 02", left, panel.y + (compact ? 25 : 38));
+
+  fill(238, 235, 216, 240);
+  textSize(compact ? 28 : 36);
+  text("Soft Ink Wash", left, panel.y + (compact ? 48 : 68));
+
+  fill(201, 207, 191, 175);
+  textSize(compact ? 13 : 15);
+  textLeading(compact ? 19 : 22);
+  text(
+    "A slow movement releases a pale wash that continues to diffuse after the hand has passed.",
+    left,
+    panel.y + (compact ? 90 : 120),
+    contentWidth
+  );
+
+  const stepsY = panel.y + (compact ? 128 : 174);
+  const stepGap = compact ? 42 : 54;
+  drawHelpStep("01", "Select Begin to activate the camera.", left, stepsY);
+  drawHelpStep("02", "Move one index finger slowly through the space.", left, stepsY + stepGap);
+  drawHelpStep("03", "Pause and let the soft wash expand.", left, stepsY + stepGap * 2);
+
+  fill(174, 191, 166, 135);
+  textSize(11);
+  text("P  HAND DISPLAY     R  RESET     ?  HELP", left, panel.buttonY - (compact ? 31 : 40));
+
+  const hovering =
+    mouseX >= panel.buttonX && mouseX <= panel.buttonX + panel.buttonWidth &&
+    mouseY >= panel.buttonY && mouseY <= panel.buttonY + panel.buttonHeight;
+
+  cursor(hovering ? HAND : ARROW);
+  fill(hovering ? color(220, 224, 203, 235) : color(188, 202, 178, 210));
+  rect(panel.buttonX, panel.buttonY, panel.buttonWidth, panel.buttonHeight, 2);
+
+  fill(18, 31, 27, 245);
+  textAlign(CENTER, CENTER);
+  textSize(12);
+  text("BEGIN", width / 2, panel.buttonY + panel.buttonHeight / 2);
+
+  fill(205, 210, 194, 105);
+  textSize(10);
+  text("or press Enter / Space", width / 2, panel.buttonY + panel.buttonHeight + 16);
+}
+
+function drawHelpStep(number, label, x, y) {
+  fill(174, 191, 166, 125);
+  textAlign(LEFT, TOP);
+  textSize(10);
+  text(number, x, y + 2);
+
+  fill(229, 228, 211, 205);
+  textSize(13);
+  text(label, x + 38, y);
+}
+
 function keyPressed() {
-  if (key === "m" || key === "M") {
-    if (inputMode === "mouse") {
-      startHandMode();
+  if (key === "?" || keyCode === 191) {
+    if (showHelp) {
+      beginExperience();
     } else {
-      stopHandMode();
+      showHelp = true;
     }
+    return false;
+  }
+
+  if (showHelp && (keyCode === ENTER || key === " " || keyCode === ESCAPE)) {
+    beginExperience();
+    return false;
+  }
+
+  if (showHelp) return false;
+
+  if (key === "p" || key === "P") {
+    handDisplayMode = (handDisplayMode + 1) % 3;
   }
 
   if (key === "r" || key === "R") {
     blooms = [];
     previousPoint = null;
+    lastGestureFrame = -1000;
+  }
+}
+
+function mousePressed() {
+  if (!showHelp) return;
+
+  const panel = getHelpPanelMetrics();
+  const insideButton =
+    mouseX >= panel.buttonX && mouseX <= panel.buttonX + panel.buttonWidth &&
+    mouseY >= panel.buttonY && mouseY <= panel.buttonY + panel.buttonHeight;
+
+  if (insideButton) beginExperience();
+}
+
+function beginExperience() {
+  showHelp = false;
+
+  if (!video && !modelLoading) {
+    startHandMode();
   }
 }
 
 function startHandMode() {
-  inputMode = "hand";
+  if (video || modelLoading) return;
+
   modelLoading = true;
   modelReady = false;
   videoReady = false;
@@ -256,8 +458,9 @@ function startHandMode() {
   video = createCapture(
     {
       video: {
-        width: 900,
-        height: 620
+        width: { ideal: CAMERA_WIDTH },
+        height: { ideal: CAMERA_HEIGHT },
+        frameRate: { ideal: 30, max: 30 }
       },
       audio: false
     },
@@ -267,7 +470,7 @@ function startHandMode() {
     }
   );
 
-  video.size(width, height);
+  video.size(CAMERA_WIDTH, CAMERA_HEIGHT);
   video.hide();
 
   handPose = ml5.handPose(
@@ -281,12 +484,7 @@ function startHandMode() {
 }
 
 function tryStartDetection() {
-  if (
-    inputMode === "hand" &&
-    modelReady &&
-    videoReady &&
-    !detectionStarted
-  ) {
+  if (modelReady && videoReady && !detectionStarted) {
     handPose.detectStart(video, gotHands);
     detectionStarted = true;
   }
@@ -296,31 +494,27 @@ function gotHands(results) {
   hands = results;
 }
 
-function stopHandMode() {
-  if (handPose && detectionStarted && handPose.detectStop) {
-    handPose.detectStop();
+function createBackgroundPoints() {
+  backgroundPoints = [];
+
+  for (let i = 0; i < 100; i++) {
+    backgroundPoints.push({
+      x: random(width),
+      y: random(height),
+      size: random(0.5, 1.7),
+      alpha: random(4, 16),
+      phase: random(TWO_PI)
+    });
   }
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  createBackgroundPoints();
 
   if (video) {
-    const stream = video.elt.srcObject;
-
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
-    }
-
-    video.remove();
+    video.size(CAMERA_WIDTH, CAMERA_HEIGHT);
   }
-
-  handPose = null;
-  video = null;
-  hands = [];
-
-  modelReady = false;
-  videoReady = false;
-  detectionStarted = false;
-  modelLoading = false;
-  inputMode = "mouse";
-  previousPoint = null;
 }
 
 function insideCanvas(x, y) {
@@ -329,8 +523,4 @@ function insideCanvas(x, y) {
 
 function easeOutQuart(t) {
   return 1 - pow(1 - t, 4);
-}
-
-function easeInCubic(t) {
-  return t * t * t;
 }

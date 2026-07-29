@@ -1,28 +1,25 @@
-# Trail V02: Ink Ribbon
+# Trail V02: Soft Ink Wash
 
 ## Question
-Can slow hand movement produce a more elegant and embodied trace through layered ribbon-like marks?
+Can slow hand movement produce a soft diffusion trace that continues to expand after the gesture?
 
 ## Change from V01
-V01 released small flow-field streams from the fingertip. V02 keeps the idea of movement as trace, but turns the path into a layered ribbon that fades, breathes and accumulates.
+V01 released small flow-field streams from the fingertip. V02 keeps the idea of movement as trace, but translates each movement into a pale ink-like bloom that diffuses and fades on a light paper field.
 
 ## Interaction
-In Mouse Mode, the mouse controls the moving point.
+Select **Begin** to activate the camera. The index finger becomes the source of the diffusion trace. Slow movement releases larger, softer blooms; the wash continues to expand after the hand has passed.
 
-Pressing M activates HandPose Mode. The index finger becomes the source of the ribbon trace. Pressing M again closes the camera and returns to Mouse Mode.
-
-Pressing R clears the drawing.
+`P` cycles hand visibility between points, skeleton and hidden. `R` clears the drawing. `?` opens the help screen.
 
 ## Design intention
 This sketch explores the hand not as a cursor, but as a slow drawing instrument. The trace is intentionally unstable and semi-transparent, closer to ink, silk, smoke or soft plant fibre.
 
 ## Technical experiment
-- Mouse and HandPose input switching
-- Path history
-- Layered curve drawing
-- Alpha fading
-- Speed-sensitive mark density
-- Reset interaction
+- Camera-only index-finger tracking
+- Soft diffusion layers on a light paper field
+- Alpha fading and irregular edges
+- Speed-sensitive bloom scale
+- Help screen and hand-display modes
 
 ## What to observe
 - Does slower movement create a more refined trace?
