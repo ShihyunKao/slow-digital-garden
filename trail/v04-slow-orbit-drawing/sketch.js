@@ -2,7 +2,6 @@ let handPose;
 let video;
 let hands = [];
 
-let inputMode = "mouse";
 let modelReady = false;
 let videoReady = false;
 let detectionStarted = false;
@@ -20,6 +19,7 @@ let stillFrames = 0;
 let missingFrames = 0;
 let savedFlash = 0;
 let savedPosition = null;
+let backgroundPoints = [];
 
 const MIN_POINT_DISTANCE = 5;
 const PAUSE_TO_SAVE_FRAMES = 26;
@@ -43,6 +43,16 @@ function setup() {
   randomSeed(904);
   noiseSeed(904);
   currentStroke = createStroke();
+
+  for (let i = 0; i < 100; i++) {
+    backgroundPoints.push({
+      x: random(width),
+      y: random(height),
+      size: random(0.5, 1.7),
+      alpha: random(4, 16),
+      phase: random(TWO_PI)
+    });
+  }
 }
 
 function draw() {
@@ -75,10 +85,6 @@ function createStroke() {
 }
 
 function getControlPoint() {
-  if (inputMode === "mouse") {
-    return { x: mouseX, y: mouseY };
-  }
-
   if (hands.length > 0) {
     const tip = hands[0].keypoints[8];
     return { x: tip.x, y: tip.y };
@@ -384,20 +390,18 @@ function drawBackground() {
     rect(0, y, width, 5);
   }
 
-  drawingContext.save();
-  drawingContext.filter = "blur(70px)";
-  fill(55, 82, 66, 11);
-  ellipse(width * 0.28, height * 0.7, width * 0.58, height * 0.7);
-  fill(95, 89, 63, 7);
-  ellipse(width * 0.78, height * 0.26, width * 0.38, height * 0.4);
-  drawingContext.restore();
+  for (const point of backgroundPoints) {
+    const flicker = sin(frameCount * 0.012 + point.phase) * 0.5 + 0.5;
+    fill(222, 219, 194, point.alpha * (0.65 + flicker * 0.35));
+    circle(point.x, point.y, point.size);
+  }
 
   fill(240, 232, 205, 5);
   rect(34, 34, width - 68, height - 68);
 }
 
 function drawHandDisplay() {
-  if (inputMode === "mouse" || hands.length === 0 || handDisplayMode === 0) return;
+  if (hands.length === 0 || handDisplayMode === 0) return;
 
   const points = hands[0].keypoints;
 
@@ -425,8 +429,7 @@ function drawHandDisplay() {
 
 function drawHeader() {
   const inset = 38;
-  const display = ["HIDDEN", "POINT", "SKELETON"][handDisplayMode];
-  const input = modelLoading ? "LOADING" : inputMode === "mouse" ? "CAMERA" : "MOUSE";
+  const display = ["HIDDEN", "POINTS", "SKELETON"][handDisplayMode];
 
   noStroke();
   textAlign(LEFT, TOP);
@@ -441,7 +444,10 @@ function drawHeader() {
   textAlign(RIGHT, TOP);
   fill(206, 212, 196, 120);
   textSize(11);
-  text(`M ${input} · P ${display} · R RESET · ? HELP`, width - inset, 30);
+  const controls = modelLoading
+    ? `CAMERA LOADING · P ${display} · R RESET · ? HELP`
+    : `P ${display} · R RESET · ? HELP`;
+  text(controls, width - inset, 30);
 
   stroke(232, 229, 210, 20);
   strokeWeight(1);
@@ -511,7 +517,7 @@ function drawHelpScreen() {
 
   fill(174, 191, 166, 135);
   textSize(11);
-  text("M  CAMERA / MOUSE     P  HAND DISPLAY     R  RESET     ?  HELP", left, panel.buttonY - (compact ? 31 : 40));
+  text("P  HAND DISPLAY     R  RESET     ?  HELP", left, panel.buttonY - (compact ? 31 : 40));
 
   const hovering =
     mouseX >= panel.buttonX && mouseX <= panel.buttonX + panel.buttonWidth &&
@@ -543,20 +549,20 @@ function drawHelpStep(number, label, x, y) {
 
 function keyPressed() {
   if (key === "?" || keyCode === 191) {
-    showHelp = !showHelp;
+    if (showHelp) {
+      beginExperience();
+    } else {
+      showHelp = true;
+    }
     return false;
   }
 
   if (showHelp && (keyCode === ENTER || key === " " || keyCode === ESCAPE)) {
-    showHelp = false;
+    beginExperience();
     return false;
   }
 
   if (showHelp) return false;
-
-  if (key === "m" || key === "M") {
-    inputMode === "mouse" ? startHandMode() : stopHandMode();
-  }
 
   if (key === "p" || key === "P") {
     handDisplayMode = (handDisplayMode + 1) % 3;
@@ -573,7 +579,15 @@ function mousePressed() {
     mouseX >= panel.buttonX && mouseX <= panel.buttonX + panel.buttonWidth &&
     mouseY >= panel.buttonY && mouseY <= panel.buttonY + panel.buttonHeight;
 
-  if (insideButton) showHelp = false;
+  if (insideButton) beginExperience();
+}
+
+function beginExperience() {
+  showHelp = false;
+
+  if (!video && !modelLoading) {
+    startHandMode();
+  }
 }
 
 function resetDrawing() {
@@ -588,7 +602,8 @@ function resetDrawing() {
 }
 
 function startHandMode() {
-  inputMode = "hand";
+  if (video || modelLoading) return;
+
   modelLoading = true;
   modelReady = false;
   videoReady = false;
@@ -619,7 +634,7 @@ function startHandMode() {
 }
 
 function tryStartDetection() {
-  if (inputMode === "hand" && modelReady && videoReady && !detectionStarted) {
+  if (modelReady && videoReady && !detectionStarted) {
     handPose.detectStart(video, gotHands);
     detectionStarted = true;
   }
@@ -627,27 +642,6 @@ function tryStartDetection() {
 
 function gotHands(results) {
   hands = results;
-}
-
-function stopHandMode() {
-  if (handPose && detectionStarted && handPose.detectStop) handPose.detectStop();
-
-  if (video) {
-    const stream = video.elt.srcObject;
-    if (stream) stream.getTracks().forEach((track) => track.stop());
-    video.remove();
-  }
-
-  handPose = null;
-  video = null;
-  hands = [];
-  modelReady = false;
-  videoReady = false;
-  detectionStarted = false;
-  modelLoading = false;
-  inputMode = "mouse";
-  smoothPoint = null;
-  previousPoint = null;
 }
 
 function windowResized() {
