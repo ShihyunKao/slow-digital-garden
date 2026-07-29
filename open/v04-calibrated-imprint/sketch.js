@@ -256,11 +256,10 @@ function drawInterface() {
   cursor(ARROW);
   const inset = 28;
   const display = ["HIDDEN", "POINTS", "SKELETON"][handDisplayMode];
-  const input = modelLoading ? "LOADING" : inputMode === "mouse" ? "CAMERA" : "MOUSE";
   noStroke(); textAlign(LEFT, TOP); fill(239, 236, 217, 220); textSize(14); text("HELD IMPRINT", inset, 27);
   fill(168, 187, 163, 130); textSize(10); text("GESTURE STUDY 04  /  OPEN PALM MEMORY", inset, 47);
   textAlign(RIGHT, TOP); fill(211, 216, 198, 128); textSize(10);
-  text(`M ${input}   ·   P ${display}   ·   R RESET   ·   ? HELP`, width - inset, 32);
+  text(`${modelLoading ? "CAMERA LOADING   ·   " : ""}P ${display}   ·   R RESET   ·   ? HELP`, width - inset, 32);
   stroke(199, 210, 188, 25); strokeWeight(1); line(inset, 66, width - inset, 66);
 }
 
@@ -280,10 +279,10 @@ function drawHelpScreen() {
   fill(201, 207, 191, 175); textSize(compact ? 13 : 15); textLeading(compact ? 19 : 22);
   text("A briefly held open palm leaves a deliberate, temporary constellation-like imprint.", left, panel.y + (compact ? 90 : 120), contentWidth);
   const stepsY = panel.y + (compact ? 128 : 174), gap = compact ? 42 : 54;
-  drawHelpStep("01", "Press M to enable the camera.", left, stepsY);
+  drawHelpStep("01", "Select Begin and allow access to the camera.", left, stepsY);
   drawHelpStep("02", "Relax your hand, then open your palm slowly.", left, stepsY + gap);
   drawHelpStep("03", "Hold until the small ring closes to leave an imprint.", left, stepsY + gap * 2);
-  fill(174, 191, 166, 135); textSize(11); text("M  CAMERA / MOUSE     P  HAND DISPLAY     R  RESET     ?  HELP", left, panel.buttonY - (compact ? 31 : 40));
+  fill(174, 191, 166, 135); textSize(11); text("P  HAND DISPLAY     R  RESET     ?  HELP", left, panel.buttonY - (compact ? 31 : 40));
   const hovering = mouseX >= panel.buttonX && mouseX <= panel.buttonX + panel.buttonWidth && mouseY >= panel.buttonY && mouseY <= panel.buttonY + panel.buttonHeight;
   cursor(hovering ? HAND : ARROW); fill(hovering ? color(220, 224, 203, 235) : color(188, 202, 178, 210)); rect(panel.buttonX, panel.buttonY, panel.buttonWidth, panel.buttonHeight, 2);
   fill(18, 31, 27, 245); textAlign(CENTER, CENTER); textSize(12); text("BEGIN", width / 2, panel.buttonY + panel.buttonHeight / 2);
@@ -297,9 +296,8 @@ function drawHelpStep(number, label, x, y) {
 
 function keyPressed() {
   if (key === "?" || keyCode === 191) { showHelp = !showHelp; return false; }
-  if (showHelp && (keyCode === ENTER || key === " " || keyCode === ESCAPE)) { showHelp = false; return false; }
+  if (showHelp && (keyCode === ENTER || key === " " || keyCode === ESCAPE)) { beginExperience(); return false; }
   if (showHelp) return false;
-  if (key === "m" || key === "M") inputMode === "mouse" ? startHandMode() : stopHandMode();
   if (key === "p" || key === "P") handDisplayMode = (handDisplayMode + 1) % 3;
   if (key === "r" || key === "R") { imprints = []; canStamp = true; openHoldFrames = 0; stampProgress = 0; }
 }
@@ -307,10 +305,16 @@ function keyPressed() {
 function mousePressed() {
   if (!showHelp) return;
   const panel = getHelpPanelMetrics();
-  if (mouseX >= panel.buttonX && mouseX <= panel.buttonX + panel.buttonWidth && mouseY >= panel.buttonY && mouseY <= panel.buttonY + panel.buttonHeight) showHelp = false;
+  if (mouseX >= panel.buttonX && mouseX <= panel.buttonX + panel.buttonWidth && mouseY >= panel.buttonY && mouseY <= panel.buttonY + panel.buttonHeight) beginExperience();
+}
+
+function beginExperience() {
+  showHelp = false;
+  if (!video && !modelLoading) startHandMode();
 }
 
 function startHandMode() {
+  if (video || modelLoading) return;
   inputMode = "hand"; modelLoading = true; modelReady = false; videoReady = false; detectionStarted = false; hands = [];
   video = createCapture({ video: { width, height }, audio: false }, () => { videoReady = true; tryStartDetection(); });
   video.size(width, height); video.hide();
