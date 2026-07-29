@@ -9,7 +9,7 @@ let detectionStarted = false;
 let modelLoading = false;
 
 let showHelp = true;
-let handDisplayMode = 0; // 0 hidden, 1 point, 2 skeleton
+let handDisplayMode = 1; // Default POINTS; P cycles POINTS → SKELETON → HIDDEN
 let openness = 0;
 let targetOpenness = 0;
 let canRelease = true;
@@ -375,8 +375,7 @@ function drawBackground() {
 
 function drawHeader() {
   const inset = 38;
-  const display = ["HIDDEN", "POINT", "SKELETON"][handDisplayMode];
-  const input = modelLoading ? "LOADING" : inputMode === "mouse" ? "CAMERA" : "MOUSE";
+  const display = ["HIDDEN", "POINTS", "SKELETON"][handDisplayMode];
 
   noStroke();
   textAlign(LEFT, TOP);
@@ -391,7 +390,7 @@ function drawHeader() {
   textAlign(RIGHT, TOP);
   fill(206, 212, 196, 120);
   textSize(11);
-  text(`M ${input} · P ${display} · R RESET · ? HELP`, width - inset, 30);
+  text(`${modelLoading ? "CAMERA LOADING · " : ""}P ${display} · R RESET · ? HELP`, width - inset, 30);
 
   stroke(232, 229, 210, 20);
   strokeWeight(1);
@@ -455,13 +454,13 @@ function drawHelpScreen() {
 
   const stepsY = panel.y + (compact ? 128 : 174);
   const gap = compact ? 42 : 54;
-  drawHelpStep("01", "Press M to enable the camera.", left, stepsY);
+  drawHelpStep("01", "Select Begin and allow access to the camera.", left, stepsY);
   drawHelpStep("02", "Open one palm slowly to create a pressure field.", left, stepsY + gap);
   drawHelpStep("03", "Close, then open again to leave another memory.", left, stepsY + gap * 2);
 
   fill(174, 191, 166, 135);
   textSize(11);
-  text("M  CAMERA / MOUSE     P  HAND DISPLAY     R  RESET     ?  HELP", left, panel.buttonY - (compact ? 31 : 40));
+  text("P  HAND DISPLAY     R  RESET     ?  HELP", left, panel.buttonY - (compact ? 31 : 40));
 
   const hovering =
     mouseX >= panel.buttonX && mouseX <= panel.buttonX + panel.buttonWidth &&
@@ -498,15 +497,11 @@ function keyPressed() {
   }
 
   if (showHelp && (keyCode === ENTER || key === " " || keyCode === ESCAPE)) {
-    showHelp = false;
+    beginExperience();
     return false;
   }
 
   if (showHelp) return false;
-
-  if (key === "m" || key === "M") {
-    inputMode === "mouse" ? startHandMode() : stopHandMode();
-  }
 
   if (key === "p" || key === "P") {
     handDisplayMode = (handDisplayMode + 1) % 3;
@@ -526,10 +521,20 @@ function mousePressed() {
     mouseX >= panel.buttonX && mouseX <= panel.buttonX + panel.buttonWidth &&
     mouseY >= panel.buttonY && mouseY <= panel.buttonY + panel.buttonHeight;
 
-  if (insideButton) showHelp = false;
+  if (insideButton) beginExperience();
+}
+
+function beginExperience() {
+  showHelp = false;
+
+  if (!video && !modelLoading) {
+    startHandMode();
+  }
 }
 
 function startHandMode() {
+  if (video || modelLoading) return;
+
   inputMode = "hand";
   modelLoading = true;
   modelReady = false;
