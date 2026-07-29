@@ -2,7 +2,6 @@ let handPose;
 let video;
 let hands = [];
 
-let inputMode = "mouse";
 let modelReady = false;
 let videoReady = false;
 let detectionStarted = false;
@@ -16,16 +15,29 @@ let smoothPoint = null;
 let lastNodePoint = null;
 let dwellFrames = 0;
 let lastAnchorFrame = -1000;
+let backgroundPoints = [];
 
 const MAX_NODES = 120;
 const NODE_SPACING = 29;
-const DWELL_FRAMES = 24;
+const DWELL_FRAMES = 12;
+const STILL_SPEED = 2.1;
+const ANCHOR_COOLDOWN = 60;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   pixelDensity(1);
   randomSeed(603);
   noiseSeed(603);
+
+  for (let i = 0; i < 100; i++) {
+    backgroundPoints.push({
+      x: random(width),
+      y: random(height),
+      size: random(0.5, 1.7),
+      alpha: random(4, 16),
+      phase: random(TWO_PI)
+    });
+  }
 }
 
 function draw() {
@@ -64,7 +76,8 @@ function updatePath() {
   smoothPoint.y = lerp(smoothPoint.y, rawPoint.y, 0.34);
 
   const speed = dist(previous.x, previous.y, smoothPoint.x, smoothPoint.y);
-  const slowness = constrain(map(speed, 0, 18, 1, 0.18), 0.18, 1);
+  const slowRange = constrain(map(speed, 0.7, 12, 1, 0), 0, 1);
+  const slowness = lerp(0.06, 1, pow(slowRange, 1.75));
   const distanceFromLastNode = dist(
     smoothPoint.x,
     smoothPoint.y,
@@ -77,12 +90,12 @@ function updatePath() {
   if (distanceFromLastNode > spacing) {
     addNode(smoothPoint, slowness, false);
     dwellFrames = 0;
-  } else if (speed < 1.35) {
+  } else if (speed < STILL_SPEED) {
     dwellFrames++;
 
     if (
       dwellFrames >= DWELL_FRAMES &&
-      frameCount - lastAnchorFrame > 90 &&
+      frameCount - lastAnchorFrame > ANCHOR_COOLDOWN &&
       distanceFromLastNode > 10
     ) {
       addNode(smoothPoint, 1, true);
@@ -95,10 +108,6 @@ function updatePath() {
 }
 
 function getControlPoint() {
-  if (inputMode === "mouse") {
-    return { x: mouseX, y: mouseY };
-  }
-
   if (hands.length > 0) {
     const tip = hands[0].keypoints[8];
     return { x: tip.x, y: tip.y };
@@ -111,8 +120,8 @@ function addNode(point, slowness, anchor) {
   nodes.push({
     x: point.x,
     y: point.y,
-    size: anchor ? random(7.5, 10.5) : lerp(2.2, 5.4, slowness),
-    alpha: anchor ? 180 : lerp(62, 152, slowness),
+    size: anchor ? random(8.5, 11.5) : lerp(1.5, 6.3, slowness),
+    alpha: anchor ? 225 : lerp(24, 190, slowness),
     slowness,
     anchor,
     born: frameCount,
@@ -169,17 +178,43 @@ function drawNode(node, appear) {
   const pulse = sin(frameCount * 0.035 + node.seed) * 0.5 + 0.5;
 
   if (node.anchor) {
+    const twinkle = sin(frameCount * 0.055 + node.seed * 1.7) * 0.5 + 0.5;
+    const baseAngle = noise(node.seed * 0.01, 2.1) * TWO_PI;
+
     drawingContext.save();
-    drawingContext.filter = "blur(14px)";
+    drawingContext.shadowBlur = 18 + twinkle * 10;
+    drawingContext.shadowColor = "rgba(244, 236, 196, 0.5)";
     noStroke();
-    fill(108, 151, 121, 30 * appear);
-    circle(node.x, node.y, node.size * 6.5);
+    fill(244, 236, 196, (35 + twinkle * 34) * appear);
+    circle(node.x, node.y, node.size * (1.25 + twinkle * 0.22));
     drawingContext.restore();
 
-    noFill();
-    stroke(226, 225, 196, 55 * appear);
-    strokeWeight(0.6);
-    circle(node.x, node.y, node.size * (2.1 + pulse * 0.25));
+    for (let arm = 0; arm < 3; arm++) {
+      const angle = baseAngle + (TWO_PI / 3) * arm;
+      const variation = noise(node.seed, arm * 0.73);
+      const length = node.size * (0.82 + variation * 0.72 + twinkle * 0.16);
+      const start = node.size * 0.34;
+      const curl = (noise(node.seed * 0.2, arm + 4) - 0.5) * node.size;
+
+      const startX = node.x + cos(angle) * start;
+      const startY = node.y + sin(angle) * start;
+      const endX = node.x + cos(angle) * length;
+      const endY = node.y + sin(angle) * length;
+      const controlX = (startX + endX) * 0.5 + cos(angle + HALF_PI) * curl;
+      const controlY = (startY + endY) * 0.5 + sin(angle + HALF_PI) * curl;
+
+      noFill();
+      stroke(242, 234, 197, (32 + twinkle * 45) * appear);
+      strokeWeight(0.45);
+      beginShape();
+      vertex(startX, startY);
+      quadraticVertex(controlX, controlY, endX, endY);
+      endShape();
+
+      noStroke();
+      fill(246, 238, 198, (54 + twinkle * 62) * appear);
+      circle(endX, endY, 1 + twinkle * 1.15);
+    }
   }
 
   drawingContext.save();
@@ -204,20 +239,18 @@ function drawBackground() {
     rect(0, y, width, 5);
   }
 
-  drawingContext.save();
-  drawingContext.filter = "blur(70px)";
-  fill(58, 85, 68, 13);
-  ellipse(width * 0.25, height * 0.68, width * 0.62, height * 0.72);
-  fill(92, 88, 62, 8);
-  ellipse(width * 0.78, height * 0.28, width * 0.45, height * 0.42);
-  drawingContext.restore();
+  for (const point of backgroundPoints) {
+    const flicker = sin(frameCount * 0.012 + point.phase) * 0.5 + 0.5;
+    fill(222, 219, 194, point.alpha * (0.65 + flicker * 0.35));
+    circle(point.x, point.y, point.size);
+  }
 
   fill(240, 232, 205, 5);
   rect(34, 34, width - 68, height - 68);
 }
 
 function drawHandDisplay() {
-  if (inputMode === "mouse" || hands.length === 0 || handDisplay === 0) return;
+  if (hands.length === 0 || handDisplay === 0) return;
 
   const hand = hands[0];
   const points = hand.keypoints;
@@ -269,11 +302,10 @@ function drawHeader() {
   textAlign(RIGHT);
   fill(232, 229, 210, 108);
   textSize(11);
-  text(
-    `M ${inputMode === "mouse" ? "CAMERA" : "MOUSE"} · P ${handDisplayLabel()} · R RESET · ? HELP`,
-    width - 38,
-    42
-  );
+  const controls = modelLoading
+    ? `CAMERA LOADING · P ${handDisplayLabel()} · R RESET · ? HELP`
+    : `P ${handDisplayLabel()} · R RESET · ? HELP`;
+  text(controls, width - 38, 42);
 
   stroke(232, 229, 210, 20);
   strokeWeight(1);
@@ -282,7 +314,7 @@ function drawHeader() {
 
 function handDisplayLabel() {
   if (handDisplay === 0) return "HIDDEN";
-  if (handDisplay === 1) return "POINT";
+  if (handDisplay === 1) return "POINTS";
   return "SKELETON";
 }
 
@@ -343,17 +375,13 @@ function drawHelpScreen() {
 
   const stepsY = panel.y + (compact ? 128 : 174);
   const stepGap = compact ? 42 : 54;
-  drawHelpStep("01", "Press M to enable the camera.", left, stepsY);
+  drawHelpStep("01", "Select Begin to activate the camera.", left, stepsY);
   drawHelpStep("02", "Move one index finger slowly through the space.", left, stepsY + stepGap);
   drawHelpStep("03", "Pause briefly to leave a larger anchor point.", left, stepsY + stepGap * 2);
 
   fill(174, 191, 166, 135);
   textSize(11);
-  text(
-    "M  CAMERA / MOUSE     P  HAND DISPLAY     R  RESET     ?  HELP",
-    left,
-    panel.buttonY - (compact ? 31 : 40)
-  );
+  text("P  HAND DISPLAY     R  RESET     ?  HELP", left, panel.buttonY - (compact ? 31 : 40));
 
   const hovering =
     mouseX >= panel.buttonX &&
@@ -388,24 +416,20 @@ function drawHelpStep(number, label, x, y) {
 
 function keyPressed() {
   if (key === "?" || keyCode === 191) {
-    helpVisible = !helpVisible;
+    if (helpVisible) {
+      beginExperience();
+    } else {
+      helpVisible = true;
+    }
     return;
   }
 
   if (helpVisible && (keyCode === ENTER || key === " " || keyCode === ESCAPE)) {
-    helpVisible = false;
+    beginExperience();
     return;
   }
 
   if (helpVisible) return;
-
-  if (key === "m" || key === "M") {
-    if (inputMode === "mouse") {
-      startHandMode();
-    } else {
-      stopHandMode();
-    }
-  }
 
   if (key === "p" || key === "P") {
     handDisplay = (handDisplay + 1) % 3;
@@ -426,7 +450,15 @@ function mousePressed() {
     mouseY >= panel.buttonY &&
     mouseY <= panel.buttonY + panel.buttonHeight;
 
-  if (insideButton) helpVisible = false;
+  if (insideButton) beginExperience();
+}
+
+function beginExperience() {
+  helpVisible = false;
+
+  if (!video && !modelLoading) {
+    startHandMode();
+  }
 }
 
 function resetPath() {
@@ -438,7 +470,8 @@ function resetPath() {
 }
 
 function startHandMode() {
-  inputMode = "hand";
+  if (video || modelLoading) return;
+
   modelLoading = true;
   modelReady = false;
   videoReady = false;
@@ -475,12 +508,7 @@ function startHandMode() {
 }
 
 function tryStartDetection() {
-  if (
-    inputMode === "hand" &&
-    modelReady &&
-    videoReady &&
-    !detectionStarted
-  ) {
+  if (modelReady && videoReady && !detectionStarted) {
     handPose.detectStart(video, gotHands);
     detectionStarted = true;
   }
@@ -488,33 +516,6 @@ function tryStartDetection() {
 
 function gotHands(results) {
   hands = results;
-}
-
-function stopHandMode() {
-  if (handPose && detectionStarted && handPose.detectStop) {
-    handPose.detectStop();
-  }
-
-  if (video) {
-    const stream = video.elt.srcObject;
-
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
-    }
-
-    video.remove();
-  }
-
-  handPose = null;
-  video = null;
-  hands = [];
-  modelReady = false;
-  videoReady = false;
-  detectionStarted = false;
-  modelLoading = false;
-  inputMode = "mouse";
-  smoothPoint = null;
-  lastNodePoint = null;
 }
 
 function windowResized() {

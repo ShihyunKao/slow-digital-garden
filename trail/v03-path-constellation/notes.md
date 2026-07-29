@@ -10,9 +10,9 @@ V02 tested ink and water-like material behaviour. Its visual language became too
 
 ## Interaction
 
-Move one index finger through the space. The system deposits points along the movement path and connects them into a personal constellation. Slower movement creates brighter, more substantial points. Holding still creates a larger anchor point.
+Select **Begin** to activate the camera, then move one index finger through the space. The system deposits points along the movement path and connects them into a personal constellation. Slower movement creates brighter, more substantial points. Holding still creates a larger anchor point.
 
-`M` switches between Mouse and HandPose input. `P` cycles hand visibility between hidden, point and skeleton. `R` clears the path. `?` opens the help screen.
+`P` cycles hand visibility between points, skeleton and hidden. `R` clears the path. `?` opens the help screen.
 
 ## Design intention
 
