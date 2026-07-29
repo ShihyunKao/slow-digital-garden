@@ -27,8 +27,8 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   pixelDensity(1);
   randomSeed(531); noiseSeed(531);
-  for (let i = 0; i < 95; i++) {
-    driftStars.push({ x: random(width), y: random(height), size: random(0.7, 2.1), alpha: random(9, 31), speed: random(0.03, 0.13) });
+  for (let i = 0; i < 100; i++) {
+    driftStars.push({ x: random(width), y: random(height), size: random(0.5, 1.7), alpha: random(4, 16), phase: random(TWO_PI) });
   }
 }
 
@@ -242,25 +242,24 @@ function drawStampHalo(points) {
 
 function drawBackground() {
   background(9, 19, 17); noStroke();
-  for (let y = 0; y < height; y += 4) { fill(30, 45, 39, map(y, 0, height, 18, 3)); rect(0, y, width, 4); }
+  for (let y = 0; y < height; y += 5) { fill(30, 45, 39, map(y, 0, height, 18, 3)); rect(0, y, width, 5); }
   for (const star of driftStars) {
-    star.y -= star.speed;
-    if (star.y < -10) { star.y = height + 10; star.x = random(width); }
-    fill(246, 238, 198, star.alpha); circle(star.x, star.y, star.size);
+    const flicker = sin(frameCount * 0.012 + star.phase) * 0.5 + 0.5;
+    fill(222, 219, 194, star.alpha * (0.65 + flicker * 0.35)); circle(star.x, star.y, star.size);
   }
-  fill(240, 232, 205, 5); rect(22, 22, width - 44, height - 44);
+  fill(240, 232, 205, 5); rect(34, 34, width - 68, height - 68);
 }
 
 function drawInterface() {
   if (showHelp) { drawHelpScreen(); return; }
   cursor(ARROW);
-  const inset = 28;
+  const inset = 38;
   const display = ["HIDDEN", "POINTS", "SKELETON"][handDisplayMode];
   noStroke(); textAlign(LEFT, TOP); fill(239, 236, 217, 220); textSize(14); text("HELD IMPRINT", inset, 27);
-  fill(168, 187, 163, 130); textSize(10); text("GESTURE STUDY 04  /  OPEN PALM MEMORY", inset, 47);
-  textAlign(RIGHT, TOP); fill(211, 216, 198, 128); textSize(10);
-  text(`${modelLoading ? "CAMERA LOADING   ·   " : ""}P ${display}   ·   R RESET   ·   ? HELP`, width - inset, 32);
-  stroke(199, 210, 188, 25); strokeWeight(1); line(inset, 66, width - inset, 66);
+  fill(196, 207, 188, 100); textSize(10); text("GESTURE STUDY 04 / OPEN PALM MEMORY", inset, 47);
+  textAlign(RIGHT, TOP); fill(206, 212, 196, 120); textSize(11);
+  text(`${modelLoading ? "CAMERA LOADING · " : ""}P ${display} · R RESET · ? HELP`, width - inset, 30);
+  stroke(232, 229, 210, 20); strokeWeight(1); line(inset, 70, width - inset, 70);
 }
 
 function getHelpPanelMetrics() {

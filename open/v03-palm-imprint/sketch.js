@@ -32,13 +32,13 @@ function setup() {
   randomSeed(451);
   noiseSeed(451);
 
-  for (let i = 0; i < 80; i++) {
+  for (let i = 0; i < 100; i++) {
     driftStars.push({
       x: random(width),
       y: random(height),
-      size: random(0.8, 2.2),
-      alpha: random(10, 34),
-      speed: random(0.04, 0.16)
+      size: random(0.5, 1.7),
+      alpha: random(4, 16),
+      phase: random(TWO_PI)
     });
   }
 }
@@ -388,29 +388,21 @@ function drawMousePreview() {
 
 function drawBackground() {
   background(9, 19, 17);
-
   noStroke();
 
-  for (let y = 0; y < height; y += 4) {
-    const a = map(y, 0, height, 18, 3);
-    fill(30, 45, 39, a);
-    rect(0, y, width, 4);
+  for (let y = 0; y < height; y += 5) {
+    fill(30, 45, 39, map(y, 0, height, 18, 3));
+    rect(0, y, width, 5);
   }
 
   for (const star of driftStars) {
-    star.y -= star.speed;
-
-    if (star.y < -10) {
-      star.y = height + 10;
-      star.x = random(width);
-    }
-
-    fill(246, 238, 198, star.alpha);
+    const flicker = sin(frameCount * 0.012 + star.phase) * 0.5 + 0.5;
+    fill(222, 219, 194, star.alpha * (0.65 + flicker * 0.35));
     circle(star.x, star.y, star.size);
   }
 
   fill(240, 232, 205, 5);
-  rect(22, 22, width - 44, height - 44);
+  rect(34, 34, width - 68, height - 68);
 }
 
 function windowResized() {
@@ -428,7 +420,7 @@ function drawInterface() {
 
 function drawExhibitionCaption() {
   cursor(ARROW);
-  const inset = 28;
+  const inset = 38;
   const display = ["HIDDEN", "POINTS", "SKELETON"][handDisplayMode];
 
   noStroke();
@@ -437,18 +429,18 @@ function drawExhibitionCaption() {
   textSize(14);
   text("PALM IMPRINT", inset, 27);
 
-  fill(168, 187, 163, 130);
+  fill(196, 207, 188, 100);
   textSize(10);
-  text("GESTURE STUDY 03  /  OPEN PALM MEMORY", inset, 47);
+  text("GESTURE STUDY 03 / OPEN PALM MEMORY", inset, 47);
 
   textAlign(RIGHT, TOP);
-  fill(211, 216, 198, 128);
-  textSize(10);
-  text(`${modelLoading ? "CAMERA LOADING   ·   " : ""}P ${display}   ·   R RESET   ·   ? HELP`, width - inset, 32);
+  fill(206, 212, 196, 120);
+  textSize(11);
+  text(`${modelLoading ? "CAMERA LOADING · " : ""}P ${display} · R RESET · ? HELP`, width - inset, 30);
 
-  stroke(199, 210, 188, 25);
+  stroke(232, 229, 210, 20);
   strokeWeight(1);
-  line(inset, 66, width - inset, 66);
+  line(inset, 70, width - inset, 70);
 }
 
 function getHelpPanelMetrics() {
