@@ -9,7 +9,7 @@ let detectionStarted = false;
 let modelLoading = false;
 
 let showHelp = true;
-let handDisplayMode = 0; // 0 hidden, 1 fingertips, 2 skeleton
+let handDisplayMode = 1; // Default POINTS; P cycles POINTS → SKELETON → HIDDEN
 let openness = 0;
 let targetOpenness = 0;
 let gestureActive = false;
