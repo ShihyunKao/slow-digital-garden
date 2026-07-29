@@ -1,10 +1,12 @@
-# 02 Hand Trail
+# Trail V01: Hand Trail
 
 ## Question
 Can a slow hand movement create an elegant visual trace without relying on literal plant graphics?
 
 ## Interaction
-The index finger releases small generative line streams. The streams follow an invisible flow field and gradually form a layered drawing.
+Select **Begin** to activate the camera. The index finger releases small generative line streams. The streams follow an invisible flow field and gradually form a layered drawing.
+
+`P` cycles hand visibility between points, skeleton and hidden. `R` clears the drawing. `?` opens the help screen.
 
 ## Design intention
 This sketch treats the hand as a source of growth rather than a cursor. Slow movement produces a denser, calmer trace, while quick movement leaves less material behind.
