@@ -12,7 +12,7 @@ V04 refined the Cosmic Memory interaction and interface. V05 makes each memory r
 
 Begin with both hands close together. Open them slowly, pause in the extended position, then return to the centre. Each complete cycle leaves one ring.
 
-Selecting **Begin** starts the camera; this and future Both Hands studies use camera input only. `P` cycles hand visibility between hidden, points and skeleton. `R` clears the archive. `?` opens the help screen.
+Selecting **Begin** starts the camera; this and future Both Hands studies use camera input only. It starts in **Points** mode; `P` cycles hand visibility through **Points → Skeleton → Hidden**. `R` clears the archive. `?` opens the help screen.
 
 ## Data-to-visual mapping
 

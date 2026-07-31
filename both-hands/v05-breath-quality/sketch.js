@@ -9,7 +9,7 @@ let detectionStarted = false;
 let modelLoading = false;
 
 let showHelp = true;
-let handDisplayMode = 0; // 0 hidden, 1 points, 2 skeleton
+let handDisplayMode = 1; // Default POINTS; P cycles POINTS → SKELETON → HIDDEN
 
 let breath = 0;
 let targetBreath = 0;
@@ -505,8 +505,8 @@ function drawHeader() {
 }
 
 function getHelpPanelMetrics() {
-  const panelWidth = min(620, width - 40);
-  const panelHeight = min(500, height - 40);
+  const panelWidth = min(840, width - 40);
+  const panelHeight = min(540, height - 40);
   return {
     x: (width - panelWidth) / 2,
     y: (height - panelHeight) / 2,
@@ -521,9 +521,9 @@ function getHelpPanelMetrics() {
 
 function drawHelpScreen() {
   const panel = getHelpPanelMetrics();
-  const compact = panel.height < 440;
-  const left = panel.x + (compact ? 34 : 54);
-  const contentWidth = panel.width - (compact ? 68 : 108);
+  const compact = panel.width < 740 || panel.height < 500;
+  const left = panel.x + (compact ? 34 : 56);
+  const rightEdge = panel.x + panel.width - (compact ? 34 : 56);
 
   noStroke();
   fill(5, 12, 11, 205);
@@ -546,33 +546,20 @@ function drawHelpScreen() {
 
   fill(238, 235, 216, 240);
   textSize(compact ? 28 : 36);
-  text("Breath Quality", left, panel.y + (compact ? 48 : 68));
+  text("Breath Quality", left, panel.y + (compact ? 46 : 65));
 
-  fill(201, 207, 191, 175);
-  textSize(compact ? 13 : 15);
-  textLeading(compact ? 19 : 22);
-  text(
-    "Each complete two-hand movement leaves a ring shaped by its speed, steadiness, balance and pause.",
-    left,
-    panel.y + (compact ? 90 : 120),
-    contentWidth
-  );
-
-  const stepsY = panel.y + (compact ? 128 : 174);
-  const gap = compact ? 42 : 54;
-  drawHelpStep("01", "Select Begin, allow the camera, and bring hands together.", left, stepsY);
-  drawHelpStep("02", "Open slowly and pause in the extended position.", left, stepsY + gap);
-  drawHelpStep("03", "Return slowly to create one quality-based memory ring.", left, stepsY + gap * 2);
-
-  fill(174, 191, 166, 135);
-  textSize(11);
-  text("P  HAND DISPLAY     R  RESET ARCHIVE     ?  HELP", left, panel.buttonY - (compact ? 31 : 40));
+  if (compact) {
+    drawCompactHelp(panel, left, rightEdge - left);
+  } else {
+    drawEditorialHelp(panel, left, rightEdge);
+  }
 
   const hovering =
     mouseX >= panel.buttonX && mouseX <= panel.buttonX + panel.buttonWidth &&
     mouseY >= panel.buttonY && mouseY <= panel.buttonY + panel.buttonHeight;
 
   cursor(hovering ? HAND : ARROW);
+  noStroke();
   fill(hovering ? color(220, 224, 203, 235) : color(188, 202, 178, 210));
   rect(panel.buttonX, panel.buttonY, panel.buttonWidth, panel.buttonHeight, 2);
 
@@ -584,6 +571,111 @@ function drawHelpScreen() {
   fill(205, 210, 194, 105);
   textSize(10);
   text("or press Enter / Space", width / 2, panel.buttonY + panel.buttonHeight + 16);
+}
+
+function drawEditorialHelp(panel, left, rightEdge) {
+  const dividerX = panel.x + panel.width * 0.59;
+  const right = dividerX + 38;
+  const rightWidth = rightEdge - right;
+
+  fill(201, 207, 191, 175);
+  textAlign(LEFT, TOP);
+  textSize(15);
+  textLeading(22);
+  text(
+    "Each complete two-hand movement leaves a ring shaped by its speed, steadiness, balance and pause.",
+    left,
+    panel.y + 118,
+    dividerX - left - 46
+  );
+
+  const stepsY = panel.y + 198;
+  const gap = 58;
+  drawHelpStep("01", "Select Begin, allow the camera, and bring hands together.", left, stepsY);
+  drawHelpStep("02", "Open slowly and pause in the extended position.", left, stepsY + gap);
+  drawHelpStep("03", "Return slowly to create one quality-based memory ring.", left, stepsY + gap * 2);
+
+  stroke(178, 193, 169, 35);
+  strokeWeight(1);
+  line(dividerX, panel.y + 112, dividerX, panel.buttonY - 42);
+
+  noStroke();
+  fill(174, 191, 166, 120);
+  textAlign(LEFT, TOP);
+  textSize(10);
+  text("READING THE ARCHIVE", right, panel.y + 120);
+
+  fill(201, 207, 191, 145);
+  textSize(12);
+  textLeading(18);
+  text(
+    "Each completed stretch becomes a ring whose surface reveals the quality of movement.",
+    right,
+    panel.y + 146,
+    rightWidth
+  );
+
+  const legendY = panel.y + 246;
+  const legendGap = 40;
+  drawArchiveLegendRow("01", "COMPLETENESS", "slow + steady movement", right, legendY, rightWidth);
+  drawArchiveLegendRow("02", "TEXTURE", "movement steadiness", right, legendY + legendGap, rightWidth);
+  drawArchiveLegendRow("03", "TILT", "vertical hand balance", right, legendY + legendGap * 2, rightWidth);
+  drawArchiveLegendRow("04", "STARS", "open-palm pause", right, legendY + legendGap * 3, rightWidth);
+
+  textAlign(LEFT, TOP);
+  fill(174, 191, 166, 125);
+  textSize(10);
+  text("P  HAND DISPLAY     R  RESET ARCHIVE     ?  HELP", left, panel.buttonY - 37);
+}
+
+function drawCompactHelp(panel, left, contentWidth) {
+  fill(201, 207, 191, 165);
+  textAlign(LEFT, TOP);
+  textSize(12);
+  textLeading(17);
+  text(
+    "Each complete two-hand movement leaves a ring shaped by movement quality.",
+    left,
+    panel.y + 86,
+    contentWidth
+  );
+
+  const stepsY = panel.y + 126;
+  const gap = 39;
+  drawHelpStep("01", "Begin with both hands together.", left, stepsY);
+  drawHelpStep("02", "Open, pause, then return.", left, stepsY + gap);
+  drawHelpStep("03", "Repeat to build a ring archive.", left, stepsY + gap * 2);
+
+  const keyY = stepsY + gap * 3 + 5;
+  fill(174, 191, 166, 115);
+  textSize(10);
+  text("COMPLETENESS / SLOW + STEADY     TEXTURE / STEADINESS", left, keyY);
+  text("TILT / VERTICAL BALANCE           STARS / OPEN-PALM PAUSE", left, keyY + 18);
+
+  fill(174, 191, 166, 120);
+  textSize(9);
+  text("P  HAND DISPLAY     R  RESET     ?  HELP", left, panel.buttonY - 28);
+}
+
+function drawArchiveLegendRow(number, label, description, x, y, rowWidth) {
+  stroke(178, 193, 169, 30);
+  strokeWeight(1);
+  line(x, y - 10, x + rowWidth, y - 10);
+
+  noStroke();
+  textAlign(LEFT, TOP);
+  fill(174, 191, 166, 90);
+  textSize(9);
+  text(number, x, y + 2);
+
+  fill(230, 229, 211, 205);
+  textSize(11);
+  text(label, x + 34, y);
+
+  fill(184, 195, 179, 145);
+  textSize(10);
+  textAlign(RIGHT, TOP);
+  text(description, x + rowWidth, y + 1);
 }
 
 function drawHelpStep(number, label, x, y) {
