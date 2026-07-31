@@ -8,7 +8,7 @@ let detectionStarted = false;
 let modelLoading = false;
 
 let showHelp = true;
-let handDisplayMode = 0; // 0 hidden, 1 points, 2 skeleton
+let handDisplayMode = 1; // Default POINTS; P cycles POINTS → SKELETON → HIDDEN
 
 let breath = 0;
 let targetBreath = 0;
