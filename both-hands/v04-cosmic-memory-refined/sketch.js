@@ -1,13 +1,12 @@
 let handPose, video;
 let hands = [];
-let inputMode = "mouse";
 let modelReady = false, videoReady = false, detectionStarted = false, modelLoading = false;
 
 let breath = 0, targetBreath = 0, previousBreath = 0;
 let wasOpen = false, memoryStep = 0;
 let memories = [], stars = [];
 let showHelp = true;
-let handDisplayMode = 0; // 0 hidden, 1 points, 2 skeleton
+let handDisplayMode = 1; // Default POINTS; P cycles POINTS → SKELETON → HIDDEN
 
 const HAND_CONNECTIONS = [
   [0, 1], [1, 2], [2, 3], [3, 4],
@@ -44,9 +43,6 @@ function draw() {
 }
 
 function getBreathAmount() {
-  const sidePadding = min(width * 0.12, 145);
-  if (inputMode === "mouse") return constrain(map(mouseX, sidePadding, width - sidePadding, 0, 1), 0, 1);
-
   // If one hand temporarily leaves the camera frame, return smoothly instead
   // of holding the last large state or making the sketch feel frozen.
   if (hands.length < 2) return max(0, breath - 0.035);
@@ -177,7 +173,7 @@ function windowResized() {
 }
 
 function drawHandDisplay() {
-  if (inputMode !== "hand" || handDisplayMode === 0) return;
+  if (handDisplayMode === 0) return;
   stroke(230, 226, 204, handDisplayMode === 2 ? 90 : 120); strokeWeight(1); noFill();
   for (const hand of hands) {
     if (handDisplayMode === 2) {
@@ -202,7 +198,6 @@ function drawExhibitionCaption() {
   cursor(ARROW);
   const inset = 28;
   const display = ["HIDDEN", "POINTS", "SKELETON"][handDisplayMode];
-  const input = modelLoading ? "LOADING" : inputMode === "mouse" ? "CAMERA" : "MOUSE";
 
   noStroke();
   textAlign(LEFT, TOP);
@@ -217,7 +212,7 @@ function drawExhibitionCaption() {
   textAlign(RIGHT, TOP);
   fill(211, 216, 198, 128);
   textSize(10);
-  text(`M ${input}   ·   P ${display}   ·   R RESET   ·   ? HELP`, width - inset, 32);
+  text(`${modelLoading ? "CAMERA LOADING · " : ""}P ${display}   ·   R RESET   ·   ? HELP`, width - inset, 32);
 
   stroke(199, 210, 188, 25);
   strokeWeight(1);
@@ -225,8 +220,8 @@ function drawExhibitionCaption() {
 }
 
 function getHelpPanelMetrics() {
-  const panelWidth = min(620, width - 40);
-  const panelHeight = min(500, height - 40);
+  const panelWidth = min(840, width - 40);
+  const panelHeight = min(540, height - 40);
 
   return {
     x: (width - panelWidth) / 2,
@@ -242,9 +237,9 @@ function getHelpPanelMetrics() {
 
 function drawHelpScreen() {
   const panel = getHelpPanelMetrics();
-  const compact = panel.height < 440;
-  const left = panel.x + (compact ? 34 : 54);
-  const contentWidth = panel.width - (compact ? 68 : 108);
+  const compact = panel.width < 740 || panel.height < 500;
+  const left = panel.x + (compact ? 34 : 56);
+  const rightEdge = panel.x + panel.width - (compact ? 34 : 56);
 
   noStroke();
   fill(5, 12, 11, 205);
@@ -268,41 +263,21 @@ function drawHelpScreen() {
 
   fill(238, 235, 216, 240);
   textSize(compact ? 28 : 36);
-  text("Cosmic Memory", left, panel.y + (compact ? 48 : 68));
+  text("Cosmic Memory", left, panel.y + (compact ? 46 : 65));
 
-  fill(201, 207, 191, 175);
-  textSize(compact ? 13 : 15);
-  textLeading(compact ? 19 : 22);
-  text(
-    "A slow two-hand movement leaves a sequence of orbit-like memories.",
-    left,
-    panel.y + (compact ? 90 : 120),
-    contentWidth
-  );
-
-  const stepsY = panel.y + (compact ? 128 : 174);
-  const stepGap = compact ? 42 : 54;
-  drawHelpStep("01", "Move both hands close together.", left, stepsY);
-  drawHelpStep("02", "Stretch them slowly apart until the field fully opens.", left, stepsY + stepGap);
-  drawHelpStep("03", "Return to the centre to leave one memory ring.", left, stepsY + stepGap * 2);
-
-  fill(174, 191, 166, 135);
-  textSize(11);
-  text(
-    "M  CAMERA / MOUSE     P  HAND DISPLAY     R  RESET     ?  HELP",
-    left,
-    panel.buttonY - (compact ? 31 : 40)
-  );
+  if (compact) {
+    drawCompactHelp(panel, left, rightEdge - left);
+  } else {
+    drawEditorialHelp(panel, left, rightEdge);
+  }
 
   const hovering =
-    mouseX >= panel.buttonX &&
-    mouseX <= panel.buttonX + panel.buttonWidth &&
-    mouseY >= panel.buttonY &&
-    mouseY <= panel.buttonY + panel.buttonHeight;
+    mouseX >= panel.buttonX && mouseX <= panel.buttonX + panel.buttonWidth &&
+    mouseY >= panel.buttonY && mouseY <= panel.buttonY + panel.buttonHeight;
 
   cursor(hovering ? HAND : ARROW);
-  fill(hovering ? color(220, 224, 203, 235) : color(188, 202, 178, 210));
   noStroke();
+  fill(hovering ? color(220, 224, 203, 235) : color(188, 202, 178, 210));
   rect(panel.buttonX, panel.buttonY, panel.buttonWidth, panel.buttonHeight, 2);
 
   fill(18, 31, 27, 245);
@@ -313,6 +288,111 @@ function drawHelpScreen() {
   fill(205, 210, 194, 105);
   textSize(10);
   text("or press Enter / Space", width / 2, panel.buttonY + panel.buttonHeight + 16);
+}
+
+function drawEditorialHelp(panel, left, rightEdge) {
+  const dividerX = panel.x + panel.width * 0.59;
+  const right = dividerX + 38;
+  const rightWidth = rightEdge - right;
+
+  fill(201, 207, 191, 175);
+  textAlign(LEFT, TOP);
+  textSize(15);
+  textLeading(22);
+  text(
+    "A slow two-hand movement leaves a sequence of orbit-like memories.",
+    left,
+    panel.y + 118,
+    dividerX - left - 46
+  );
+
+  const stepsY = panel.y + 198;
+  const stepGap = 58;
+  drawHelpStep("01", "Move both hands close together.", left, stepsY);
+  drawHelpStep("02", "Stretch them slowly apart until the field fully opens.", left, stepsY + stepGap);
+  drawHelpStep("03", "Return to the centre to leave one memory ring.", left, stepsY + stepGap * 2);
+
+  stroke(178, 193, 169, 35);
+  strokeWeight(1);
+  line(dividerX, panel.y + 112, dividerX, panel.buttonY - 42);
+
+  noStroke();
+  fill(174, 191, 166, 120);
+  textAlign(LEFT, TOP);
+  textSize(10);
+  text("READING THE ARCHIVE", right, panel.y + 120);
+
+  fill(201, 207, 191, 145);
+  textSize(12);
+  textLeading(18);
+  text(
+    "Each completed stretch becomes one orbit-like memory. Across eight cycles, the archive moves steadily from the outer field towards its centre.",
+    right,
+    panel.y + 146,
+    rightWidth
+  );
+
+  const legendY = panel.y + 246;
+  const legendGap = 40;
+  drawArchiveLegendRow("01", "CYCLE", "wide stretch + return", right, legendY, rightWidth);
+  drawArchiveLegendRow("02", "RADIUS", "outer-to-inner order", right, legendY + legendGap, rightWidth);
+  drawArchiveLegendRow("03", "ORBITS", "one memory ring", right, legendY + legendGap * 2, rightWidth);
+  drawArchiveLegendRow("04", "STARS", "surrounding constellation", right, legendY + legendGap * 3, rightWidth);
+
+  textAlign(LEFT, TOP);
+  fill(174, 191, 166, 125);
+  textSize(10);
+  text("P  HAND DISPLAY     R  RESET ARCHIVE     ?  HELP", left, panel.buttonY - 37);
+}
+
+function drawCompactHelp(panel, left, contentWidth) {
+  fill(201, 207, 191, 165);
+  textAlign(LEFT, TOP);
+  textSize(12);
+  textLeading(17);
+  text(
+    "Each stretch leaves one orbit-like memory in an eight-cycle archive.",
+    left,
+    panel.y + 86,
+    contentWidth
+  );
+
+  const stepsY = panel.y + 126;
+  const gap = 39;
+  drawHelpStep("01", "Begin with both hands together.", left, stepsY);
+  drawHelpStep("02", "Open fully, then return.", left, stepsY + gap);
+  drawHelpStep("03", "Repeat eight times.", left, stepsY + gap * 2);
+
+  const keyY = stepsY + gap * 3 + 5;
+  fill(174, 191, 166, 115);
+  textSize(10);
+  text("CYCLE / WIDE STRETCH + RETURN     RADIUS / OUTER TO INNER", left, keyY);
+  text("ORBITS / MEMORY RING              STARS / CONSTELLATION", left, keyY + 18);
+
+  fill(174, 191, 166, 120);
+  textSize(9);
+  text("P  HAND DISPLAY     R  RESET     ?  HELP", left, panel.buttonY - 28);
+}
+
+function drawArchiveLegendRow(number, label, description, x, y, rowWidth) {
+  stroke(178, 193, 169, 30);
+  strokeWeight(1);
+  line(x, y - 10, x + rowWidth, y - 10);
+
+  noStroke();
+  textAlign(LEFT, TOP);
+  fill(174, 191, 166, 90);
+  textSize(9);
+  text(number, x, y + 2);
+
+  fill(230, 229, 211, 205);
+  textSize(11);
+  text(label, x + 34, y);
+
+  fill(184, 195, 179, 145);
+  textSize(10);
+  textAlign(RIGHT, TOP);
+  text(description, x + rowWidth, y + 1);
 }
 
 function drawHelpStep(number, label, x, y) {
@@ -328,21 +408,18 @@ function drawHelpStep(number, label, x, y) {
 
 function keyPressed() {
   if (key === "?" || keyCode === 191) {
-    showHelp = !showHelp;
+    if (showHelp) beginExperience();
+    else showHelp = true;
     return false;
   }
 
-  if (showHelp && (keyCode === ENTER || key === " ")) {
-    showHelp = false;
+  if (showHelp && (keyCode === ENTER || key === " " || keyCode === ESCAPE)) {
+    beginExperience();
     return false;
   }
 
-  if (showHelp && keyCode === ESCAPE) {
-    showHelp = false;
-    return false;
-  }
+  if (showHelp) return false;
 
-  if (key === "m" || key === "M") inputMode === "mouse" ? startHandMode() : stopHandMode();
   if (key === "p" || key === "P") handDisplayMode = (handDisplayMode + 1) % 3;
   if (key === "r" || key === "R") { memories = []; wasOpen = false; memoryStep = 0; }
 }
@@ -357,26 +434,26 @@ function mousePressed() {
     mouseY >= panel.buttonY &&
     mouseY <= panel.buttonY + panel.buttonHeight;
 
-  if (insideButton) showHelp = false;
+  if (insideButton) beginExperience();
+}
+
+function beginExperience() {
+  showHelp = false;
+  startHandMode();
 }
 
 function startHandMode() {
-  inputMode = "hand"; modelLoading = true; modelReady = false; videoReady = false; detectionStarted = false; hands = [];
+  if (video || modelLoading || detectionStarted) return;
+  modelLoading = true; modelReady = false; videoReady = false; detectionStarted = false; hands = [];
   video = createCapture({ video: { width, height }, audio: false }, () => { videoReady = true; tryStartDetection(); });
   video.size(width, height); video.hide();
   handPose = ml5.handPose({ flipped: true }, () => { modelReady = true; modelLoading = false; tryStartDetection(); });
 }
 
 function tryStartDetection() {
-  if (inputMode === "hand" && modelReady && videoReady && !detectionStarted) { handPose.detectStart(video, gotHands); detectionStarted = true; }
+  if (modelReady && videoReady && !detectionStarted) { handPose.detectStart(video, gotHands); detectionStarted = true; }
 }
 function gotHands(results) { hands = results; }
-
-function stopHandMode() {
-  if (handPose && detectionStarted && handPose.detectStop) handPose.detectStop();
-  if (video) { const stream = video.elt.srcObject; if (stream) stream.getTracks().forEach(track => track.stop()); video.remove(); }
-  handPose = null; video = null; hands = []; modelReady = false; videoReady = false; detectionStarted = false; modelLoading = false; inputMode = "mouse";
-}
 
 function randomSeeded(seed, minValue, maxValue) { return map(noise(seed * 0.31, 4.7), 0, 1, minValue, maxValue); }
 function easeOutCubic(t) { return 1 - pow(1 - t, 3); }
