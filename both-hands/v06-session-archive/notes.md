@@ -12,7 +12,7 @@ V05 compares separate rings as feedback on movement quality. V06 removes the con
 
 Begin with both hands close together. Open slowly, pause, then return to the centre. During movement, a scanning arc shows which archive layer is being sampled. Repeat eight times. Each cycle fixes one contour closer to the centre and extends the connecting body path. After the eighth movement, secondary connections reveal the completed map.
 
-Selecting **Begin** starts the camera. `P` cycles hand visibility between hidden, points and skeleton. `R` clears the archive and begins a new session. `?` opens the help screen.
+Selecting **Begin** starts the camera in **Points** mode. `P` cycles hand visibility through **Points → Skeleton → Hidden**. `R` clears the archive and begins a new session. `?` opens the help screen.
 
 ## Session structure
 
@@ -23,6 +23,12 @@ Selecting **Begin** starts the camera. `P` cycles hand visibility between hidden
 - Anchor distance responds subtly to slowness, while local star density records the pause.
 - The completed map adds predetermined cross-ring and inward connections.
 - Stretch 8 transforms the accumulated contours into one completed body-map signature.
+
+## Anchor placement
+
+V06 uses a fixed golden-angle sequence to place its eight anchors. Each completed stretch moves to the next position around the archive by approximately 137.5 degrees, distributing the anchors across the composition rather than mapping them directly to the hands’ screen position.
+
+A small correction based on the left–right tilt of the hands allows each movement to shift the anchor slightly. The anchor’s distance from the centre responds to slowness, while the nearby star cluster records the pause. The final image therefore combines a repeatable compositional structure with subtle bodily variation.
 
 ## Design intention
 

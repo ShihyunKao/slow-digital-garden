@@ -8,7 +8,7 @@ let detectionStarted = false;
 let modelLoading = false;
 
 let showHelp = true;
-let handDisplayMode = 0; // 0 hidden, 1 points, 2 skeleton
+let handDisplayMode = 1; // Default POINTS; P cycles POINTS → SKELETON → HIDDEN
 
 let breath = 0;
 let targetBreath = 0;
@@ -736,14 +736,14 @@ function drawEditorialHelp(panel, left, rightEdge) {
   textSize(12);
   textLeading(18);
   text(
-    "Each anchor preserves four qualities from one completed stretch.",
+    "Each anchor turns one completed stretch into a small record of pace, pause, steadiness and duration.",
     right,
     panel.y + 146,
     rightWidth
   );
 
-  const legendY = panel.y + 205;
-  const legendGap = 53;
+  const legendY = panel.y + 246;
+  const legendGap = 40;
   drawArchiveLegendRow("01", "DISTANCE", "movement slowness", right, legendY, rightWidth);
   drawArchiveLegendRow("02", "SIZE", "open-palm pause", right, legendY + legendGap, rightWidth);
   drawArchiveLegendRow("03", "LIGHT", "movement steadiness", right, legendY + legendGap * 2, rightWidth);

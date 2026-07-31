@@ -12,7 +12,7 @@ V06 uses a fixed golden-angle structure for its archive anchors. V07 makes the a
 
 Begin with both hands close together. Open slowly, pause, then return to the centre. During movement, a scanning arc shows which archive layer is being sampled. Repeat eight times. Each cycle fixes one contour closer to the centre and extends the chronological body path. After the eighth movement, the complete data-driven signature is revealed.
 
-Selecting **Begin** starts the camera. `P` cycles hand visibility between hidden, points and skeleton. `R` clears the archive and begins a new session. `?` opens the help screen.
+Selecting **Begin** starts the camera in **Points** mode. `P` cycles hand visibility through **Points → Skeleton → Hidden**. `R` clears the archive and begins a new session. `?` opens the help screen.
 
 ## Session structure
 
