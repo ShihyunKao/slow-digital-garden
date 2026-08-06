@@ -1,0 +1,90 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300&family=IBM+Plex+Mono:wght@300;400&display=swap");
+
+:root {
+  --live-obsidian: #07100d;
+  --live-bone: #e8e1d8;
+  --live-moss: #526055;
+  --live-teal: #65d7c4;
+  --live-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  --live-serif: "Cormorant Garamond", Georgia, serif;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: var(--live-obsidian) !important;
+  font-family: var(--live-mono) !important;
+}
+
+body { position: relative; }
+
+.live-shell {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+  color: var(--live-bone);
+  font-family: var(--live-mono);
+  font-size: clamp(10px, .9vw, 14px);
+  font-weight: 300;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+.live-shell::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .035;
+  content: "";
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+}
+
+.live-top, .live-bottom {
+  position: absolute;
+  left: clamp(24px, 3.2vw, 52px);
+  right: clamp(24px, 3.2vw, 52px);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.live-top { top: clamp(25px, 4vh, 46px); color: var(--live-teal); }
+.live-bottom { bottom: clamp(25px, 4vh, 48px); align-items: flex-end; }
+.live-bottom-copy { max-width: 70%; }
+.live-title {
+  margin: 0 0 8px;
+  font-family: var(--live-serif);
+  font-size: clamp(34px, 3.6vw, 62px);
+  font-weight: 300;
+  line-height: .95;
+  letter-spacing: -.025em;
+  text-transform: none;
+}
+
+.live-input { color: var(--live-moss); }
+.live-return {
+  padding: 12px 0;
+  pointer-events: auto;
+  color: var(--live-bone);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color .35s ease;
+}
+.live-return:hover, .live-return:focus-visible { color: var(--live-teal); outline: none; }
+
+@media (max-width: 620px) {
+  .live-top { align-items: flex-start; }
+  .live-top span:first-child { max-width: 55%; line-height: 1.6; }
+  .live-top span:last-child { text-align: right; }
+  .live-bottom { gap: 16px; }
+  .live-bottom-copy { max-width: 58%; }
+  .live-title { font-size: 32px; }
+  .live-input { line-height: 1.5; }
+  .live-return { max-width: 36%; line-height: 1.5; text-align: right; white-space: normal; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-return { transition: none; }
+}

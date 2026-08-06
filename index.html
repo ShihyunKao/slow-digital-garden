@@ -1,242 +1,69 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#07100d">
+    <meta name="description" content="An archive of gesture-based generative studies in slowness, bodily movement and visual memory.">
+    <title>Slow Digital Garden</title>
+    <link rel="stylesheet" href="./assets/site.css">
+  </head>
+  <body>
+    <div class="home">
+      <header class="home-masthead technical-label">
+        <span>Computational Arts Practice</span>
+        <span class="masthead-rule" aria-hidden="true"></span>
+        <span>Visual System</span>
+        <span class="masthead-code">Three Paths&nbsp; [03]</span>
+      </header>
 
-  <title>Slow Digital Garden</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: #111a18;
-      color: #e2e2d5;
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-    header {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 90px 32px 55px;
-    }
-
-    .label {
-      margin-bottom: 18px;
-      color: #aeb99c;
-      font-size: 13px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-
-    h1 {
-      max-width: 760px;
-      margin: 0;
-      font-size: clamp(42px, 7vw, 76px);
-      font-weight: 400;
-      line-height: 1.05;
-    }
-
-    .introduction {
-      max-width: 650px;
-      margin: 28px 0 0;
-      color: #aeb3aa;
-      font-size: 17px;
-      line-height: 1.7;
-    }
-
-    main {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 32px 90px;
-    }
-
-    .sketch-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-    }
-
-    .sketch {
-      min-height: 310px;
-      padding: 25px;
-      border: 1px solid #34423c;
-      color: inherit;
-      text-decoration: none;
-      display: flex;
-      flex-direction: column;
-      transition:
-        background 250ms ease,
-        border-color 250ms ease,
-        transform 250ms ease;
-    }
-
-    .sketch:hover {
-      background: #17231f;
-      border-color: #89977f;
-      transform: translateY(-4px);
-    }
-
-    .number {
-      color: #8f9d87;
-      font-size: 13px;
-    }
-
-    .sketch-content {
-      margin-top: auto;
-    }
-
-    h2 {
-      margin: 0 0 14px;
-      font-size: 25px;
-      font-weight: 400;
-    }
-
-    .sketch p {
-      margin: 0;
-      color: #9ca49c;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .open {
-      display: inline-block;
-      margin-top: 24px;
-      color: #d5d8c6;
-      font-size: 13px;
-    }
-
-    .version-links {
-      display: flex;
-      gap: 16px;
-      margin-top: 24px;
-      flex-wrap: wrap;
-    }
-
-     .version-links a {
-      color: #d5d8c6;
-      font-size: 13px;
-      text-decoration: none;
-    }
-
-     .version-links a:hover {
-      text-decoration: underline;
-    }
-    
-    footer {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 24px 32px 45px;
-      border-top: 1px solid #29342f;
-      color: #77817b;
-      font-size: 12px;
-    }
-
-    @media (max-width: 760px) {
-      header {
-        padding-top: 55px;
-      }
-
-      .sketch-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .sketch {
-        min-height: 230px;
-      }
-    }
-  </style>
-</head>
-
-<body>
-  <header>
-    <div class="label">Computational Arts Practice</div>
-
-    <h1>Slow Digital Garden</h1>
-
-    <p class="introduction">
-      A growing collection of gesture-based sketches exploring slowness,
-      gentle bodily movement and generative visual traces. Here, the garden
-      is a cultivated field of bodily memories rather than a literal plant space.
-    </p>
-  </header>
-
-  <main>
-    <section class="sketch-grid">
-      <div class="sketch">
-  <span class="number">01 / OPEN</span>
-
-  <div class="sketch-content">
-    <h2>Palm Imprint</h2>
-
-    <p>
-      The gradual opening of one hand unfolds a compact seed into a
-      generative structure.
-    </p>
-
-    <div class="version-links">
-      <a href="./open/v01-unfolding-form/">v01 →</a>
-      <a href="./open/v02-layered-bloom/">v02 →</a>
-      <a href="./open/v03-palm-imprint/">v03 →</a>
-      <a href="./open/v04-calibrated-imprint/">v04 →</a>
-      <a href="./open/v05-pressure-bloom/">v05 →</a>
-      <a href="./open/v06-finger-constellation/">v06 →</a>
-    </div>
-  </div>
-</div>
-
-       <div class="sketch">
-  <span class="number">02 / TRAIL</span>
-
-  <div class="sketch-content">
-     <h2>Trace Field</h2>
-
-    <p>
-      Slow movement deposits points that accumulate into a personal
-      constellation path.
-    </p>
-
-    <div class="version-links">
-      <a href="./trail/v01-hand-trail/">v01 →</a>
-      <a href="./trail/v02-ink-ribbon/">v02 →</a>
-      <a href="./trail/v03-path-constellation/">v03 →</a>
-      <a href="./trail/v04-slow-orbit-drawing/">v04 →</a>
-    </div>
-  </div>
-</div>
-
-      <div class="sketch">
-        <span class="number">03 / BOTH HANDS</span>
-
-        <div class="sketch-content">
-          <h2>Breathing Cosmos</h2>
-
-          <p>
-            The distance between two hands opens and contracts a quiet cosmic field.
-          </p>
-
-          <div class="version-links">
-            <a href="./both-hands/v01-breathing-garden/">v01 →</a>
-            <a href="./both-hands/v02-breathing-cosmos/">v02 →</a>
-            <a href="./both-hands/v03-cosmic-memory/">v03 →</a>
-            <a href="./both-hands/v04-cosmic-memory-refined/">v04 →</a>
-            <a href="./both-hands/v05-breath-quality/">v05 →</a>
-            <a href="./both-hands/v06-session-archive/">v06 →</a>
-            <a href="./both-hands/v07-session-archive-refined/">v07 →</a>
-            <a href="./both-hands/v08-session-archive-spatial/">v08 →</a>
-            <a href="./both-hands/v09-trajectory-archive/">v09 →</a>
-          </div>
+      <main class="home-hero">
+        <div class="home-hero-copy">
+          <h1 class="display-title">Slow Digital<br>Garden</h1>
+          <p class="home-subtitle">a study in slowness</p>
+          <p class="home-introduction">A growing collection of gesture-based sketches exploring slowness, gentle bodily movement and generative visual traces. Here, the garden is a cultivated field of bodily memories rather than a literal plant space.</p>
         </div>
-      </div>
-    </section>
-  </main>
+        <canvas class="home-field" data-field="home" aria-label="A slowly flowing teal particle trace"></canvas>
+        <aside class="memory-marker technical-label">
+          <div class="marker-title">Material Memory</div>
+          <div class="marker-rule"></div>
+          <div>Material Laboratory</div>
+          <div>Archive Layer</div>
+          <div class="marker-code">[MD–01]</div>
+        </aside>
+      </main>
 
-  <footer>
-    Shihyun Kao · MA Computational Arts · Goldsmiths, University of London
-  </footer>
-</body>
+      <nav class="pathways" aria-label="Project pathways">
+        <a class="pathway" href="./open/">
+          <span class="pathway-number">01 /</span>
+          <span class="pathway-title">Palm Imprint</span>
+          <p class="pathway-description">The gradual opening of one hand unfolds a compact seed into a generative structure.</p>
+          <span class="pathway-entry technical-label"><span>Entry Point</span><span>[MT–01]</span></span>
+        </a>
+        <a class="pathway" href="./trail/">
+          <span class="pathway-number">02 /</span>
+          <span class="pathway-title">Trace Field</span>
+          <p class="pathway-description">Slow movement deposits points that accumulate into a personal constellation path.</p>
+          <span class="pathway-entry technical-label"><span>Entry Point</span><span>[MT–02]</span></span>
+        </a>
+        <a class="pathway" href="./both-hands/">
+          <span class="pathway-number">03 /</span>
+          <span class="pathway-title">Breathing Cosmos</span>
+          <p class="pathway-description">The distance between two hands opens and contracts a quiet cosmic field.</p>
+          <span class="pathway-entry technical-label"><span>Entry Point</span><span>[MT–03]</span></span>
+        </a>
+      </nav>
+
+      <footer class="home-footer technical-label">
+        <span>Open each pathway to enter the material memory layer.</span>
+        <div class="palette" aria-label="Colour palette">
+          <span class="swatch">Obsidian <i style="background:#07100d"></i></span>
+          <span class="swatch">Moss <i style="background:#526055"></i></span>
+          <span class="swatch" style="color:var(--teal)">Bio Teal <i style="background:#65d7c4"></i></span>
+          <span class="swatch">Bone <i style="background:#e8e1d8"></i></span>
+        </div>
+      </footer>
+    </div>
+    <script src="./assets/particle-field.js"></script>
+  </body>
 </html>
