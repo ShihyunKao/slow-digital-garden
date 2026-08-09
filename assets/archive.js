@@ -45,9 +45,9 @@
         }
       ],
       materials: [
-        ["gesture", "[GS–01]", "gesture-open", "opening degree"],
-        ["particle bloom", "[PB–01]", "open", "field diffusion"],
-        ["aperture memory", "[AM–01]", "trail", "held openness"]
+        ["gesture", "[MG–01]", "open-gesture", "hand openness", "closed", "open"],
+        ["particle bloom", "[PB–01]", "open-bloom", "bloom diffusion", "0", "1"],
+        ["aperture memory", "[AM–01]", "open-aperture", "layer depth", "0", "1"]
       ]
     },
     trail: {
@@ -83,9 +83,9 @@
         }
       ],
       materials: [
-        ["gesture", "[GS–02]", "gesture-trail", "movement path"],
-        ["trace field", "[TF–02]", "trail", "trace density"],
-        ["path sediment", "[PS–02]", "trail", "settled trace"]
+        ["gesture", "[MG–02]", "trail-gesture", "gesture path", "still", "moving"],
+        ["trace field", "[TF–02]", "trail-response", "trail persistence", "0", "1"],
+        ["path sediment", "[PS–02]", "trail-sediment", "line density", "0", "1"]
       ]
     },
     both: {
@@ -160,9 +160,9 @@
         }
       ],
       materials: [
-        ["gesture", "[GS–03]", "gesture-both", "shared distance"],
-        ["shared particle field", "[SF–03]", "both", "field expansion"],
-        ["anchor constellation", "[AC–03]", "trail", "anchor density"]
+        ["gesture", "[MG–03]", "both-gesture", "hand distance", "together", "apart"],
+        ["shared particle field", "[SF–03]", "both-field", "field contraction", "0", "1"],
+        ["anchor constellation", "[AC–03]", "both-anchor", "anchor count", "0", "1"]
       ]
     }
   };
@@ -197,7 +197,7 @@
           <article class="material-record">
             <div class="material-head"><span>${material[0]}</span><span class="material-code">${material[1]}</span></div>
             <canvas class="material-canvas" data-field="${material[2]}" data-seed="${index + Number(project.number) * 17}" aria-hidden="true"></canvas>
-            <div class="material-scale"><span>0</span><span>1</span></div>
+            <div class="material-scale"><span>${material[4] ?? "0"}</span><span>${material[5] ?? "1"}</span></div>
             <div class="material-metric">${material[3]}</div>
           </article>`).join("")}
       </section>

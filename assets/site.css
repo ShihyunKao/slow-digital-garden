@@ -385,6 +385,21 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 .stage-upper.is-selected .stage-canvas { opacity: .18; filter: blur(.7px); }
 
+.archive-page[data-project="open"] .stage-upper.is-selected .stage-canvas {
+  opacity: .38;
+  filter: none;
+}
+
+.archive-page[data-project="both"] .stage-upper.is-selected .stage-canvas {
+  opacity: .34;
+  filter: none;
+}
+
+.archive-page[data-project="trail"] .stage-upper.is-selected .stage-canvas {
+  opacity: .34;
+  filter: none;
+}
+
 .coordinate-layer {
   position: absolute;
   inset: 24px 30px 26px;
@@ -734,6 +749,19 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .material-scale span:first-child { position: absolute; left: 0; top: 4px; }
 .material-scale span:last-child { position: absolute; right: 0; top: 4px; }
 .material-metric { margin-top: 7px; color: var(--teal-dim); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+
+.archive-page:is([data-project="open"], [data-project="trail"], [data-project="both"]) .material-head {
+  color: var(--bone-muted);
+}
+.archive-page:is([data-project="open"], [data-project="trail"], [data-project="both"]) .material-code {
+  color: var(--gold-moss);
+}
+.archive-page:is([data-project="open"], [data-project="trail"], [data-project="both"]) .material-scale {
+  color: var(--moss);
+}
+.archive-page:is([data-project="open"], [data-project="trail"], [data-project="both"]) .material-metric {
+  color: var(--teal-dim);
+}
 
 @media (max-width: 1050px) {
   .home { grid-template-rows: auto auto auto auto; }
