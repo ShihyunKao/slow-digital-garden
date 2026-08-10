@@ -10,7 +10,7 @@ let modelLoading = false;
 let blooms = [];
 let previousPoint = null;
 let lastGestureFrame = -1000;
-let showHelp = true;
+let showHelp = false;
 let handDisplayMode = 1; // 0 hidden, 1 points, 2 skeleton
 let backgroundPoints = [];
 
@@ -32,6 +32,7 @@ function setup() {
   noiseSeed(12);
   randomSeed(12);
   createBackgroundPoints();
+  startHandMode();
 }
 
 function draw() {
@@ -161,7 +162,7 @@ function drawMistBloom(bloom) {
     const r = radius * (0.18 + layer * 1.08);
     const a = alpha * pow(1 - layer, 1.7);
 
-    fill(72, 76, 72, a);
+    fill(101, 215, 196, a * 1.45);
 
     beginShape();
 
@@ -190,7 +191,7 @@ function drawMistBloom(bloom) {
 
 function drawQuietEdge(bloom, radius, alpha) {
   noFill();
-  stroke(72, 76, 72, alpha * 0.18);
+  stroke(101, 215, 196, alpha * 0.34);
   strokeWeight(0.55);
 
   beginShape();
@@ -214,24 +215,7 @@ function drawQuietEdge(bloom, radius, alpha) {
 }
 
 function drawWarmPaper() {
-  background(241, 238, 226);
-
-  noStroke();
-
-  for (let y = 0; y < height; y += 4) {
-    const a = map(y, 0, height, 10, 0);
-    fill(255, 252, 241, a);
-    rect(0, y, width, 4);
-  }
-
-  for (const point of backgroundPoints) {
-    const flicker = sin(frameCount * 0.012 + point.phase) * 0.5 + 0.5;
-    fill(123, 116, 95, point.alpha * (0.65 + flicker * 0.35));
-    circle(point.x, point.y, point.size);
-  }
-
-  fill(215, 207, 188, 16);
-  rect(28, 28, width - 56, height - 56);
+  clear();
 }
 
 function drawHandDisplay() {
@@ -243,13 +227,13 @@ function drawHandDisplay() {
     const tip = points[8];
 
     noFill();
-    stroke(70, 74, 68, 80);
+    stroke(234, 228, 194, 90);
     strokeWeight(1);
     circle(tip.x, tip.y, 14);
     return;
   }
 
-  stroke(70, 74, 68, 55);
+  stroke(230, 226, 204, 48);
   strokeWeight(0.7);
 
   for (const [a, b] of HAND_CONNECTIONS) {
@@ -257,7 +241,7 @@ function drawHandDisplay() {
   }
 
   noStroke();
-  fill(70, 74, 68, 95);
+  fill(240, 231, 194, 78);
 
   for (const point of points) {
     circle(point.x, point.y, 3.5);
@@ -265,30 +249,9 @@ function drawHandDisplay() {
 }
 
 function drawInterface() {
-  textAlign(LEFT, TOP);
-  noStroke();
-  fill(74, 76, 67, 180);
-  textSize(14);
-  text("SOFT INK WASH", 38, 27);
-
-  fill(100, 105, 91, 125);
-  textSize(10);
-  text("GESTURE STUDY 02 / DIFFUSION TRACE", 38, 47);
-
-  textAlign(RIGHT, TOP);
-  fill(74, 76, 67, 125);
-  textSize(11);
-  const controls = modelLoading
-    ? `CAMERA LOADING · P ${handDisplayLabel()} · R RESET · ? HELP`
-    : `P ${handDisplayLabel()} · R RESET · ? HELP`;
-  text(controls, width - 38, 30);
-
-  stroke(74, 76, 67, 24);
-  strokeWeight(1);
-  line(38, 70, width - 38, 70);
-
   textAlign(CENTER);
-  fill(74, 76, 67, 115);
+  noStroke();
+  fill(228, 228, 213, 95);
   textSize(12);
 
   if (!modelLoading && hands.length === 0) {

@@ -7,7 +7,7 @@ let videoReady = false;
 let detectionStarted = false;
 let modelLoading = false;
 
-let showHelp = true;
+let showHelp = false;
 let handDisplayMode = 1; // 0 hidden, 1 point, 2 skeleton
 
 let smoothPoint = null;
@@ -53,6 +53,7 @@ function setup() {
       phase: random(TWO_PI)
     });
   }
+  startHandMode();
 }
 
 function draw() {
@@ -67,7 +68,6 @@ function draw() {
   if (!showHelp) {
     drawHandDisplay();
     drawMovementStatus();
-    drawHeader();
   }
 
   savedFlash = max(0, savedFlash - 1);
@@ -382,22 +382,7 @@ function drawMovementStatus() {
 }
 
 function drawBackground() {
-  background(9, 19, 17);
-  noStroke();
-
-  for (let y = 0; y < height; y += 5) {
-    fill(30, 45, 39, map(y, 0, height, 18, 3));
-    rect(0, y, width, 5);
-  }
-
-  for (const point of backgroundPoints) {
-    const flicker = sin(frameCount * 0.012 + point.phase) * 0.5 + 0.5;
-    fill(222, 219, 194, point.alpha * (0.65 + flicker * 0.35));
-    circle(point.x, point.y, point.size);
-  }
-
-  fill(240, 232, 205, 5);
-  rect(34, 34, width - 68, height - 68);
+  clear();
 }
 
 function drawHandDisplay() {

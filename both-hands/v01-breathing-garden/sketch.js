@@ -11,7 +11,7 @@ let modelReady = false;
 let videoReady = false;
 let detectionStarted = false;
 let modelLoading = false;
-let showHelp = true;
+let showHelp = false;
 let handDisplayMode = 1; // Default POINTS; P cycles POINTS → SKELETON → HIDDEN
 
 const HAND_CONNECTIONS = [
@@ -25,6 +25,7 @@ const HAND_CONNECTIONS = [
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  beginExperience();
 }
 
 function gotHands(results) {
@@ -68,18 +69,7 @@ function draw() {
 }
 
 function drawBackground() {
-  background(9, 19, 17);
-
-  noStroke();
-
-  for (let y = 0; y < height; y += 5) {
-    const alpha = map(y, 0, height, 16, 2);
-    fill(30, 45, 39, alpha);
-    rect(0, y, width, 5);
-  }
-
-  fill(240, 232, 205, 5);
-  rect(22, 22, width - 44, height - 44);
+  clear();
 }
 
 function drawContourGarden() {
@@ -178,8 +168,7 @@ function drawInterface() {
     drawHelpScreen();
     return;
   }
-
-  drawExhibitionCaption();
+  cursor(ARROW);
 }
 
 function drawExhibitionCaption() {

@@ -5,7 +5,7 @@ let modelReady = false, videoReady = false, detectionStarted = false, modelLoadi
 let breath = 0, targetBreath = 0, previousBreath = 0;
 let wasOpen = false, memoryStep = 0;
 let memories = [], stars = [];
-let showHelp = true;
+let showHelp = false;
 let handDisplayMode = 1; // Default POINTS; P cycles POINTS → SKELETON → HIDDEN
 
 const HAND_CONNECTIONS = [
@@ -24,6 +24,7 @@ function setup() {
   for (let i = 0; i < 150; i++) {
     stars.push({ angle: random(TWO_PI), radius: random(18, 245), speed: random(0.0005, 0.002), size: random(0.8, 2.8), alpha: random(18, 68), depth: random(0.35, 1) });
   }
+  beginExperience();
 }
 
 function draw() {
@@ -162,9 +163,7 @@ function drawMemoryRings() {
 }
 
 function drawBackground() {
-  background(9, 19, 17); noStroke();
-  for (let y = 0; y < height; y += 5) { fill(30, 45, 39, map(y, 0, height, 16, 2)); rect(0, y, width, 5); }
-  fill(240, 232, 205, 4); rect(22, 22, width - 44, height - 44);
+  clear();
 }
 
 function windowResized() {
@@ -186,12 +185,11 @@ function drawHandDisplay() {
 }
 
 function drawInterface() {
-  if (!showHelp) {
-    drawExhibitionCaption();
+  if (showHelp) {
+    drawHelpScreen();
     return;
   }
-
-  drawHelpScreen();
+  cursor(ARROW);
 }
 
 function drawExhibitionCaption() {

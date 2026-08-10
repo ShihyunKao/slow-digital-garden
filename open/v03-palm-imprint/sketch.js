@@ -14,7 +14,7 @@ let targetOpenness = 0;
 let canStamp = true;
 let imprints = [];
 let driftStars = [];
-let showHelp = true;
+let showHelp = false;
 let handDisplayMode = 1; // Default POINTS; P cycles POINTS → SKELETON → HIDDEN
 
 const HAND_CONNECTIONS = [
@@ -41,6 +41,8 @@ function setup() {
       phase: random(TWO_PI)
     });
   }
+
+  beginExperience();
 }
 
 function draw() {
@@ -387,22 +389,7 @@ function drawMousePreview() {
 }
 
 function drawBackground() {
-  background(9, 19, 17);
-  noStroke();
-
-  for (let y = 0; y < height; y += 5) {
-    fill(30, 45, 39, map(y, 0, height, 18, 3));
-    rect(0, y, width, 5);
-  }
-
-  for (const star of driftStars) {
-    const flicker = sin(frameCount * 0.012 + star.phase) * 0.5 + 0.5;
-    fill(222, 219, 194, star.alpha * (0.65 + flicker * 0.35));
-    circle(star.x, star.y, star.size);
-  }
-
-  fill(240, 232, 205, 5);
-  rect(34, 34, width - 68, height - 68);
+  clear();
 }
 
 function windowResized() {
@@ -414,7 +401,7 @@ function drawInterface() {
   if (showHelp) {
     drawHelpScreen();
   } else {
-    drawExhibitionCaption();
+    cursor(ARROW);
   }
 }
 

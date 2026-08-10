@@ -7,7 +7,7 @@ let videoReady = false;
 let detectionStarted = false;
 let modelLoading = false;
 
-let showHelp = true;
+let showHelp = false;
 let handDisplayMode = 1; // Default POINTS; P cycles POINTS → SKELETON → HIDDEN
 
 let breath = 0;
@@ -47,6 +47,7 @@ function setup() {
   pixelDensity(1);
   randomSeed(1106);
   noiseSeed(1106);
+  beginExperience();
 }
 
 function draw() {
@@ -68,9 +69,9 @@ function draw() {
   drawCompletedBodyMap();
 
   if (!showHelp) {
+    cursor(ARROW);
     drawHandDisplay();
     drawSessionFeedback();
-    drawHeader();
   }
 
   savedFlash = max(0, savedFlash - 1);
@@ -844,14 +845,7 @@ function drawStatus(label, progress) {
 }
 
 function drawBackground() {
-  background(9, 19, 17);
-  noStroke();
-  for (let y = 0; y < height; y += 5) {
-    fill(30, 45, 39, map(y, 0, height, 16, 2));
-    rect(0, y, width, 5);
-  }
-  fill(240, 232, 205, 4);
-  rect(22, 22, width - 44, height - 44);
+  clear();
 }
 
 function drawHandDisplay() {

@@ -8,7 +8,7 @@ let videoReady = false;
 let detectionStarted = false;
 let modelLoading = false;
 
-let showHelp = true;
+let showHelp = false;
 let handDisplayMode = 1; // Default POINTS; P cycles POINTS → SKELETON → HIDDEN
 let openness = 0;
 let targetOpenness = 0;
@@ -42,6 +42,8 @@ function setup() {
       alpha: random(2, 9)
     });
   }
+
+  startHandMode();
 }
 
 function draw() {
@@ -60,7 +62,6 @@ function draw() {
     updateRelease(metrics);
     drawLiveField(source);
     drawHandDisplay(metrics);
-    drawHeader();
   }
 
   drawBloomMemories();
@@ -356,21 +357,7 @@ function drawHandDisplay(metrics) {
 }
 
 function drawBackground() {
-  background(9, 19, 17);
-  noStroke();
-
-  for (let y = 0; y < height; y += 5) {
-    fill(30, 45, 39, map(y, 0, height, 18, 3));
-    rect(0, y, width, 5);
-  }
-
-  for (const grain of paperGrain) {
-    fill(210, 213, 190, grain.alpha);
-    circle(grain.x, grain.y, grain.size);
-  }
-
-  fill(240, 232, 205, 5);
-  rect(34, 34, width - 68, height - 68);
+  clear();
 }
 
 function drawHeader() {

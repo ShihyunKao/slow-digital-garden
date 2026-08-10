@@ -10,7 +10,7 @@ let modelLoading = false;
 let breath = 0;
 let targetBreath = 0;
 let particles = [];
-let showHelp = true;
+let showHelp = false;
 let handDisplayMode = 1; // Default POINTS; P cycles POINTS → SKELETON → HIDDEN
 
 const HAND_CONNECTIONS = [
@@ -37,6 +37,7 @@ function setup() {
       alpha: random(18, 58)
     });
   }
+  beginExperience();
 }
 
 function draw() {
@@ -200,18 +201,7 @@ function drawFloatingParticles(cx, cy, r, sy, amount) {
 }
 
 function drawBackground() {
-  background(9, 19, 17);
-
-  noStroke();
-
-  for (let y = 0; y < height; y += 5) {
-    const a = map(y, 0, height, 16, 2);
-    fill(30, 45, 39, a);
-    rect(0, y, width, 5);
-  }
-
-  fill(240, 232, 205, 5);
-  rect(22, 22, width - 44, height - 44);
+  clear();
 }
 
 function windowResized() {
@@ -250,8 +240,7 @@ function drawInterface() {
     drawHelpScreen();
     return;
   }
-
-  drawExhibitionCaption();
+  cursor(ARROW);
 }
 
 function drawExhibitionCaption() {
