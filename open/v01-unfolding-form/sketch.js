@@ -40,6 +40,9 @@ function setup() {
     });
   }
 
+  const helpReturn = document.getElementById("open-v01-help-return");
+  if (helpReturn) helpReturn.addEventListener("click", beginExperience);
+
   startHandMode();
 }
 
@@ -55,7 +58,7 @@ function draw() {
     drawTechnicalHand(hand);
   }
 
-  if (showHelp) drawHelpScreen();
+  syncHelpOverlay();
 }
 
 function getHandOpenness(hand) {
@@ -177,97 +180,12 @@ function drawHeader() {
   line(inset, 70, width - inset, 70);
 }
 
-function getHelpPanelMetrics() {
-  const panelWidth = min(620, width - 40);
-  const panelHeight = min(510, height - 40);
+function syncHelpOverlay() {
+  const overlay = document.getElementById("open-v01-help");
+  if (!overlay) return;
 
-  return {
-    x: (width - panelWidth) / 2,
-    y: (height - panelHeight) / 2,
-    width: panelWidth,
-    height: panelHeight,
-    buttonX: width / 2 - 92,
-    buttonY: (height - panelHeight) / 2 + panelHeight - 78,
-    buttonWidth: 184,
-    buttonHeight: 42
-  };
-}
-
-function drawHelpScreen() {
-  const panel = getHelpPanelMetrics();
-  const compact = panel.height < 440;
-  const left = panel.x + (compact ? 34 : 54);
-  const contentWidth = panel.width - (compact ? 68 : 108);
-
-  noStroke();
-  fill(5, 12, 11, 205);
-  rect(0, 0, width, height);
-
-  drawingContext.save();
-  drawingContext.shadowBlur = 40;
-  drawingContext.shadowColor = "rgba(0, 0, 0, 0.45)";
-  fill(15, 29, 25, 246);
-  stroke(177, 192, 167, 52);
-  strokeWeight(1);
-  rect(panel.x, panel.y, panel.width, panel.height, 4);
-  drawingContext.restore();
-
-  noStroke();
-  textAlign(LEFT, TOP);
-  fill(174, 191, 166, 180);
-  textSize(11);
-  text("GESTURE STUDY 01", left, panel.y + (compact ? 25 : 38));
-
-  fill(238, 235, 216, 240);
-  textSize(compact ? 28 : 36);
-  text("Unfolding Form", left, panel.y + (compact ? 48 : 68));
-
-  fill(201, 207, 191, 175);
-  textSize(compact ? 13 : 15);
-  textLeading(compact ? 19 : 22);
-  text(
-    "An open palm turns a compact centre into fine, radiating traces. This first study follows unfolding as a slow bodily gesture.",
-    left,
-    panel.y + (compact ? 90 : 120),
-    contentWidth
-  );
-
-  const stepsY = panel.y + (compact ? 128 : 174);
-  const gap = compact ? 42 : 54;
-  drawHelpStep("01", "Select Begin and allow access to the camera.", left, stepsY);
-  drawHelpStep("02", "Show one hand and open your palm slowly.", left, stepsY + gap);
-  drawHelpStep("03", "Allow the radiating form to unfold with your hand.", left, stepsY + gap * 2);
-
-  fill(174, 191, 166, 135);
-  textSize(11);
-  text("P  HAND DISPLAY     ?  HELP", left, panel.buttonY - (compact ? 31 : 40));
-
-  const hovering =
-    mouseX >= panel.buttonX && mouseX <= panel.buttonX + panel.buttonWidth &&
-    mouseY >= panel.buttonY && mouseY <= panel.buttonY + panel.buttonHeight;
-
-  cursor(hovering ? HAND : ARROW);
-  fill(hovering ? color(220, 224, 203, 235) : color(188, 202, 178, 210));
-  rect(panel.buttonX, panel.buttonY, panel.buttonWidth, panel.buttonHeight, 2);
-
-  fill(18, 31, 27, 245);
-  textAlign(CENTER, CENTER);
-  textSize(12);
-  text("BEGIN", width / 2, panel.buttonY + panel.buttonHeight / 2);
-
-  fill(205, 210, 194, 105);
-  textSize(10);
-  text("or press Enter / Space", width / 2, panel.buttonY + panel.buttonHeight + 16);
-}
-
-function drawHelpStep(number, label, x, y) {
-  fill(174, 191, 166, 125);
-  textAlign(LEFT, TOP);
-  textSize(10);
-  text(number, x, y + 2);
-  fill(229, 228, 211, 205);
-  textSize(13);
-  text(label, x + 38, y);
+  overlay.hidden = !showHelp;
+  overlay.setAttribute("aria-hidden", String(!showHelp));
 }
 
 function keyPressed() {
@@ -289,18 +207,13 @@ function keyPressed() {
 }
 
 function mousePressed() {
-  if (!showHelp) return;
-
-  const panel = getHelpPanelMetrics();
-  const insideButton =
-    mouseX >= panel.buttonX && mouseX <= panel.buttonX + panel.buttonWidth &&
-    mouseY >= panel.buttonY && mouseY <= panel.buttonY + panel.buttonHeight;
-
-  if (insideButton) beginExperience();
+  if (showHelp) return false;
 }
 
 function beginExperience() {
   showHelp = false;
+  syncHelpOverlay();
+  cursor(ARROW);
 
   if (!video && !modelLoading) {
     startHandMode();

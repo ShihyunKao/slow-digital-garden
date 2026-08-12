@@ -38,6 +38,8 @@ function setup() {
       phase: random(TWO_PI)
     });
   }
+  const helpReturn = document.getElementById("live-help-return");
+  if (helpReturn) helpReturn.addEventListener("click", beginExperience);
   startHandMode();
 }
 
@@ -50,9 +52,14 @@ function draw() {
     drawHandDisplay();
   }
 
-  if (helpVisible) {
-    drawHelpScreen();
-  }
+  syncHelpOverlay();
+}
+
+function syncHelpOverlay() {
+  const overlay = document.getElementById("live-help");
+  if (!overlay) return;
+  overlay.hidden = !helpVisible;
+  overlay.setAttribute("aria-hidden", String(!helpVisible));
 }
 
 function updatePath() {
@@ -424,20 +431,13 @@ function keyPressed() {
 }
 
 function mousePressed() {
-  if (!helpVisible) return;
-
-  const panel = getHelpPanelMetrics();
-  const insideButton =
-    mouseX >= panel.buttonX &&
-    mouseX <= panel.buttonX + panel.buttonWidth &&
-    mouseY >= panel.buttonY &&
-    mouseY <= panel.buttonY + panel.buttonHeight;
-
-  if (insideButton) beginExperience();
+  if (helpVisible) return false;
 }
 
 function beginExperience() {
   helpVisible = false;
+  syncHelpOverlay();
+  cursor(ARROW);
 
   if (!video && !modelLoading) {
     startHandMode();

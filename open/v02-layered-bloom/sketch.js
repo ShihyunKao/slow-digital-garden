@@ -40,6 +40,9 @@ function setup() {
     });
   }
 
+  const helpReturn = document.getElementById("live-help-return");
+  if (helpReturn) helpReturn.addEventListener("click", beginExperience);
+
   startHandMode();
 }
 
@@ -55,7 +58,14 @@ function draw() {
     drawTechnicalHand(hand);
   }
 
-  if (showHelp) drawHelpScreen();
+  syncHelpOverlay();
+}
+
+function syncHelpOverlay() {
+  const overlay = document.getElementById("live-help");
+  if (!overlay) return;
+  overlay.hidden = !showHelp;
+  overlay.setAttribute("aria-hidden", String(!showHelp));
 }
 
 function getHandOpenness(hand) {
@@ -304,18 +314,13 @@ function keyPressed() {
 }
 
 function mousePressed() {
-  if (!showHelp) return;
-
-  const panel = getHelpPanelMetrics();
-  const insideButton =
-    mouseX >= panel.buttonX && mouseX <= panel.buttonX + panel.buttonWidth &&
-    mouseY >= panel.buttonY && mouseY <= panel.buttonY + panel.buttonHeight;
-
-  if (insideButton) beginExperience();
+  if (showHelp) return false;
 }
 
 function beginExperience() {
   showHelp = false;
+  syncHelpOverlay();
+  cursor(ARROW);
 
   if (!video && !modelLoading) {
     startHandMode();

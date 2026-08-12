@@ -23,10 +23,269 @@
       canvas {
         display: block;
       }
+
+      .open-v01-help[hidden] {
+        display: none;
+      }
+
+      .open-v01-help {
+        position: fixed;
+        inset: 0;
+        z-index: 900;
+        display: grid;
+        place-items: center;
+        box-sizing: border-box;
+        padding: max(116px, 13vh) max(44px, 7.5vw) max(144px, 16vh);
+        color: #e8e1d8;
+        background: rgba(3, 9, 7, 0.76);
+        font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+      }
+
+      .open-v01-help__panel {
+        position: relative;
+        width: min(920px, 100%);
+        height: min(560px, 100%);
+        min-height: 360px;
+        box-sizing: border-box;
+        padding: 32px 44px 44px;
+        border: 1px solid rgba(82, 96, 85, 0.42);
+        background: rgba(7, 16, 13, 0.95);
+        box-shadow: 0 18px 52px rgba(0, 0, 0, 0.34);
+      }
+
+      .open-v01-help__panel::before {
+        position: absolute;
+        top: -1px;
+        left: -1px;
+        width: 112px;
+        height: 1px;
+        content: "";
+        background: rgba(144, 140, 86, 0.72);
+      }
+
+      .open-v01-help__eyebrow {
+        margin: 0 0 10px;
+        color: rgba(101, 215, 196, 0.84);
+        font-size: 11px;
+        font-weight: 400;
+        letter-spacing: 0.12em;
+      }
+
+      .open-v01-help__title {
+        margin: 0 0 12px;
+        color: #e8e1d8;
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 52px;
+        font-weight: 300;
+        line-height: 0.96;
+        letter-spacing: -0.02em;
+      }
+
+      .open-v01-help__intro {
+        margin: 0;
+        color: rgba(212, 208, 195, 0.8);
+        font-size: 14px;
+        font-weight: 300;
+        line-height: 1.58;
+      }
+
+      .open-v01-help__steps {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        margin-top: 26px;
+        border-top: 1px solid rgba(82, 96, 85, 0.38);
+        border-bottom: 1px solid rgba(82, 96, 85, 0.38);
+      }
+
+      .open-v01-help__step {
+        position: relative;
+        min-height: 150px;
+        box-sizing: border-box;
+        padding: 31px 28px 28px 82px;
+      }
+
+      .open-v01-help__step + .open-v01-help__step {
+        border-left: 0;
+      }
+
+      .open-v01-help__step + .open-v01-help__step::before {
+        position: absolute;
+        top: 18px;
+        bottom: 18px;
+        left: 0;
+        width: 1px;
+        content: "";
+        background: rgba(82, 96, 85, 0.28);
+      }
+
+      .open-v01-help__number {
+        position: absolute;
+        top: 26px;
+        left: 24px;
+        color: rgba(101, 215, 196, 0.68);
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 27px;
+        font-weight: 300;
+      }
+
+      .open-v01-help__step h2 {
+        margin: 0 0 11px;
+        color: rgba(232, 225, 216, 0.9);
+        font: inherit;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+      }
+
+      .open-v01-help__step p {
+        margin: 0;
+        color: rgba(164, 170, 157, 0.76);
+        font-size: 11px;
+        font-weight: 300;
+        line-height: 1.55;
+      }
+
+      .open-v01-help__footer {
+        position: absolute;
+        right: 44px;
+        bottom: 44px;
+        left: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .open-v01-help__keys {
+        color: rgba(82, 96, 85, 0.9);
+        font-size: 10px;
+        letter-spacing: 0.08em;
+      }
+
+      .open-v01-help__return {
+        min-width: 190px;
+        padding: 9px 0;
+        border: 0;
+        border-bottom: 1px solid rgba(82, 96, 85, 0.48);
+        color: rgba(232, 225, 216, 0.88);
+        background: transparent;
+        font: inherit;
+        font-size: 11px;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        transition: color 0.35s ease, border-color 0.35s ease;
+      }
+
+      .open-v01-help__return:hover,
+      .open-v01-help__return:focus-visible {
+        border-color: rgba(101, 215, 196, 0.74);
+        color: #65d7c4;
+        outline: none;
+      }
+
+      @media (max-width: 760px), (max-height: 680px) {
+        .open-v01-help {
+          align-items: center;
+          padding: 82px 20px 112px;
+        }
+
+        .open-v01-help__panel {
+          height: min(510px, 100%);
+          padding: 24px 26px 26px;
+        }
+
+        .open-v01-help__panel::before {
+          width: 72px;
+        }
+
+        .open-v01-help__eyebrow {
+          margin-bottom: 8px;
+          font-size: 10px;
+        }
+
+        .open-v01-help__title {
+          margin-bottom: 10px;
+          font-size: 36px;
+        }
+
+        .open-v01-help__intro {
+          font-size: 11px;
+          line-height: 1.5;
+        }
+
+        .open-v01-help__steps {
+          display: block;
+          margin-top: 18px;
+          padding: 10px 0;
+        }
+
+        .open-v01-help__step {
+          min-height: 62px;
+          padding: 13px 0 10px 58px;
+        }
+
+        .open-v01-help__step + .open-v01-help__step {
+          border-left: 0;
+        }
+
+        .open-v01-help__step + .open-v01-help__step::before {
+          display: none;
+        }
+
+        .open-v01-help__number {
+          top: 8px;
+          left: 12px;
+          font-size: 25px;
+        }
+
+        .open-v01-help__step h2 {
+          margin-bottom: 5px;
+        }
+
+        .open-v01-help__footer {
+          right: 26px;
+          bottom: 26px;
+          left: 26px;
+        }
+
+        .open-v01-help__return {
+          min-width: 154px;
+          font-size: 10px;
+        }
+      }
     </style>
   </head>
 
   <body>
+    <section id="open-v01-help" class="open-v01-help" aria-hidden="true" aria-label="Unfolding Form field guide" hidden>
+      <div class="open-v01-help__panel">
+        <p class="open-v01-help__eyebrow">GESTURE STUDY 01&nbsp; / &nbsp;FIELD GUIDE</p>
+        <h1 class="open-v01-help__title">Unfolding Form</h1>
+        <p class="open-v01-help__intro">An open palm turns a compact centre into fine, radiating traces.<br />The field follows unfolding as a slow bodily gesture.</p>
+
+        <div class="open-v01-help__steps">
+          <article class="open-v01-help__step">
+            <span class="open-v01-help__number">01</span>
+            <h2>CAMERA</h2>
+            <p>Allow camera access when the browser asks.</p>
+          </article>
+          <article class="open-v01-help__step">
+            <span class="open-v01-help__number">02</span>
+            <h2>UNFOLD</h2>
+            <p>Show one hand and open your palm slowly.</p>
+          </article>
+          <article class="open-v01-help__step">
+            <span class="open-v01-help__number">03</span>
+            <h2>FOLLOW</h2>
+            <p>Let the radiating field unfold with your hand.</p>
+          </article>
+        </div>
+
+        <div class="open-v01-help__footer">
+          <span class="open-v01-help__keys">P&nbsp; HAND DISPLAY&nbsp;&nbsp;&nbsp;&nbsp; ?&nbsp; CLOSE</span>
+          <button id="open-v01-help-return" class="open-v01-help__return" type="button">RETURN TO LIVE FIELD&nbsp; →</button>
+        </div>
+      </div>
+    </section>
     <script src="sketch.js"></script>
   </body>
 </html>

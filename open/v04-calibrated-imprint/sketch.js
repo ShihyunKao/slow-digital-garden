@@ -30,6 +30,8 @@ function setup() {
   for (let i = 0; i < 100; i++) {
     driftStars.push({ x: random(width), y: random(height), size: random(0.5, 1.7), alpha: random(4, 16), phase: random(TWO_PI) });
   }
+  const helpReturn = document.getElementById("live-help-return");
+  if (helpReturn) helpReturn.addEventListener("click", beginExperience);
   startHandMode();
 }
 
@@ -246,8 +248,15 @@ function drawBackground() {
 }
 
 function drawInterface() {
-  if (showHelp) { drawHelpScreen(); return; }
-  cursor(ARROW);
+  syncHelpOverlay();
+  if (!showHelp) cursor(ARROW);
+}
+
+function syncHelpOverlay() {
+  const overlay = document.getElementById("live-help");
+  if (!overlay) return;
+  overlay.hidden = !showHelp;
+  overlay.setAttribute("aria-hidden", String(!showHelp));
 }
 
 function getHelpPanelMetrics() {
@@ -290,13 +299,13 @@ function keyPressed() {
 }
 
 function mousePressed() {
-  if (!showHelp) return;
-  const panel = getHelpPanelMetrics();
-  if (mouseX >= panel.buttonX && mouseX <= panel.buttonX + panel.buttonWidth && mouseY >= panel.buttonY && mouseY <= panel.buttonY + panel.buttonHeight) beginExperience();
+  if (showHelp) return false;
 }
 
 function beginExperience() {
   showHelp = false;
+  syncHelpOverlay();
+  cursor(ARROW);
   if (!video && !modelLoading) startHandMode();
 }
 
