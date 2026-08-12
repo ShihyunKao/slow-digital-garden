@@ -152,6 +152,90 @@
   outline: none;
 }
 
+.live-help--archive .live-help__panel {
+  width: min(1080px, 100%);
+  height: min(610px, 100%);
+}
+
+.live-help__archive-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(250px, 0.85fr);
+  gap: 48px;
+  align-items: start;
+}
+
+.live-help__reading {
+  padding-top: 4px;
+  border-top: 1px solid rgba(82, 96, 85, 0.38);
+}
+
+.live-help__reading h2 {
+  margin: 17px 0 12px;
+  color: rgba(101, 215, 196, 0.78);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+}
+
+.live-help__reading p {
+  margin: 0;
+  color: rgba(164, 170, 157, 0.76);
+  font-size: 11px;
+  font-weight: 300;
+  line-height: 1.65;
+}
+
+.live-help__archive-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(230px, 1fr);
+  margin-top: 25px;
+  border-top: 1px solid rgba(82, 96, 85, 0.38);
+  border-bottom: 1px solid rgba(82, 96, 85, 0.38);
+}
+
+.live-help__archive-grid .live-help__steps {
+  margin-top: 0;
+  border: 0;
+}
+
+.live-help__parameters {
+  position: relative;
+  box-sizing: border-box;
+  padding: 25px 0 21px 28px;
+}
+
+.live-help__parameters::before {
+  position: absolute;
+  top: 18px;
+  bottom: 18px;
+  left: 0;
+  width: 1px;
+  content: "";
+  background: rgba(82, 96, 85, 0.28);
+}
+
+.live-help__parameter {
+  margin: 0 0 14px;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.live-help__parameter:last-child {
+  margin-bottom: 0;
+}
+
+.live-help__parameter span {
+  display: block;
+  color: rgba(232, 225, 216, 0.82);
+}
+
+.live-help__parameter strong {
+  display: block;
+  color: rgba(101, 215, 196, 0.72);
+  font-weight: 300;
+}
+
 @media (max-width: 760px), (max-height: 680px) {
   .live-help {
     align-items: center;
@@ -216,5 +300,43 @@
   .live-help__return {
     min-width: 154px;
     font-size: 10px;
+  }
+
+  .live-help--archive .live-help__panel {
+    height: min(540px, 100%);
+    overflow-y: auto;
+  }
+
+  .live-help__archive-summary {
+    display: block;
+  }
+
+  .live-help__reading {
+    margin-top: 16px;
+  }
+
+  .live-help__reading h2 {
+    margin-top: 13px;
+  }
+
+  .live-help__archive-grid {
+    display: block;
+    margin-top: 16px;
+  }
+
+  .live-help__parameters {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px 20px;
+    padding: 16px 12px 18px;
+    border-top: 1px solid rgba(82, 96, 85, 0.28);
+  }
+
+  .live-help__parameters::before {
+    display: none;
+  }
+
+  .live-help__parameter {
+    margin-bottom: 4px;
   }
 }
