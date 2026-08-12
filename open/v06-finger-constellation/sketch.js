@@ -473,7 +473,7 @@ function drawHeader() {
 
   fill(196, 207, 188, 100);
   textSize(10);
-  text("GESTURE STUDY 06 / FIVE-POINT HAND MEMORY", inset, 47);
+  text("GESTURE STUDY 06.00 / FIVE-POINT HAND MEMORY", inset, 47);
 
   textAlign(RIGHT, TOP);
   fill(206, 212, 196, 120);
@@ -524,7 +524,7 @@ function drawHelpScreen() {
   textAlign(LEFT, TOP);
   fill(174, 191, 166, 180);
   textSize(11);
-  text("GESTURE STUDY 06", left, panel.y + (compact ? 25 : 38));
+  text("GESTURE STUDY 06.00", left, panel.y + (compact ? 25 : 38));
 
   fill(238, 235, 216, 240);
   textSize(compact ? 28 : 36);

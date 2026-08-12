@@ -270,7 +270,7 @@ function drawHelpScreen() {
   noStroke(); fill(5, 12, 11, 205); rect(0, 0, width, height);
   drawingContext.save(); drawingContext.shadowBlur = 40; drawingContext.shadowColor = "rgba(0, 0, 0, 0.45)";
   fill(15, 29, 25, 246); stroke(177, 192, 167, 52); strokeWeight(1); rect(panel.x, panel.y, panel.width, panel.height, 4); drawingContext.restore();
-  noStroke(); textAlign(LEFT, TOP); fill(174, 191, 166, 180); textSize(11); text("GESTURE STUDY 04", left, panel.y + (compact ? 25 : 38));
+  noStroke(); textAlign(LEFT, TOP); fill(174, 191, 166, 180); textSize(11); text("GESTURE STUDY 04.00", left, panel.y + (compact ? 25 : 38));
   fill(238, 235, 216, 240); textSize(compact ? 28 : 36); text("Held Imprint", left, panel.y + (compact ? 48 : 68));
   fill(201, 207, 191, 175); textSize(compact ? 13 : 15); textLeading(compact ? 19 : 22);
   text("A briefly held open palm leaves a deliberate, temporary constellation-like imprint.", left, panel.y + (compact ? 90 : 120), contentWidth);

@@ -8,37 +8,37 @@
       field: "open",
       versions: [
         {
-          code: "v01", path: "v01-unfolding-form", title: "Unfolding Form",
+          code: "v01", displayCode: "v01.00", path: "v01-unfolding-form", title: "Unfolding Form",
           statement: "An open palm turns a compact centre into fine, radiating traces. This first study follows unfolding as a slow bodily gesture.",
           instructions: [["Begin", "Select Begin and allow access to the camera."], ["Unfold", "Show one hand and open your palm slowly."], ["Allow", "Let the radiating form unfold with your hand."]],
           meaning: ["gesture / open palm", "field / radiating traces", "pace / slow unfolding"]
         },
         {
-          code: "v02", path: "v02-layered-bloom", title: "Layered Bloom",
+          code: "v02", displayCode: "v02.00", path: "v02-layered-bloom", title: "Layered Bloom",
           statement: "An opening palm unfolds a layered contour field. A small movement becomes a slow, shifting expansion.",
           instructions: [["Begin", "Select Begin and allow access to the camera."], ["Open", "Show one hand and open your palm slowly."], ["Gather", "Open and close to unfold and gather the contour field."]],
           meaning: ["gesture / open palm", "contours / layered field", "motion / expand + gather"]
         },
         {
-          code: "v03", path: "v03-palm-imprint", title: "Palm Imprint",
+          code: "v03", displayCode: "v03.00", path: "v03-palm-imprint", title: "Palm Imprint",
           statement: "Each fully opened palm leaves a temporary constellation-like imprint.",
           instructions: [["Begin", "Select Begin and allow access to the camera."], ["Open", "Show one hand and open your palm slowly."], ["Imprint", "Relax, then open again to leave another imprint."]],
           meaning: ["gesture / open palm", "points / constellation", "memory / temporary imprint"]
         },
         {
-          code: "v04", path: "v04-calibrated-imprint", title: "Held Imprint",
+          code: "v04", displayCode: "v04.00", path: "v04-calibrated-imprint", title: "Held Imprint",
           statement: "A briefly held open palm leaves a deliberate, temporary constellation-like imprint.",
           instructions: [["Begin", "Select Begin and allow access to the camera."], ["Open", "Relax your hand, then open your palm slowly."], ["Hold", "Hold until the small ring closes to leave an imprint."]],
           meaning: ["gesture / held palm", "time / closing ring", "memory / deliberate imprint"]
         },
         {
-          code: "v05", path: "v05-pressure-bloom", title: "Pressure Bloom",
+          code: "v05", displayCode: "v05.00", path: "v05-pressure-bloom", title: "Pressure Bloom",
           statement: "An opening palm becomes a soft pressure field. Each release leaves a circular memory that slowly dissipates.",
           instructions: [["Begin", "Select Begin and allow access to the camera."], ["Press", "Open one palm slowly to create a pressure field."], ["Release", "Close, then open again to leave another memory."]],
           meaning: ["gesture / opening palm", "field / soft pressure", "memory / slow release"]
         },
         {
-          code: "v06", path: "v06-finger-constellation", title: "Finger Constellation",
+          code: "v06", displayCode: "v06.00", path: "v06-finger-constellation", title: "Finger Constellation",
           statement: "Five fingertips become five stars. Each open hand adds a persistent map to an accumulating bodily archive.",
           instructions: [["Begin", "Select Begin and allow access to the camera."], ["Arrange", "Arrange the five stars, then hold until they brighten."], ["Preserve", "Close the hand to preserve the locked constellation."]],
           meaning: ["points / five fingertips", "field / open hand", "light / held brightness", "memory / locked constellation"]
@@ -58,25 +58,25 @@
       field: "trail",
       versions: [
         {
-          code: "v01", path: "v01-hand-trail", title: "Hand Trail",
+          code: "v01", displayCode: "v01.00", path: "v01-hand-trail", title: "Hand Trail",
           statement: "A moving fingertip releases fine streams that follow an invisible flow field and gradually form a layered drawing.",
           instructions: [["Begin", "Select Begin to activate the camera."], ["Move", "Move one index finger slowly through the space."], ["Follow", "Let the flow field carry each trace onwards."]],
           meaning: ["trace / one finger", "flow / invisible field", "drawing / layered stream"]
         },
         {
-          code: "v02", path: "v02-ink-ribbon", title: "Soft Ink Wash",
+          code: "v02", displayCode: "v02.00", path: "v02-ink-ribbon", title: "Soft Ink Wash",
           statement: "A slow movement releases a pale wash that continues to diffuse after the hand has passed.",
           instructions: [["Begin", "Select Begin to activate the camera."], ["Move", "Move one index finger slowly through the space."], ["Pause", "Pause and let the soft wash expand."]],
           meaning: ["trace / one finger", "wash / pale diffusion", "pause / continued expansion"]
         },
         {
-          code: "v03", path: "v03-path-constellation", title: "Path Constellation",
+          code: "v03", displayCode: "v03.00", path: "v03-path-constellation", title: "Path Constellation",
           statement: "Slow movement deposits a constellation-like record of the path your hand takes through space.",
           instructions: [["Begin", "Select Begin to activate the camera."], ["Move", "Move one index finger slowly through the space."], ["Anchor", "Pause briefly to leave a larger anchor point."]],
           meaning: ["trace / one finger", "points / deposited path", "pause / anchor point"]
         },
         {
-          code: "v04", path: "v04-slow-orbit-drawing", title: "Slow Orbit Drawing",
+          code: "v04", displayCode: "v04.00", path: "v04-slow-orbit-drawing", title: "Slow Orbit Drawing",
           statement: "A movement begins as scattered points. Sustained slowness allows those points to settle into a coherent orbit.",
           instructions: [["Move", "Move one finger slowly through the space."], ["Steady", "Keep a steady pace until the path becomes stable."], ["Preserve", "Pause to preserve the orbit; speed scatters it."]],
           meaning: ["trace / one finger", "pace / sustained slowness", "orbit / coherent path", "pause / preservation"]
@@ -96,63 +96,63 @@
       field: "both",
       versions: [
         {
-          code: "v01", path: "v01-breathing-garden", title: "Breathing Garden",
+          code: "v01", displayCode: "v01.00", path: "v01-breathing-garden", title: "Breathing Garden",
           statement: "A two-hand opening gesture grows a live contour field through slow expansion and return.",
           archiveReading: "This first study does not save individual traces yet. It establishes the near-closed centre and slow expansion that later versions turn into memory.",
           instructions: [["Begin", "Allow the camera and touch index fingertips."], ["Open", "Open both hands slowly to expand the contour field."], ["Return", "Return to the centre and begin another cycle."]],
           meaning: ["distance / index fingertips", "scale / field expansion", "contours / layered response", "return / near-closed centre"]
         },
         {
-          code: "v02", path: "v02-breathing-cosmos", title: "Breathing Cosmos",
+          code: "v02", displayCode: "v02.00", path: "v02-breathing-cosmos", title: "Breathing Cosmos",
           statement: "A two-hand gesture creates a live field of expansion, contraction and return.",
           archiveReading: "This early study does not save individual traces yet. It establishes the live breathing system that later versions turn into memory.",
           instructions: [["Begin", "Allow the camera and bring hands together."], ["Open", "Open both hands slowly to expand the breathing field."], ["Return", "Return to the centre and begin another cycle."]],
           meaning: ["distance / hands apart", "scale / field expansion", "ripples / breathing contours", "particles / slow orbital drift"]
         },
         {
-          code: "v03", path: "v03-cosmic-memory", title: "Cosmic Memory",
+          code: "v03", displayCode: "v03.00", path: "v03-cosmic-memory", title: "Cosmic Memory",
           statement: "A two-hand breathing gesture becomes a memory of expansion and return.",
           archiveReading: "Each completed breath becomes an orbit-like memory. Across eight cycles, the rings move from the outer field towards the centre.",
           instructions: [["Begin", "Allow the camera and bring hands together."], ["Expand", "Open both hands fully until the field expands."], ["Return", "Return to the centre to leave one memory ring."]],
           meaning: ["cycle / wide stretch + return", "radius / outer-to-inner order", "rings / one breath memory", "stars / surrounding constellation"]
         },
         {
-          code: "v04", path: "v04-cosmic-memory-refined", title: "Cosmic Memory Refined",
+          code: "v04", displayCode: "v04.00", path: "v04-cosmic-memory-refined", title: "Cosmic Memory Refined",
           statement: "A slow two-hand movement leaves a sequence of orbit-like memories.",
           archiveReading: "Each completed stretch becomes one orbit-like memory. Across eight cycles, the archive moves steadily from the outer field towards its centre.",
           instructions: [["Begin", "Move both hands close together."], ["Stretch", "Stretch slowly apart until the field fully opens."], ["Return", "Return to the centre to leave one memory ring."]],
           meaning: ["cycle / wide stretch + return", "radius / outer-to-inner order", "orbits / one memory ring", "stars / surrounding constellation"]
         },
         {
-          code: "v05", path: "v05-breath-quality", title: "Breath Quality",
+          code: "v05", displayCode: "v05.00", path: "v05-breath-quality", title: "Breath Quality",
           statement: "Each complete two-hand movement leaves a ring shaped by its speed, steadiness, balance and pause.",
           archiveReading: "Each completed stretch becomes a ring whose surface reveals the quality of movement.",
           instructions: [["Begin", "Allow the camera and bring hands together."], ["Open", "Open slowly and pause in the extended position."], ["Return", "Return slowly to create one quality-based memory ring."]],
           meaning: ["completeness / slow + steady", "texture / movement steadiness", "tilt / vertical hand balance", "stars / open-palm pause"]
         },
         {
-          code: "v06", path: "v06-session-archive", title: "Session Archive",
+          code: "v06", displayCode: "v06.00", path: "v06-session-archive", title: "Session Archive",
           statement: "Eight gentle stretches record nested contours and connect them into one personal bodily star map.",
           archiveReading: "A fixed golden-angle sequence gives the archive its underlying structure; each stretch introduces a subtle bodily variation.",
           instructions: [["Begin", "Allow the camera and bring hands together."], ["Open", "Open slowly, pause, then return to fix one contour."], ["Complete", "Complete eight stretches to reveal your body map."]],
           meaning: ["sequence / golden-angle placement", "tilt / subtle hand correction", "distance / movement slowness", "stars / open-palm pause"]
         },
         {
-          code: "v07", path: "v07-session-archive-refined", title: "Session Archive Refined",
+          code: "v07", displayCode: "v07.00", path: "v07-session-archive-refined", title: "Session Archive Refined",
           statement: "Eight gentle stretches record nested contours and connect them into one personal bodily star map.",
           archiveReading: "Each anchor turns one completed stretch into a small record of pace, pause, steadiness and duration.",
           instructions: [["Begin", "Allow the camera and bring hands together."], ["Open", "Open slowly, pause, then return to fix one contour."], ["Complete", "Complete eight stretches to reveal your body map."]],
           meaning: ["distance / movement slowness", "size / open-palm pause", "light / movement steadiness", "stars / stretch duration"]
         },
         {
-          code: "v08", path: "v08-session-archive-spatial", title: "Session Archive Spatial",
+          code: "v08", displayCode: "v08.00", path: "v08-session-archive-spatial", title: "Session Archive Spatial",
           statement: "Eight gentle stretches record nested contours and connect them into one personal bodily star map.",
           archiveReading: "While both hands are widely open, the system averages the midpoint between the two index fingers. Shift the whole stretch left, right, up or down; the anchor follows the same direction.",
           instructions: [["Begin", "Allow the camera and bring hands together."], ["Shift", "Open slowly and shift the full stretch through space."], ["Complete", "Return and complete eight stretches to reveal the map."]],
           meaning: ["direction / two-hand midpoint", "distance / movement slowness", "size / open-palm pause", "light / steadiness", "stars / stretch duration"]
         },
         {
-          code: "v09", path: "v09-trajectory-archive", title: "Trajectory Archive",
+          code: "v09", displayCode: "v09.00", path: "v09-trajectory-archive", title: "Trajectory Archive",
           statement: "Eight gentle stretches build a quiet field, while their anchors and chronological path remain visually central.",
           archiveReading: "At the end of each stretch, hold both hands together where you want the anchor to appear. The system samples the midpoint between the two index fingers and places the anchor in the same direction.",
           instructions: [["Begin", "Allow the camera and bring hands together."], ["Open + return", "Open until the contour closes, then return."], ["Complete", "Hold hands together to place each of eight anchors."]],
@@ -180,7 +180,7 @@
       <h1 class="display-title project-title${key === "both" ? " long" : ""}">${project.title}</h1>
       <p class="project-subtitle">${project.subtitle}</p>
       <div class="version-list" role="listbox" aria-label="${project.breadcrumb} versions">
-        ${project.versions.map(version => `<button class="version-row" type="button" role="option" aria-selected="false" data-version="${version.code}"><span class="version-code">${version.code}</span><span class="version-title">${version.title}</span><span class="version-arrow" aria-hidden="true">→</span></button>`).join("")}
+        ${project.versions.map(version => `<button class="version-row" type="button" role="option" aria-selected="false" data-version="${version.code}"><span class="version-code">${version.displayCode}</span><span class="version-title">${version.title}</span><span class="version-arrow" aria-hidden="true">→</span></button>`).join("")}
       </div>
       <a class="archive-return technical-label" href="../" aria-label="Return to archive index">← ARCHIVE INDEX</a>
     </aside>
@@ -228,7 +228,7 @@
       if (updateHistory) history.replaceState({}, "", location.pathname);
       return;
     }
-    const studyNumber = version.code.slice(1);
+    const studyNumber = version.displayCode.slice(1);
     const showMeaning = key === "both";
     panel.innerHTML = `
       <header class="reading-header${version.archiveReading ? " has-archive-reading" : ""}">

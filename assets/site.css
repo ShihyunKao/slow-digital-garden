@@ -275,7 +275,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   min-height: 56px;
   padding: 0;
   display: grid;
-  grid-template-columns: 50px 1fr auto;
+  grid-template-columns: 66px 1fr auto;
   gap: 10px;
   align-items: center;
   border: 0;
@@ -573,7 +573,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .archive-page .version-row {
     height: 52px;
     min-height: 52px;
-    grid-template-columns: 40px 1fr auto;
+    grid-template-columns: 56px 1fr auto;
     gap: 8px;
     font-size: 15px;
     line-height: 1.2;

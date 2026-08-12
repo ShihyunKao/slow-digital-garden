@@ -287,7 +287,7 @@ function drawHeader() {
 
   fill(232, 229, 210, 80);
   textSize(10);
-  text("GESTURE STUDY 03 / MOVEMENT TRACE", 38, 60);
+  text("GESTURE STUDY 03.00 / MOVEMENT TRACE", 38, 60);
 
   textAlign(RIGHT);
   fill(232, 229, 210, 108);
@@ -347,7 +347,7 @@ function drawHelpScreen() {
   textAlign(LEFT, TOP);
   fill(174, 191, 166, 180);
   textSize(11);
-  text("GESTURE STUDY 03", left, panel.y + (compact ? 25 : 38));
+  text("GESTURE STUDY 03.00", left, panel.y + (compact ? 25 : 38));
 
   fill(238, 235, 216, 240);
   textSize(compact ? 28 : 36);

@@ -168,7 +168,7 @@ function drawHeader() {
 
   fill(196, 207, 188, 100);
   textSize(10);
-  text("GESTURE STUDY 01 / OPEN PALM RADIANCE", inset, 47);
+  text("GESTURE STUDY 01.00 / OPEN PALM RADIANCE", inset, 47);
 
   textAlign(RIGHT, TOP);
   fill(206, 212, 196, 120);

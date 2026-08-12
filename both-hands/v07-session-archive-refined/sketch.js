@@ -622,7 +622,7 @@ function drawHeader() {
 
   fill(168, 187, 163, 130);
   textSize(10);
-  text("GESTURE STUDY 07 / DATA-DRIVEN BODY MAP", inset, 47);
+  text("GESTURE STUDY 07.00 / DATA-DRIVEN BODY MAP", inset, 47);
 
   textAlign(RIGHT, TOP);
   fill(211, 216, 198, 128);
@@ -672,7 +672,7 @@ function drawHelpScreen() {
   textAlign(LEFT, TOP);
   fill(174, 191, 166, 180);
   textSize(11);
-  text("GESTURE STUDY 07", left, panel.y + (compact ? 24 : 36));
+  text("GESTURE STUDY 07.00", left, panel.y + (compact ? 24 : 36));
 
   fill(238, 235, 216, 240);
   textSize(compact ? 28 : 36);

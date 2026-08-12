@@ -315,7 +315,7 @@ function drawHelpScreen() {
   textAlign(LEFT, TOP);
   fill(174, 191, 166, 180);
   textSize(11);
-  text("GESTURE STUDY 02", left, panel.y + (compact ? 25 : 38));
+  text("GESTURE STUDY 02.00", left, panel.y + (compact ? 25 : 38));
 
   fill(238, 235, 216, 240);
   textSize(compact ? 28 : 36);
