@@ -1,0 +1,103 @@
+:root {
+  --ink-paper: #aeb0aa;
+  --ink-paper-deep: #969b96;
+  --ink-black: #151b1d;
+  --ink-soft: #353e3f;
+}
+
+html,
+body.ink-sediment {
+  background: var(--ink-paper) !important;
+}
+
+body::before,
+body::after {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  content: "";
+}
+
+body::before {
+  opacity: 0.72;
+  background:
+    radial-gradient(ellipse at 23% 31%, rgba(247, 246, 236, 0.2), transparent 35%),
+    radial-gradient(ellipse at 72% 64%, rgba(38, 48, 49, 0.12), transparent 47%),
+    linear-gradient(128deg, rgba(235, 234, 222, 0.12), rgba(66, 75, 75, 0.07));
+}
+
+body::after {
+  opacity: 0.2;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.46' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.42'/%3E%3C/svg%3E");
+}
+
+canvas {
+  position: relative;
+  z-index: 1;
+  filter: contrast(1.08);
+}
+
+.live-shell {
+  --live-bone: #151b1d;
+  --live-moss: #4b5453;
+  --live-teal: #253335;
+  z-index: 1000;
+}
+
+.live-shell::before {
+  opacity: 0.09;
+  mix-blend-mode: multiply;
+}
+
+.live-input,
+.live-return {
+  color: var(--ink-soft);
+}
+
+.live-return:hover,
+.live-return:focus-visible {
+  color: #080c0d;
+}
+
+.live-help {
+  color: var(--ink-black);
+  background: rgba(35, 43, 43, 0.48);
+}
+
+.live-help__panel {
+  border-color: rgba(26, 34, 35, 0.38);
+  background: rgba(177, 179, 171, 0.97);
+  box-shadow: 0 22px 58px rgba(22, 29, 30, 0.25);
+}
+
+.live-help__panel::before {
+  background: rgba(21, 29, 30, 0.8);
+}
+
+.live-help__eyebrow,
+.live-help__number {
+  color: rgba(28, 39, 40, 0.76);
+}
+
+.live-help__title,
+.live-help__step h2,
+.live-help__return {
+  color: var(--ink-black);
+}
+
+.live-help__intro,
+.live-help__step p,
+.live-help__keys {
+  color: rgba(42, 51, 51, 0.72);
+}
+
+.live-help__steps,
+.live-help__return {
+  border-color: rgba(33, 43, 43, 0.3);
+}
+
+.live-help__step + .live-help__step::before {
+  background: rgba(33, 43, 43, 0.23);
+}

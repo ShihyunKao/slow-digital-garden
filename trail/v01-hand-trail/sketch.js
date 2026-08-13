@@ -18,6 +18,27 @@ let backgroundPoints = [];
 const CAMERA_WIDTH = 640;
 const CAMERA_HEIGHT = 480;
 
+const TRAIL_V01_STYLE = window.TRAIL_V01_VARIANT || {
+  id: "v01.00",
+  name: "Hand Trail",
+  palette: {
+    primary: [177, 195, 153],
+    secondary: [213, 190, 156],
+    handTip: [234, 228, 194],
+    handSkeleton: [230, 226, 204],
+    handPoints: [240, 231, 194]
+  },
+  alphaScale: 1,
+  weightScale: 1,
+  wetDiffusion: false,
+  diffusionAlpha: 0,
+  sedimentFrequency: 0,
+  electricDrift: false,
+  afterimageLength: 0,
+  afterimageAlpha: 0,
+  flickerStrength: 0
+};
+
 const HAND_CONNECTIONS = [
   [0, 1], [1, 2], [2, 3], [3, 4],
   [0, 5], [5, 6], [6, 7], [7, 8],
@@ -143,15 +164,57 @@ function updateStreams() {
     stream.life++;
 
     const remaining = 1 - stream.life / stream.maxLife;
-    const alpha = remaining * 65;
+    const alpha = remaining * 65 * TRAIL_V01_STYLE.alphaScale;
+    const tone = stream.tone < 0.55
+      ? TRAIL_V01_STYLE.palette.primary
+      : TRAIL_V01_STYLE.palette.secondary;
 
-    if (stream.tone < 0.55) {
-      inkLayer.stroke(177, 195, 153, alpha);
-    } else {
-      inkLayer.stroke(213, 190, 156, alpha * 0.75);
+    if (TRAIL_V01_STYLE.wetDiffusion) {
+      inkLayer.stroke(...tone, alpha * TRAIL_V01_STYLE.diffusionAlpha * 0.34);
+      inkLayer.strokeWeight(stream.weight * TRAIL_V01_STYLE.weightScale * 8.5);
+      inkLayer.line(stream.previousX, stream.previousY, stream.x, stream.y);
+
+      inkLayer.stroke(...tone, alpha * TRAIL_V01_STYLE.diffusionAlpha);
+      inkLayer.strokeWeight(stream.weight * TRAIL_V01_STYLE.weightScale * 3.2);
+      inkLayer.line(stream.previousX, stream.previousY, stream.x, stream.y);
+
+      if (TRAIL_V01_STYLE.sedimentFrequency > 0 && frameCount % TRAIL_V01_STYLE.sedimentFrequency === 0 && stream.tone > 0.72) {
+        inkLayer.noStroke();
+        inkLayer.fill(...tone, alpha * 0.11);
+        const deposit = stream.weight * random(4.5, 10.5);
+        inkLayer.ellipse(stream.x, stream.y, deposit * random(0.7, 1.3), deposit);
+      }
     }
 
-    inkLayer.strokeWeight(stream.weight);
+    if (TRAIL_V01_STYLE.electricDrift) {
+      const deltaX = stream.x - stream.previousX;
+      const deltaY = stream.y - stream.previousY;
+      const tailX = stream.previousX - deltaX * TRAIL_V01_STYLE.afterimageLength;
+      const tailY = stream.previousY - deltaY * TRAIL_V01_STYLE.afterimageLength;
+      const flicker = (sin(stream.seed * 12.9898 + frameCount * 0.13) + 1) * 0.5;
+      const localBrightness = 0.42 + flicker * TRAIL_V01_STYLE.flickerStrength;
+
+      inkLayer.stroke(...tone, alpha * TRAIL_V01_STYLE.afterimageAlpha * localBrightness);
+      inkLayer.strokeWeight(stream.weight * TRAIL_V01_STYLE.weightScale * 4.8);
+      inkLayer.line(tailX, tailY, stream.x, stream.y);
+
+      inkLayer.stroke(...tone, alpha * TRAIL_V01_STYLE.afterimageAlpha * localBrightness * 1.7);
+      inkLayer.strokeWeight(stream.weight * TRAIL_V01_STYLE.weightScale * 1.9);
+      inkLayer.line(tailX, tailY, stream.x, stream.y);
+
+      inkLayer.stroke(...tone, alpha * (0.42 + localBrightness * 0.58));
+      inkLayer.strokeWeight(stream.weight * TRAIL_V01_STYLE.weightScale * 0.62);
+      inkLayer.line(stream.previousX, stream.previousY, stream.x, stream.y);
+
+      if (flicker > 0.88) {
+        inkLayer.noStroke();
+        inkLayer.fill(...TRAIL_V01_STYLE.palette.spark, alpha * localBrightness);
+        inkLayer.circle(stream.x, stream.y, 0.9 + flicker * 1.8);
+      }
+    }
+
+    inkLayer.stroke(...tone, stream.tone < 0.55 ? alpha : alpha * 0.75);
+    inkLayer.strokeWeight(stream.weight * TRAIL_V01_STYLE.weightScale);
     inkLayer.line(
       stream.previousX,
       stream.previousY,
@@ -187,13 +250,13 @@ function drawHandDisplay() {
   if (handDisplayMode === 1) {
     const tip = points[8];
     noFill();
-    stroke(234, 228, 194, 90);
+    stroke(...TRAIL_V01_STYLE.palette.handTip, 90);
     strokeWeight(1);
     circle(tip.x, tip.y, 13);
     return;
   }
 
-  stroke(230, 226, 204, 46);
+  stroke(...TRAIL_V01_STYLE.palette.handSkeleton, 46);
   strokeWeight(0.7);
 
   for (const [a, b] of HAND_CONNECTIONS) {
@@ -201,7 +264,7 @@ function drawHandDisplay() {
   }
 
   noStroke();
-  fill(240, 231, 194, 72);
+  fill(...TRAIL_V01_STYLE.palette.handPoints, 72);
 
   for (const point of points) {
     circle(point.x, point.y, 3.5);

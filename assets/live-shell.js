@@ -1,14 +1,16 @@
 (() => {
   const studies = {
     "open/v01-unfolding-form": ["01", "OPEN", "01.00", "Unfolding Form", "open", "v01", "P HAND DISPLAY · ? HELP"],
-    "variants/v01.01": ["01", "OPEN", "01.01", "Carbon Veil", "open", "v01-carbon", "P HAND DISPLAY · ? HELP", "../../../../"],
-    "variants/v01.02": ["01", "OPEN", "01.02", "Luminous Aperture", "open", "v01-luminous", "P HAND DISPLAY · ? HELP", "../../../../"],
+    "open/v01-unfolding-form/variants/v01.01": ["01", "OPEN", "01.01", "Carbon Veil", "open", "v01-carbon", "P HAND DISPLAY · ? HELP", "../../../../"],
+    "open/v01-unfolding-form/variants/v01.02": ["01", "OPEN", "01.02", "Luminous Aperture", "open", "v01-luminous", "P HAND DISPLAY · ? HELP", "../../../../"],
     "open/v02-layered-bloom": ["01", "OPEN", "02.00", "Layered Bloom", "open", "v02", "P HAND DISPLAY · ? HELP"],
     "open/v03-palm-imprint": ["01", "OPEN", "03.00", "Palm Imprint", "open", "v03", "P HAND DISPLAY · R RESET · ? HELP"],
     "open/v04-calibrated-imprint": ["01", "OPEN", "04.00", "Held Imprint", "open", "v04", "P HAND DISPLAY · R RESET · ? HELP"],
     "open/v05-pressure-bloom": ["01", "OPEN", "05.00", "Pressure Bloom", "open", "v05", "P HAND DISPLAY · R RESET · ? HELP"],
     "open/v06-finger-constellation": ["01", "OPEN", "06.00", "Finger Constellation", "open", "v06", "P HAND DISPLAY · R RESET · ? HELP"],
     "trail/v01-hand-trail": ["02", "TRAIL", "01.00", "Hand Trail", "trail", "v01", "P HAND DISPLAY · R RESET · ? HELP"],
+    "trail/v01-hand-trail/variants/v01.01": ["02", "TRAIL", "01.01", "Ink Sediment", "trail", "v01-ink-sediment", "P HAND DISPLAY · R RESET · ? HELP", "../../../../"],
+    "trail/v01-hand-trail/variants/v01.02": ["02", "TRAIL", "01.02", "Electric Drift", "trail", "v01-electric-drift", "P HAND DISPLAY · R RESET · ? HELP", "../../../../"],
     "trail/v02-ink-ribbon": ["02", "TRAIL", "02.00", "Soft Ink Wash", "trail", "v02", "P HAND DISPLAY · R RESET · ? HELP"],
     "trail/v03-path-constellation": ["02", "TRAIL", "03.00", "Path Constellation", "trail", "v03", "P HAND DISPLAY · R RESET · ? HELP"],
     "trail/v04-slow-orbit-drawing": ["02", "TRAIL", "04.00", "Slow Orbit Drawing", "trail", "v04", "P HAND DISPLAY · R RESET · ? HELP"],
@@ -24,8 +26,9 @@
   };
 
   const parts = location.pathname.split("/").filter(Boolean);
+  const variantKey = parts.slice(-4).join("/");
   const key = parts.slice(-2).join("/");
-  const study = studies[key];
+  const study = studies[variantKey] || studies[key];
   if (!study) return;
 
   const style = document.createElement("link");

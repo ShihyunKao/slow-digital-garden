@@ -77,7 +77,23 @@
           code: "v01", displayCode: "v01.00", path: "v01-hand-trail", title: "Hand Trail",
           statement: "A moving fingertip releases fine streams that follow an invisible flow field and gradually form a layered drawing.",
           instructions: [["Begin", "Select Begin to activate the camera."], ["Move", "Move one index finger slowly through the space."], ["Follow", "Let the flow field carry each trace onwards."]],
-          meaning: ["trace / one finger", "flow / invisible field", "drawing / layered stream"]
+          meaning: ["trace / one finger", "flow / invisible field", "drawing / layered stream"],
+          variants: [
+            {
+              code: "v01-ink-sediment", displayCode: "v01.01", path: "v01-hand-trail/variants/v01.01", title: "Ink Sediment",
+              variantStyle: "ink-sediment",
+              statement: "The same fingertip path becomes a wet ink deposit, gathering diffused edges, damp afterimages and layered sediment.",
+              instructions: [["Begin", "Select Begin to activate the camera."], ["Move", "Move one index finger slowly through the space."], ["Deposit", "Let each wet trace settle over the paths already drawn."]],
+              meaning: ["trace / one finger", "material / wet ink", "memory / sediment layer"]
+            },
+            {
+              code: "v01-electric-drift", displayCode: "v01.02", path: "v01-hand-trail/variants/v01.02", title: "Electric Drift",
+              variantStyle: "electric-drift",
+              statement: "The fingertip path becomes a cold electric filament, leaving luminous afterimages and small local flickers across the flow field.",
+              instructions: [["Begin", "Select Begin to activate the camera."], ["Move", "Move one index finger slowly through the space."], ["Drift", "Let each blue filament trail and flicker along the path."]],
+              meaning: ["trace / one finger", "light / cold filament", "motion / luminous afterimage"]
+            }
+          ]
         },
         {
           code: "v02", displayCode: "v02.00", path: "v02-ink-ribbon", title: "Soft Ink Wash",

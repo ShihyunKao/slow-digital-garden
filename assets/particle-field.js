@@ -202,10 +202,17 @@
     ctx.restore();
   }
 
-  function drawTrailStageField(ctx, time, width, height, seed) {
+  function drawTrailStageField(ctx, time, width, height, seed, canvas) {
     const rand = mulberry32(seed * 71 + 53);
     const motionTime = reduceMotion ? 8.5 : time;
     const historyLength = 11.5;
+    const inkSediment = canvas.dataset.variant === "ink-sediment";
+    const electricDrift = canvas.dataset.variant === "electric-drift";
+
+    if (inkSediment) {
+      ctx.fillStyle = "#aeb0aa";
+      ctx.fillRect(0, 0, width, height);
+    }
 
     const trailPoint = (sampleTime, lane = 0) => {
       const phase = sampleTime * .34;
@@ -243,27 +250,41 @@
         else ctx.lineTo(x, y);
       }
       const tealSediment = strand % 5 === 0;
-      ctx.strokeStyle = tealSediment
-        ? `rgba(38,91,79,${.035 + rand() * .045})`
-        : `rgba(91,48,54,${.025 + rand() * .05})`;
-      ctx.lineWidth = .65 + rand() * 2.2;
+      ctx.strokeStyle = inkSediment
+        ? `rgba(19,27,30,${.055 + rand() * .085})`
+        : electricDrift
+          ? `rgba(25,76,132,${.035 + rand() * .075})`
+        : tealSediment
+          ? `rgba(38,91,79,${.035 + rand() * .045})`
+          : `rgba(91,48,54,${.025 + rand() * .05})`;
+      ctx.lineWidth = inkSediment ? 1.2 + rand() * 4.6 : .65 + rand() * 2.2;
       ctx.stroke();
     }
 
     // Recent filaments brighten gradually toward the moving front, producing
     // a clear sense of direction instead of a stationary decorative vortex.
-    ctx.globalCompositeOperation = "lighter";
-    for (let strand = 0; strand < 31; strand++) {
+    ctx.globalCompositeOperation = inkSediment ? "source-over" : "lighter";
+    const recentStrandCount = electricDrift ? 22 : 31;
+    const recentSampleCount = electricDrift ? 42 : 58;
+    for (let strand = 0; strand < recentStrandCount; strand++) {
       const lane = (rand() - .5) * height * .2;
       const strandHistory = historyLength * (.7 + rand() * .34);
       let previous = trailPoint(motionTime - strandHistory, lane);
-      for (let sample = 1; sample <= 58; sample++) {
-        const progress = sample / 58;
+      for (let sample = 1; sample <= recentSampleCount; sample++) {
+        const progress = sample / recentSampleCount;
         const sampleTime = motionTime - strandHistory * (1 - progress);
         const current = trailPoint(sampleTime, lane);
         const frontLight = progress * progress;
-        ctx.strokeStyle = `rgba(101,215,196,${.012 + frontLight * (.15 + rand() * .13)})`;
-        ctx.lineWidth = strand % 9 === 0 ? .92 : .28 + rand() * .4;
+        ctx.strokeStyle = inkSediment
+          ? `rgba(38,50,54,${.02 + frontLight * (.13 + rand() * .1)})`
+          : electricDrift
+            ? `rgba(87,183,255,${.025 + frontLight * (.2 + rand() * .18)})`
+          : `rgba(101,215,196,${.012 + frontLight * (.15 + rand() * .13)})`;
+        ctx.lineWidth = inkSediment
+          ? (strand % 7 === 0 ? 2.4 : .55 + rand() * 1.3)
+          : electricDrift
+            ? (strand % 8 === 0 ? 1.18 : .3 + rand() * .52)
+            : (strand % 9 === 0 ? .92 : .28 + rand() * .4);
         ctx.beginPath();
         ctx.moveTo(previous[0], previous[1]);
         ctx.lineTo(current[0], current[1]);
@@ -274,27 +295,40 @@
 
     // Small moving strokes travel through different ages of the same path.
     // Their varied lengths make the trail read as flow rather than dotted noise.
-    for (let particle = 0; particle < 230; particle++) {
+    const movingParticleCount = electricDrift ? 148 : 230;
+    for (let particle = 0; particle < movingParticleCount; particle++) {
       const age = rand() * historyLength;
       const lane = (rand() - .5) * height * .22;
       const current = trailPoint(motionTime - age, lane);
       const previous = trailPoint(motionTime - age - (.045 + rand() * .09), lane);
       const recency = 1 - age / historyLength;
       const alpha = .035 + recency * (.2 + rand() * .48);
-      ctx.strokeStyle = `rgba(101,215,196,${alpha * .16})`;
-      ctx.lineWidth = 2.1 + rand() * 2.8;
+      ctx.strokeStyle = inkSediment
+        ? `rgba(17,24,27,${alpha * .13})`
+        : electricDrift
+          ? `rgba(31,121,255,${alpha * .22})`
+          : `rgba(101,215,196,${alpha * .16})`;
+      ctx.lineWidth = inkSediment ? 4.8 + rand() * 6.2 : electricDrift ? 3.2 + rand() * 4.6 : 2.1 + rand() * 2.8;
       ctx.beginPath();
       ctx.moveTo(previous[0], previous[1]);
       ctx.lineTo(current[0], current[1]);
       ctx.stroke();
-      ctx.strokeStyle = `rgba(101,215,196,${alpha})`;
-      ctx.lineWidth = .32 + rand() * .68;
+      ctx.strokeStyle = inkSediment
+        ? `rgba(24,33,36,${alpha * .72})`
+        : electricDrift
+          ? `rgba(154,225,255,${alpha * (particle % 9 === 0 ? 1.38 : 1)})`
+          : `rgba(101,215,196,${alpha})`;
+      ctx.lineWidth = inkSediment ? .55 + rand() * 1.15 : electricDrift ? .38 + rand() * .74 : .32 + rand() * .68;
       ctx.beginPath();
       ctx.moveTo(previous[0], previous[1]);
       ctx.lineTo(current[0], current[1]);
       ctx.stroke();
       if (particle % 13 === 0) {
-        ctx.fillStyle = `rgba(232,225,216,${.18 + recency * .55})`;
+        ctx.fillStyle = inkSediment
+          ? `rgba(16,22,24,${.12 + recency * .28})`
+          : electricDrift
+            ? `rgba(222,248,255,${.24 + recency * .68})`
+            : `rgba(232,225,216,${.18 + recency * .55})`;
         ctx.beginPath();
         ctx.arc(current[0], current[1], .45 + rand() * .75, 0, TAU);
         ctx.fill();
@@ -309,12 +343,17 @@
     const normalY = velocityX / velocity;
     const tangentX = velocityX / velocity;
     const tangentY = velocityY / velocity;
-    for (let spark = 0; spark < 68; spark++) {
+    const sparkCount = electricDrift ? 42 : 68;
+    for (let spark = 0; spark < sparkCount; spark++) {
       const behind = rand() * Math.min(width, height) * .09;
       const side = (rand() - .5) * Math.min(width, height) * .105;
       const x = headX - tangentX * behind + normalX * side;
       const y = headY - tangentY * behind + normalY * side;
-      ctx.fillStyle = `rgba(101,215,196,${.16 + rand() * .58})`;
+      ctx.fillStyle = inkSediment
+        ? `rgba(20,28,31,${.09 + rand() * .34})`
+        : electricDrift
+          ? `rgba(119,211,255,${.18 + rand() * .72})`
+          : `rgba(101,215,196,${.16 + rand() * .58})`;
       ctx.beginPath();
       ctx.arc(x, y, .35 + rand() * .9, 0, TAU);
       ctx.fill();
@@ -322,9 +361,9 @@
 
     ctx.globalCompositeOperation = "source-over";
     const headGlow = ctx.createRadialGradient(headX, headY, 0, headX, headY, Math.min(width, height) * .07);
-    headGlow.addColorStop(0, "rgba(232,225,216,.34)");
-    headGlow.addColorStop(.16, "rgba(101,215,196,.2)");
-    headGlow.addColorStop(1, "rgba(101,215,196,0)");
+    headGlow.addColorStop(0, inkSediment ? "rgba(29,38,41,.2)" : electricDrift ? "rgba(226,249,255,.55)" : "rgba(232,225,216,.34)");
+    headGlow.addColorStop(.16, inkSediment ? "rgba(37,49,52,.12)" : electricDrift ? "rgba(73,174,255,.32)" : "rgba(101,215,196,.2)");
+    headGlow.addColorStop(1, inkSediment ? "rgba(37,49,52,0)" : electricDrift ? "rgba(49,132,255,0)" : "rgba(101,215,196,0)");
     ctx.fillStyle = headGlow;
     ctx.beginPath();
     ctx.arc(headX, headY, Math.min(width, height) * .07, 0, TAU);
@@ -1109,7 +1148,7 @@ function drawTrailMaterial(ctx, type, time, width, height, seed) {
     }
 
     if (!compact && type === "trail") {
-      drawTrailStageField(ctx, time, width, height, seed);
+      drawTrailStageField(ctx, time, width, height, seed, canvas);
       return;
     }
 
