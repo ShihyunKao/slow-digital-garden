@@ -1,6 +1,7 @@
 (() => {
   const studies = {
     "open/v01-unfolding-form": ["01", "OPEN", "01.00", "Unfolding Form", "open", "v01", "P HAND DISPLAY · ? HELP"],
+    "variants/v01.01": ["01", "OPEN", "01.01", "Carbon Veil", "open", "v01-carbon", "P HAND DISPLAY · ? HELP", "../../../../"],
     "open/v02-layered-bloom": ["01", "OPEN", "02.00", "Layered Bloom", "open", "v02", "P HAND DISPLAY · ? HELP"],
     "open/v03-palm-imprint": ["01", "OPEN", "03.00", "Palm Imprint", "open", "v03", "P HAND DISPLAY · R RESET · ? HELP"],
     "open/v04-calibrated-imprint": ["01", "OPEN", "04.00", "Held Imprint", "open", "v04", "P HAND DISPLAY · R RESET · ? HELP"],
@@ -28,7 +29,8 @@
 
   const style = document.createElement("link");
   style.rel = "stylesheet";
-  style.href = "../../assets/live.css";
+  const root = study[7] || "../../";
+  style.href = `${root}assets/live.css`;
   document.head.append(style);
 
   const originalSetup = window.setup;
@@ -52,7 +54,7 @@
     <header class="live-top"><span>SLOW DIGITAL GARDEN / ${study[0]} / ${study[1]}</span><span>GESTURE STUDY ${study[2]}</span></header>
     <footer class="live-bottom">
       <div class="live-bottom-copy"><h1 class="live-title">${study[3]}</h1><div class="live-input">LIVE FIELD · ${study[6] || "CAMERA GESTURE INPUT"}</div></div>
-      <a class="live-return" href="../../${study[4]}/?v=${study[5]}">← RETURN TO ARCHIVE</a>
+      <a class="live-return" href="${root}${study[4]}/?v=${study[5]}">← RETURN TO ARCHIVE</a>
     </footer>`;
   document.body.append(shell);
 })();

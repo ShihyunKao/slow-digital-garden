@@ -333,8 +333,10 @@
   }
 
   function drawOpenStageField(ctx, width, height, seed, canvas) {
+    const variant = canvas.dataset.variant || "";
+    const carbonVeil = variant === "carbon-veil";
     let state = openStageStates.get(canvas);
-    if (!state || state.width !== width || state.height !== height) {
+    if (!state || state.width !== width || state.height !== height || state.variant !== variant) {
       const rand = mulberry32(seed * 97 + 41);
       const count = Math.round(480 * 1.6 * Math.min(1.6, Math.max(.5, width * height / 380000)));
       const spawn = () => {
@@ -352,16 +354,16 @@
           dot: rand() < .12
         };
       };
-      state = { width, height, rand, spawn, particles: Array.from({ length: count }, spawn), frames: 0 };
+      state = { width, height, variant, rand, spawn, particles: Array.from({ length: count }, spawn), frames: 0 };
       openStageStates.set(canvas, state);
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = "#07100d";
+      ctx.fillStyle = carbonVeil ? "#b8b0a2" : "#07100d";
       ctx.fillRect(0, 0, width, height);
     }
 
     // This follows the supplied Trail field: particles spiral inward while the
     // translucent frame wash preserves a soft record of their previous paths.
-    ctx.fillStyle = "rgba(7,16,13,.045)";
+    ctx.fillStyle = carbonVeil ? "rgba(184,176,162,.07)" : "rgba(7,16,13,.045)";
     ctx.fillRect(0, 0, width, height);
     ctx.lineCap = "round";
     const path = new Path2D();
@@ -382,16 +384,16 @@
       if (particle.life > particle.max) state.particles[index] = state.spawn();
     });
 
-    ctx.strokeStyle = "rgba(101,215,196,.049)";
+    ctx.strokeStyle = carbonVeil ? "rgba(43,41,37,.032)" : "rgba(101,215,196,.049)";
     ctx.lineWidth = 3.4;
     ctx.stroke(path);
-    ctx.strokeStyle = "rgba(101,215,196,.112)";
+    ctx.strokeStyle = carbonVeil ? "rgba(62,57,51,.09)" : "rgba(101,215,196,.112)";
     ctx.lineWidth = 1.7;
     ctx.stroke(path);
-    ctx.strokeStyle = "rgba(101,215,196,.35)";
+    ctx.strokeStyle = carbonVeil ? "rgba(43,41,37,.34)" : "rgba(101,215,196,.35)";
     ctx.lineWidth = .8;
     ctx.stroke(path);
-    ctx.fillStyle = "rgba(232,225,216,.78)";
+    ctx.fillStyle = carbonVeil ? "rgba(43,41,37,.58)" : "rgba(232,225,216,.78)";
     dots.forEach(([x, y]) => ctx.fillRect(x, y, 1.35, 1.35));
     state.frames += 1;
   }

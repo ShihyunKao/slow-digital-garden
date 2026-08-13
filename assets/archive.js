@@ -11,7 +11,16 @@
           code: "v01", displayCode: "v01.00", path: "v01-unfolding-form", title: "Unfolding Form",
           statement: "An open palm turns a compact centre into fine, radiating traces. This first study follows unfolding as a slow bodily gesture.",
           instructions: [["Begin", "Select Begin and allow access to the camera."], ["Unfold", "Show one hand and open your palm slowly."], ["Allow", "Let the radiating form unfold with your hand."]],
-          meaning: ["gesture / open palm", "field / radiating traces", "pace / slow unfolding"]
+          meaning: ["gesture / open palm", "field / radiating traces", "pace / slow unfolding"],
+          variants: [
+            {
+              code: "v01-carbon", displayCode: "v01.01", path: "v01-unfolding-form/variants/v01.01", title: "Carbon Veil",
+              variantStyle: "carbon-veil",
+              statement: "The same open-palm field rendered as warm graphite lines across a softly fibrous paper surface.",
+              instructions: [["Begin", "Select Begin and allow access to the camera."], ["Unfold", "Show one hand and open your palm slowly."], ["Observe", "Let the dry graphite veil expand without a luminous glow."]],
+              meaning: ["gesture / open palm", "material / graphite line", "surface / warm paper"]
+            }
+          ]
         },
         {
           code: "v02", displayCode: "v02.00", path: "v02-layered-bloom", title: "Layered Bloom",
@@ -180,7 +189,11 @@
       <h1 class="display-title project-title${key === "both" ? " long" : ""}">${project.title}</h1>
       <p class="project-subtitle">${project.subtitle}</p>
       <div class="version-list" role="listbox" aria-label="${project.breadcrumb} versions">
-        ${project.versions.map(version => `<button class="version-row" type="button" role="option" aria-selected="false" data-version="${version.code}"><span class="version-code">${version.displayCode}</span><span class="version-title">${version.title}</span><span class="version-arrow" aria-hidden="true">→</span></button>`).join("")}
+        ${project.versions.map(version => `
+          <div class="version-family${version.variants?.length ? " has-variants" : ""}">
+            <button class="version-row version-row--base" type="button" role="option" aria-selected="false" data-version="${version.code}"><span class="version-code">${version.displayCode}</span><span class="version-title">${version.title}</span><span class="version-arrow" aria-hidden="true">→</span></button>
+            ${version.variants?.length ? `<div class="version-variants">${version.variants.map(variant => `<button class="version-row version-row--variant" type="button" role="option" aria-selected="false" data-version="${variant.code}"><span class="version-code">${variant.displayCode}</span><span class="version-title">${variant.title}</span><span class="version-arrow" aria-hidden="true">→</span></button>`).join("")}</div>` : ""}
+          </div>`).join("")}
       </div>
       <a class="archive-return technical-label" href="../" aria-label="Return to archive index">← ARCHIVE INDEX</a>
     </aside>
@@ -204,8 +217,10 @@
     </main>`;
 
   const stage = mount.querySelector(".stage-upper");
+  const stageCanvas = mount.querySelector(".stage-canvas");
   const panel = mount.querySelector(".reading-panel");
   const rows = [...mount.querySelectorAll(".version-row")];
+  const allVersions = project.versions.flatMap(version => [version, ...(version.variants || [])]);
 
   function formatMeaning(item) {
     const separator = item.indexOf(" / ");
@@ -216,13 +231,14 @@
   }
 
   function renderSelection(code, updateHistory = true) {
-    const version = project.versions.find(item => item.code === code);
+    const version = allVersions.find(item => item.code === code);
     rows.forEach(row => {
       const active = !!version && row.dataset.version === version.code;
       row.classList.toggle("is-selected", active);
       row.setAttribute("aria-selected", String(active));
     });
     stage.classList.toggle("is-selected", !!version);
+    stageCanvas.dataset.variant = version?.variantStyle || "";
     if (!version) {
       panel.innerHTML = "";
       if (updateHistory) history.replaceState({}, "", location.pathname);

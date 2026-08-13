@@ -13,6 +13,23 @@ let openness = 0;
 let targetOpenness = 0;
 let backgroundPoints = [];
 
+const OPEN_V01_STYLE = window.OPEN_V01_VARIANT || {
+  id: "v01.00",
+  name: "Unfolding Form",
+  palette: {
+    graphite: [171, 194, 154],
+    graphiteSoft: [171, 194, 154],
+    warmTrace: [214, 191, 158],
+    hand: [240, 231, 194],
+    centre: [225, 220, 195]
+  },
+  lineCount: 94,
+  lineWeight: [0.45, 0.8],
+  traceAlpha: [14, 82],
+  warmTraceInterval: 5,
+  maximumLengthScale: 0.68
+};
+
 const HAND_CONNECTIONS = [
   [0, 1], [1, 2], [2, 3], [3, 4],
   [0, 5], [5, 6], [6, 7], [7, 8],
@@ -79,22 +96,28 @@ function getHandOpenness(hand) {
 }
 
 function drawUnfoldingForm(centerX, centerY, amount) {
-  const lineCount = 94;
+  const lineCount = OPEN_V01_STYLE.lineCount;
   const time = frameCount * 0.0035;
-  const maximumLength = min(width, height) * 0.287;
+  const maximumLength = min(width, height) * OPEN_V01_STYLE.maximumLengthScale;
 
   for (let i = 0; i < lineCount; i++) {
     const angle = (i / lineCount) * TWO_PI;
     const variation = noise(i * 0.13);
     const length = lerp(7, maximumLength, amount) * (0.72 + variation * 0.38);
 
-    if (i % 5 === 0) {
-      stroke(214, 191, 158, 12 + amount * 68);
+    const warmTrace = i % OPEN_V01_STYLE.warmTraceInterval === 0;
+    const traceColour = warmTrace
+      ? OPEN_V01_STYLE.palette.warmTrace
+      : (i % 3 === 0 ? OPEN_V01_STYLE.palette.graphiteSoft : OPEN_V01_STYLE.palette.graphite);
+    const traceAlpha = OPEN_V01_STYLE.traceAlpha[0] + amount * OPEN_V01_STYLE.traceAlpha[1];
+
+    if (warmTrace) {
+      stroke(...traceColour, traceAlpha * 0.84);
     } else {
-      stroke(171, 194, 154, 14 + amount * 82);
+      stroke(...traceColour, traceAlpha);
     }
 
-    strokeWeight(0.45 + variation * 0.8);
+    strokeWeight(OPEN_V01_STYLE.lineWeight[0] + variation * OPEN_V01_STYLE.lineWeight[1]);
     noFill();
     beginShape();
 
@@ -116,7 +139,7 @@ function drawUnfoldingForm(centerX, centerY, amount) {
   }
 
   noStroke();
-  fill(225, 220, 195, 110 + amount * 85);
+  fill(...OPEN_V01_STYLE.palette.centre, 110 + amount * 85);
   circle(centerX, centerY, lerp(9, 21, amount));
 }
 
@@ -127,7 +150,7 @@ function drawTechnicalHand(hand) {
 
   if (handDisplayMode === 1) {
     noStroke();
-    fill(240, 231, 194, 62);
+    fill(...OPEN_V01_STYLE.palette.hand, 62);
 
     for (const index of TIP_INDICES) {
       circle(points[index].x, points[index].y, 3.5);
@@ -137,7 +160,7 @@ function drawTechnicalHand(hand) {
   }
 
   noFill();
-  stroke(230, 226, 204, 45);
+  stroke(...OPEN_V01_STYLE.palette.hand, 45);
   strokeWeight(0.7);
 
   for (const [a, b] of HAND_CONNECTIONS) {
@@ -145,7 +168,7 @@ function drawTechnicalHand(hand) {
   }
 
   noStroke();
-  fill(240, 231, 194, 72);
+  fill(...OPEN_V01_STYLE.palette.hand, 72);
 
   for (const point of points) {
     circle(point.x, point.y, 3.5);
