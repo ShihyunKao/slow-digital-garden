@@ -2,6 +2,7 @@
   const studies = {
     "open/v01-unfolding-form": ["01", "OPEN", "01.00", "Unfolding Form", "open", "v01", "P HAND DISPLAY · ? HELP"],
     "variants/v01.01": ["01", "OPEN", "01.01", "Carbon Veil", "open", "v01-carbon", "P HAND DISPLAY · ? HELP", "../../../../"],
+    "variants/v01.02": ["01", "OPEN", "01.02", "Luminous Aperture", "open", "v01-luminous", "P HAND DISPLAY · ? HELP", "../../../../"],
     "open/v02-layered-bloom": ["01", "OPEN", "02.00", "Layered Bloom", "open", "v02", "P HAND DISPLAY · ? HELP"],
     "open/v03-palm-imprint": ["01", "OPEN", "03.00", "Palm Imprint", "open", "v03", "P HAND DISPLAY · R RESET · ? HELP"],
     "open/v04-calibrated-imprint": ["01", "OPEN", "04.00", "Held Imprint", "open", "v04", "P HAND DISPLAY · R RESET · ? HELP"],

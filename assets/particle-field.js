@@ -335,6 +335,7 @@
   function drawOpenStageField(ctx, width, height, seed, canvas) {
     const variant = canvas.dataset.variant || "";
     const carbonVeil = variant === "carbon-veil";
+    const luminousAperture = variant === "luminous-aperture";
     let state = openStageStates.get(canvas);
     if (!state || state.width !== width || state.height !== height || state.variant !== variant) {
       const rand = mulberry32(seed * 97 + 41);
@@ -357,13 +358,13 @@
       state = { width, height, variant, rand, spawn, particles: Array.from({ length: count }, spawn), frames: 0 };
       openStageStates.set(canvas, state);
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = carbonVeil ? "#b8b0a2" : "#07100d";
+      ctx.fillStyle = carbonVeil ? "#b8b0a2" : luminousAperture ? "#020916" : "#07100d";
       ctx.fillRect(0, 0, width, height);
     }
 
     // This follows the supplied Trail field: particles spiral inward while the
     // translucent frame wash preserves a soft record of their previous paths.
-    ctx.fillStyle = carbonVeil ? "rgba(184,176,162,.07)" : "rgba(7,16,13,.045)";
+    ctx.fillStyle = carbonVeil ? "rgba(184,176,162,.07)" : luminousAperture ? "rgba(2,9,22,.055)" : "rgba(7,16,13,.045)";
     ctx.fillRect(0, 0, width, height);
     ctx.lineCap = "round";
     const path = new Path2D();
@@ -384,17 +385,24 @@
       if (particle.life > particle.max) state.particles[index] = state.spawn();
     });
 
-    ctx.strokeStyle = carbonVeil ? "rgba(43,41,37,.032)" : "rgba(101,215,196,.049)";
+    ctx.save();
+    if (luminousAperture) {
+      ctx.globalCompositeOperation = "lighter";
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = "rgba(82,181,255,.62)";
+    }
+    ctx.strokeStyle = carbonVeil ? "rgba(43,41,37,.032)" : luminousAperture ? "rgba(57,148,255,.11)" : "rgba(101,215,196,.049)";
     ctx.lineWidth = 3.4;
     ctx.stroke(path);
-    ctx.strokeStyle = carbonVeil ? "rgba(62,57,51,.09)" : "rgba(101,215,196,.112)";
+    ctx.strokeStyle = carbonVeil ? "rgba(62,57,51,.09)" : luminousAperture ? "rgba(92,202,255,.3)" : "rgba(101,215,196,.112)";
     ctx.lineWidth = 1.7;
     ctx.stroke(path);
-    ctx.strokeStyle = carbonVeil ? "rgba(43,41,37,.34)" : "rgba(101,215,196,.35)";
+    ctx.strokeStyle = carbonVeil ? "rgba(43,41,37,.34)" : luminousAperture ? "rgba(215,244,255,.82)" : "rgba(101,215,196,.35)";
     ctx.lineWidth = .8;
     ctx.stroke(path);
-    ctx.fillStyle = carbonVeil ? "rgba(43,41,37,.58)" : "rgba(232,225,216,.78)";
+    ctx.fillStyle = carbonVeil ? "rgba(43,41,37,.58)" : luminousAperture ? "rgba(231,250,255,.95)" : "rgba(232,225,216,.78)";
     dots.forEach(([x, y]) => ctx.fillRect(x, y, 1.35, 1.35));
+    ctx.restore();
     state.frames += 1;
   }
 

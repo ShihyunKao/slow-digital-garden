@@ -19,6 +19,13 @@
               statement: "The same open-palm field rendered as warm graphite lines across a softly fibrous paper surface.",
               instructions: [["Begin", "Select Begin and allow access to the camera."], ["Unfold", "Show one hand and open your palm slowly."], ["Observe", "Let the dry graphite veil expand without a luminous glow."]],
               meaning: ["gesture / open palm", "material / graphite line", "surface / warm paper"]
+            },
+            {
+              code: "v01-luminous", displayCode: "v01.02", path: "v01-unfolding-form/variants/v01.02", title: "Luminous Aperture",
+              variantStyle: "luminous-aperture",
+              statement: "The open-palm field becomes a cold luminous aperture, carrying high-contrast radial lines through a deep blue atmosphere.",
+              instructions: [["Begin", "Select Begin and allow access to the camera."], ["Unfold", "Show one hand and open your palm slowly."], ["Illuminate", "Let the cold radiating aperture expand with your hand."]],
+              meaning: ["gesture / open palm", "light / edge glow", "contrast / cold radiance"]
             }
           ]
         },

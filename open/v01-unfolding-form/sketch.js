@@ -27,7 +27,10 @@ const OPEN_V01_STYLE = window.OPEN_V01_VARIANT || {
   lineWeight: [0.45, 0.8],
   traceAlpha: [14, 82],
   warmTraceInterval: 5,
-  maximumLengthScale: 0.68
+  maximumLengthScale: 0.68,
+  glowBlur: 0,
+  glowColour: [171, 194, 154],
+  compositeOperation: "source-over"
 };
 
 const HAND_CONNECTIONS = [
@@ -99,6 +102,12 @@ function drawUnfoldingForm(centerX, centerY, amount) {
   const lineCount = OPEN_V01_STYLE.lineCount;
   const time = frameCount * 0.0035;
   const maximumLength = min(width, height) * OPEN_V01_STYLE.maximumLengthScale;
+  const glowColour = OPEN_V01_STYLE.glowColour || OPEN_V01_STYLE.palette.graphite;
+
+  drawingContext.save();
+  drawingContext.globalCompositeOperation = OPEN_V01_STYLE.compositeOperation || "source-over";
+  drawingContext.shadowBlur = (OPEN_V01_STYLE.glowBlur || 0) * amount;
+  drawingContext.shadowColor = `rgba(${glowColour.join(",")},${0.3 + amount * 0.55})`;
 
   for (let i = 0; i < lineCount; i++) {
     const angle = (i / lineCount) * TWO_PI;
@@ -137,6 +146,8 @@ function drawUnfoldingForm(centerX, centerY, amount) {
 
     endShape();
   }
+
+  drawingContext.restore();
 
   noStroke();
   fill(...OPEN_V01_STYLE.palette.centre, 110 + amount * 85);
