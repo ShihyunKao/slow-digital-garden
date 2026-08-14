@@ -13,6 +13,7 @@ let handDisplayMode = 1; // 0 hidden, 1 points, 2 skeleton
 let inkLayer;
 let streams = [];
 let inkBlooms = [];
+let electricResidue = [];
 let previousPoint = null;
 let backgroundPoints = [];
 
@@ -48,7 +49,8 @@ const TRAIL_V01_STYLE = window.TRAIL_V01_VARIANT || {
   electricDrift: false,
   afterimageLength: 0,
   afterimageAlpha: 0,
-  flickerStrength: 0
+  flickerStrength: 0,
+  particleFilaments: false
 };
 
 const HAND_CONNECTIONS = [
@@ -82,6 +84,10 @@ function draw() {
   }
 
   image(inkLayer, 0, 0);
+
+  if (!showHelp && TRAIL_V01_STYLE.particleFilaments) {
+    drawElectricFlicker();
+  }
 
   if (!showHelp) {
     const point = getControlPoint();
@@ -211,33 +217,54 @@ function updateStreams() {
       const flicker = (sin(stream.seed * 12.9898 + frameCount * 0.13) + 1) * 0.5;
       const localBrightness = 0.42 + flicker * TRAIL_V01_STYLE.flickerStrength;
 
-      inkLayer.stroke(...tone, alpha * TRAIL_V01_STYLE.afterimageAlpha * localBrightness);
-      inkLayer.strokeWeight(stream.weight * TRAIL_V01_STYLE.weightScale * 4.8);
-      inkLayer.line(tailX, tailY, stream.x, stream.y);
+      if (TRAIL_V01_STYLE.particleFilaments) {
+        const sampleOffset = floor(stream.seed * 1000) % 4;
 
-      inkLayer.stroke(...tone, alpha * TRAIL_V01_STYLE.afterimageAlpha * localBrightness * 1.7);
-      inkLayer.strokeWeight(stream.weight * TRAIL_V01_STYLE.weightScale * 1.9);
-      inkLayer.line(tailX, tailY, stream.x, stream.y);
+        if ((frameCount + sampleOffset) % 4 === 0) {
+          electricResidue.push({
+            x: stream.x + random(-0.55, 0.55),
+            y: stream.y + random(-0.55, 0.55),
+            tone: [...tone],
+            seed: random(1000),
+            rate: random(0.035, 0.095),
+            size: random() < 0.16 ? 1.7 : random(0.85, 1.25)
+          });
 
-      inkLayer.stroke(...tone, alpha * (0.42 + localBrightness * 0.58));
-      inkLayer.strokeWeight(stream.weight * TRAIL_V01_STYLE.weightScale * 0.62);
-      inkLayer.line(stream.previousX, stream.previousY, stream.x, stream.y);
+          if (electricResidue.length > 10000) {
+            electricResidue.splice(0, electricResidue.length - 10000);
+          }
+        }
+      } else {
+        inkLayer.stroke(...tone, alpha * TRAIL_V01_STYLE.afterimageAlpha * localBrightness);
+        inkLayer.strokeWeight(stream.weight * TRAIL_V01_STYLE.weightScale * 4.8);
+        inkLayer.line(tailX, tailY, stream.x, stream.y);
 
-      if (flicker > 0.88) {
-        inkLayer.noStroke();
-        inkLayer.fill(...TRAIL_V01_STYLE.palette.spark, alpha * localBrightness);
-        inkLayer.circle(stream.x, stream.y, 0.9 + flicker * 1.8);
+        inkLayer.stroke(...tone, alpha * TRAIL_V01_STYLE.afterimageAlpha * localBrightness * 1.7);
+        inkLayer.strokeWeight(stream.weight * TRAIL_V01_STYLE.weightScale * 1.9);
+        inkLayer.line(tailX, tailY, stream.x, stream.y);
+
+        inkLayer.stroke(...tone, alpha * (0.42 + localBrightness * 0.58));
+        inkLayer.strokeWeight(stream.weight * TRAIL_V01_STYLE.weightScale * 0.62);
+        inkLayer.line(stream.previousX, stream.previousY, stream.x, stream.y);
+
+        if (flicker > 0.88) {
+          inkLayer.noStroke();
+          inkLayer.fill(...TRAIL_V01_STYLE.palette.spark, alpha * localBrightness);
+          inkLayer.circle(stream.x, stream.y, 0.9 + flicker * 1.8);
+        }
       }
     }
 
-    inkLayer.stroke(...tone, stream.tone < 0.55 ? alpha : alpha * 0.75);
-    inkLayer.strokeWeight(stream.weight * TRAIL_V01_STYLE.weightScale);
-    inkLayer.line(
-      stream.previousX,
-      stream.previousY,
-      stream.x,
-      stream.y
-    );
+    if (!TRAIL_V01_STYLE.particleFilaments) {
+      inkLayer.stroke(...tone, stream.tone < 0.55 ? alpha : alpha * 0.75);
+      inkLayer.strokeWeight(stream.weight * TRAIL_V01_STYLE.weightScale);
+      inkLayer.line(
+        stream.previousX,
+        stream.previousY,
+        stream.x,
+        stream.y
+      );
+    }
 
     if (
       stream.life > stream.maxLife ||
@@ -255,6 +282,44 @@ function updateStreams() {
   if (streams.length > 850) {
     streams.splice(0, streams.length - 850);
   }
+}
+
+function drawElectricFlicker() {
+  push();
+  blendMode(ADD);
+
+  for (const particle of electricResidue) {
+    const pulse =
+      (sin(particle.seed * 31.17 + frameCount * particle.rate) + 1) *
+      0.5;
+    const sparkle = pow(pulse, 1.15);
+    const tone = sparkle > 0.78
+      ? TRAIL_V01_STYLE.palette.spark
+      : particle.tone;
+
+    stroke(...tone, lerp(42, 205, sparkle));
+    strokeWeight(particle.size + sparkle * 0.55);
+    point(particle.x, particle.y);
+  }
+
+  strokeWeight(1.25);
+  for (const stream of streams) {
+    const headPulse =
+      (sin(stream.seed * 19.43 + frameCount * 0.15) + 1) * 0.5;
+
+    if (headPulse < 0.58) continue;
+
+    const tone = headPulse > 0.9
+      ? TRAIL_V01_STYLE.palette.spark
+      : stream.tone < 0.55
+        ? TRAIL_V01_STYLE.palette.primary
+        : TRAIL_V01_STYLE.palette.secondary;
+
+    stroke(...tone, map(headPulse, 0.58, 1, 34, 220));
+    point(stream.x, stream.y);
+  }
+
+  pop();
 }
 
 function updateInkBlooms() {
@@ -561,6 +626,7 @@ function keyPressed() {
     inkLayer.clear();
     streams = [];
     inkBlooms = [];
+    electricResidue = [];
     previousPoint = null;
   }
 }
@@ -648,6 +714,7 @@ function windowResized() {
   inkLayer.clear();
   streams = [];
   inkBlooms = [];
+  electricResidue = [];
   previousPoint = null;
   createBackgroundPoints();
 }

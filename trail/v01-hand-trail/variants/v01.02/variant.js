@@ -17,5 +17,6 @@ window.TRAIL_V01_VARIANT = {
   electricDrift: true,
   afterimageLength: 5.8,
   afterimageAlpha: 0.26,
-  flickerStrength: 0.78
+  flickerStrength: 0.78,
+  particleFilaments: true
 };
