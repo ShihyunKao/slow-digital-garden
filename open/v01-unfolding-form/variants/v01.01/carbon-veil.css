@@ -1,6 +1,6 @@
 :root {
-  --carbon-paper: #b8b0a2;
-  --carbon-paper-deep: #a79f92;
+  --carbon-paper: #c7bfb1;
+  --carbon-paper-deep: #b5ac9d;
   --carbon-graphite: #2b2925;
   --carbon-graphite-soft: #4c4741;
 }
@@ -28,6 +28,7 @@ body::before {
 }
 
 body::after {
+  z-index: 2;
   opacity: 0.16;
   mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.48'/%3E%3C/svg%3E");

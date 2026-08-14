@@ -16,9 +16,9 @@
             {
               code: "v01-carbon", displayCode: "v01.01", path: "v01-unfolding-form/variants/v01.01", title: "Carbon Veil",
               variantStyle: "carbon-veil",
-              statement: "The same open-palm field rendered as warm graphite lines across a softly fibrous paper surface.",
-              instructions: [["Begin", "Select Begin and allow access to the camera."], ["Unfold", "Show one hand and open your palm slowly."], ["Observe", "Let the dry graphite veil expand without a luminous glow."]],
-              meaning: ["gesture / open palm", "material / graphite line", "surface / warm paper"]
+              statement: "The original radiating field gathers through repeated open-palm gestures, slowly imprinting rough warm graphite into a softly fibrous paper surface.",
+              instructions: [["Begin", "Select Begin and allow access to the camera."], ["Unfold", "Show one hand and open your palm slowly."], ["Imprint", "Hold and repeat the opening gesture to deepen the radiating trace."]],
+              meaning: ["gesture / repeated open palm", "material / rough graphite", "rhythm / slow accumulation"]
             },
             {
               code: "v01-luminous", displayCode: "v01.02", path: "v01-unfolding-form/variants/v01.02", title: "Luminous Aperture",

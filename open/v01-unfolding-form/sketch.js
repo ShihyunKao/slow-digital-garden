@@ -12,8 +12,12 @@ let handDisplayMode = 1; // Default POINTS; P cycles POINTS → SKELETON → HID
 let openness = 0;
 let targetOpenness = 0;
 let backgroundPoints = [];
+let lastRecognitionLabel = "";
+let accumulationLayer = null;
+let lastTrackedHand = null;
+let lastTrackedAt = 0;
 
-const OPEN_V01_STYLE = window.OPEN_V01_VARIANT || {
+const OPEN_V01_DEFAULT_STYLE = {
   id: "v01.00",
   name: "Unfolding Form",
   palette: {
@@ -30,7 +34,50 @@ const OPEN_V01_STYLE = window.OPEN_V01_VARIANT || {
   maximumLengthScale: 0.68,
   glowBlur: 0,
   glowColour: [171, 194, 154],
-  compositeOperation: "source-over"
+  compositeOperation: "source-over",
+  persistentCanvas: false,
+  paperColour: [0, 0, 0],
+  backgroundAlpha: 0,
+  vertexNoise: 0,
+  vertexNoiseSpeed: 0,
+  centreAlpha: [110, 85],
+  handAlpha: [62, 45, 72],
+  accumulationInterval: 1,
+  accumulationNoiseSpeed: 0,
+  accumulationAngleJitter: 0,
+  accumulationLengthJitter: 0,
+  accumulationCenterWander: 0,
+  accumulationLineDropout: 0,
+  accumulationContourWarp: 0,
+  recognitionFeedback: false,
+  liveLineCount: 0,
+  liveTraceAlpha: [0, 0],
+  opennessRange: [1.15, 2.65],
+  opennessSmoothing: 0.06,
+  trackingGraceMs: 0,
+  curveSteps: 28,
+  liveCurveSteps: 28,
+  driftScale: 1,
+  lengthVariation: [0.72, 0.38],
+  liveDriftScale: 1,
+  liveLengthVariation: [0.72, 0.38],
+  liveContourWarp: 0,
+  liveRoughnessScale: 0.72,
+  liveLineWeight: [0.42, 0.48],
+  liveColour: null,
+  liveCentreAlpha: [0, 0],
+  liveCentreSize: [0, 0],
+  liveCompositeOperation: "source-over"
+};
+
+const OPEN_V01_VARIANT_STYLE = window.OPEN_V01_VARIANT || {};
+const OPEN_V01_STYLE = {
+  ...OPEN_V01_DEFAULT_STYLE,
+  ...OPEN_V01_VARIANT_STYLE,
+  palette: {
+    ...OPEN_V01_DEFAULT_STYLE.palette,
+    ...(OPEN_V01_VARIANT_STYLE.palette || {})
+  }
 };
 
 const HAND_CONNECTIONS = [
@@ -50,6 +97,8 @@ function setup() {
   randomSeed(5);
   noiseSeed(5);
 
+  if (OPEN_V01_STYLE.persistentCanvas) initialiseAccumulationLayer();
+
   for (let i = 0; i < 100; i++) {
     backgroundPoints.push({
       x: random(width),
@@ -67,15 +116,40 @@ function setup() {
 }
 
 function draw() {
-  drawBackground();
+  const freshHand = hands.length > 0 ? hands[0] : null;
 
-  const hand = hands.length > 0 ? hands[0] : null;
+  if (freshHand) {
+    lastTrackedHand = freshHand;
+    lastTrackedAt = millis();
+  }
+
+  const hand = freshHand ||
+    (millis() - lastTrackedAt < OPEN_V01_STYLE.trackingGraceMs ? lastTrackedHand : null);
   targetOpenness = hand ? getHandOpenness(hand) : openness * 0.94;
-  openness = lerp(openness, targetOpenness, 0.06);
+  openness = lerp(openness, targetOpenness, OPEN_V01_STYLE.opennessSmoothing);
+  syncRecognitionFeedback(hand, openness);
 
-  if (!showHelp) {
-    drawUnfoldingForm(width / 2, height * 0.55, openness);
-    drawTechnicalHand(hand);
+  if (OPEN_V01_STYLE.persistentCanvas) {
+    fadeAccumulationLayer();
+
+    if (!showHelp && frameCount % OPEN_V01_STYLE.accumulationInterval === 0) {
+      drawAccumulatingForm(width / 2, height * 0.55, openness);
+    }
+
+    clear();
+    image(accumulationLayer, 0, 0, width, height);
+
+    if (!showHelp) {
+      if (hand || openness > 0.025) drawLiveResponse(width / 2, height * 0.55, openness);
+      drawTechnicalHand(hand);
+    }
+  } else {
+    drawBackground();
+
+    if (!showHelp) {
+      drawUnfoldingForm(width / 2, height * 0.55, openness);
+      drawTechnicalHand(hand);
+    }
   }
 
   syncHelpOverlay();
@@ -95,7 +169,11 @@ function getHandOpenness(hand) {
   }
 
   const ratio = totalDistance / TIP_INDICES.length / palmSize;
-  return constrain(map(ratio, 1.15, 2.65, 0, 1), 0, 1);
+  return constrain(
+    map(ratio, OPEN_V01_STYLE.opennessRange[0], OPEN_V01_STYLE.opennessRange[1], 0, 1),
+    0,
+    1
+  );
 }
 
 function drawUnfoldingForm(centerX, centerY, amount) {
@@ -103,6 +181,9 @@ function drawUnfoldingForm(centerX, centerY, amount) {
   const time = frameCount * 0.0035;
   const maximumLength = min(width, height) * OPEN_V01_STYLE.maximumLengthScale;
   const glowColour = OPEN_V01_STYLE.glowColour || OPEN_V01_STYLE.palette.graphite;
+  const usesMultiply = OPEN_V01_STYLE.compositeOperation === "multiply";
+
+  if (usesMultiply) blendMode(MULTIPLY);
 
   drawingContext.save();
   drawingContext.globalCompositeOperation = OPEN_V01_STYLE.compositeOperation || "source-over";
@@ -112,7 +193,8 @@ function drawUnfoldingForm(centerX, centerY, amount) {
   for (let i = 0; i < lineCount; i++) {
     const angle = (i / lineCount) * TWO_PI;
     const variation = noise(i * 0.13);
-    const length = lerp(7, maximumLength, amount) * (0.72 + variation * 0.38);
+    const length = lerp(7, maximumLength, amount) *
+      (OPEN_V01_STYLE.lengthVariation[0] + variation * OPEN_V01_STYLE.lengthVariation[1]);
 
     const warmTrace = i % OPEN_V01_STYLE.warmTraceInterval === 0;
     const traceColour = warmTrace
@@ -130,17 +212,26 @@ function drawUnfoldingForm(centerX, centerY, amount) {
     noFill();
     beginShape();
 
-    for (let step = 0; step <= 28; step++) {
-      const progress = step / 28;
+    for (let step = 0; step <= OPEN_V01_STYLE.curveSteps; step++) {
+      const progress = step / OPEN_V01_STYLE.curveSteps;
       const radius = length * progress;
       const drift =
         sin(progress * PI * 1.4 + angle * 3 + time * 4 + variation * TWO_PI) *
-        (3 + amount * 28) *
+        (3 + amount * 28) * OPEN_V01_STYLE.driftScale *
         sin(progress * PI);
 
+      const roughness = (OPEN_V01_STYLE.vertexNoise || 0) * (0.28 + amount * 0.72);
+      const noiseTime = frameCount * (OPEN_V01_STYLE.vertexNoiseSpeed || 0);
+      const roughX =
+        (noise(i * 0.31 + 19, step * 0.23 + 7, noiseTime) - 0.5) *
+        roughness * 2;
+      const roughY =
+        (noise(i * 0.29 + 73, step * 0.19 + 41, noiseTime) - 0.5) *
+        roughness * 2;
+
       curveVertex(
-        centerX + cos(angle) * radius - sin(angle) * drift,
-        centerY + sin(angle) * radius + cos(angle) * drift
+        centerX + cos(angle) * radius - sin(angle) * drift + roughX,
+        centerY + sin(angle) * radius + cos(angle) * drift + roughY
       );
     }
 
@@ -148,10 +239,196 @@ function drawUnfoldingForm(centerX, centerY, amount) {
   }
 
   drawingContext.restore();
+  if (usesMultiply) blendMode(BLEND);
 
   noStroke();
-  fill(...OPEN_V01_STYLE.palette.centre, 110 + amount * 85);
+  fill(
+    ...OPEN_V01_STYLE.palette.centre,
+    OPEN_V01_STYLE.centreAlpha[0] + amount * OPEN_V01_STYLE.centreAlpha[1]
+  );
   circle(centerX, centerY, lerp(9, 21, amount));
+}
+
+function initialiseAccumulationLayer() {
+  accumulationLayer = createGraphics(width, height);
+  accumulationLayer.pixelDensity(1);
+  accumulationLayer.background(...OPEN_V01_STYLE.paperColour);
+}
+
+function fadeAccumulationLayer() {
+  if (!accumulationLayer) initialiseAccumulationLayer();
+
+  accumulationLayer.push();
+  accumulationLayer.blendMode(BLEND);
+  accumulationLayer.noStroke();
+  accumulationLayer.fill(...OPEN_V01_STYLE.paperColour, OPEN_V01_STYLE.backgroundAlpha);
+  accumulationLayer.rect(0, 0, accumulationLayer.width, accumulationLayer.height);
+  accumulationLayer.pop();
+}
+
+function drawAccumulatingForm(centerX, centerY, amount) {
+  const layer = accumulationLayer;
+  const lineCount = OPEN_V01_STYLE.lineCount;
+  const time = frameCount * 0.0035;
+  const accumulationTime = frameCount * OPEN_V01_STYLE.accumulationNoiseSpeed;
+  const maximumLength = min(width, height) * OPEN_V01_STYLE.maximumLengthScale;
+  const wanderingCenterX = centerX +
+    (noise(811, accumulationTime) - 0.5) * OPEN_V01_STYLE.accumulationCenterWander;
+  const wanderingCenterY = centerY +
+    (noise(977, accumulationTime) - 0.5) * OPEN_V01_STYLE.accumulationCenterWander;
+  const rotationDrift =
+    (noise(613, accumulationTime * 0.72) - 0.5) *
+    OPEN_V01_STYLE.accumulationAngleJitter;
+
+  layer.push();
+  layer.blendMode(MULTIPLY);
+  layer.noFill();
+
+  for (let i = 0; i < lineCount; i++) {
+    if (random() < OPEN_V01_STYLE.accumulationLineDropout) continue;
+
+    const baseAngle = (i / lineCount) * TWO_PI;
+    const angleNoise =
+      (noise(i * 0.31 + 347, accumulationTime * 1.13) - 0.5) *
+      OPEN_V01_STYLE.accumulationAngleJitter;
+    const angle = baseAngle + rotationDrift + angleNoise;
+    const variation = noise(i * 0.13);
+    const contourScale = getOrganicContourScale(
+      baseAngle,
+      OPEN_V01_STYLE.accumulationContourWarp
+    );
+    const temporalLength = 1 +
+      (noise(i * 0.19 + 521, accumulationTime * 0.84) - 0.5) *
+      OPEN_V01_STYLE.accumulationLengthJitter;
+    const length = lerp(7, maximumLength, amount) *
+      (OPEN_V01_STYLE.lengthVariation[0] + variation * OPEN_V01_STYLE.lengthVariation[1]) *
+      contourScale *
+      temporalLength;
+    const warmTrace = i % OPEN_V01_STYLE.warmTraceInterval === 0;
+    const traceColour = warmTrace
+      ? OPEN_V01_STYLE.palette.warmTrace
+      : (i % 3 === 0 ? OPEN_V01_STYLE.palette.graphiteSoft : OPEN_V01_STYLE.palette.graphite);
+    const traceAlpha = OPEN_V01_STYLE.traceAlpha[0] + amount * OPEN_V01_STYLE.traceAlpha[1];
+
+    layer.stroke(...traceColour, warmTrace ? traceAlpha * 0.84 : traceAlpha);
+    layer.strokeWeight(OPEN_V01_STYLE.lineWeight[0] + variation * OPEN_V01_STYLE.lineWeight[1]);
+    layer.beginShape();
+
+    for (let step = 0; step <= OPEN_V01_STYLE.curveSteps; step++) {
+      const progress = step / OPEN_V01_STYLE.curveSteps;
+      const radius = length * progress;
+      const drift =
+        sin(progress * PI * 1.4 + angle * 3 + time * 4 + variation * TWO_PI) *
+        (3 + amount * 28) * OPEN_V01_STYLE.driftScale *
+        sin(progress * PI);
+      const roughness = OPEN_V01_STYLE.vertexNoise * (0.28 + amount * 0.72);
+      const noiseTime = frameCount * OPEN_V01_STYLE.vertexNoiseSpeed;
+      const roughX =
+        (noise(i * 0.31 + 19, step * 0.23 + 7, noiseTime) - 0.5) * roughness * 2;
+      const roughY =
+        (noise(i * 0.29 + 73, step * 0.19 + 41, noiseTime) - 0.5) * roughness * 2;
+
+      layer.curveVertex(
+        wanderingCenterX + cos(angle) * radius - sin(angle) * drift + roughX,
+        wanderingCenterY + sin(angle) * radius + cos(angle) * drift + roughY
+      );
+    }
+
+    layer.endShape();
+  }
+
+  layer.noStroke();
+  layer.fill(
+    ...OPEN_V01_STYLE.palette.centre,
+    OPEN_V01_STYLE.centreAlpha[0] + amount * OPEN_V01_STYLE.centreAlpha[1]
+  );
+  layer.circle(wanderingCenterX, wanderingCenterY, lerp(9, 21, amount));
+  layer.pop();
+}
+
+function drawLiveResponse(centerX, centerY, amount) {
+  const lineCount = OPEN_V01_STYLE.liveLineCount;
+  const time = frameCount * 0.0035;
+  const maximumLength = min(width, height) * OPEN_V01_STYLE.maximumLengthScale;
+  const liveColour = OPEN_V01_STYLE.liveColour || OPEN_V01_STYLE.palette.graphiteSoft;
+  const usesMultiply = OPEN_V01_STYLE.liveCompositeOperation === "multiply";
+  const traceAlpha = OPEN_V01_STYLE.liveTraceAlpha[0] +
+    amount * OPEN_V01_STYLE.liveTraceAlpha[1];
+
+  blendMode(usesMultiply ? MULTIPLY : BLEND);
+  drawingContext.save();
+  drawingContext.globalCompositeOperation = OPEN_V01_STYLE.liveCompositeOperation;
+  noFill();
+
+  for (let i = 0; i < lineCount; i++) {
+    const angle = (i / lineCount) * TWO_PI;
+    const variation = noise(i * 0.13);
+    const contourScale = getOrganicContourScale(angle, OPEN_V01_STYLE.liveContourWarp);
+    const length = lerp(7, maximumLength, amount) *
+      (OPEN_V01_STYLE.liveLengthVariation[0] +
+        variation * OPEN_V01_STYLE.liveLengthVariation[1]) *
+      contourScale;
+
+    stroke(...liveColour, traceAlpha);
+    strokeWeight(
+      OPEN_V01_STYLE.liveLineWeight[0] + variation * OPEN_V01_STYLE.liveLineWeight[1]
+    );
+    beginShape();
+
+    for (let step = 0; step <= OPEN_V01_STYLE.liveCurveSteps; step++) {
+      const progress = step / OPEN_V01_STYLE.liveCurveSteps;
+      const radius = length * progress;
+      const drift =
+        sin(progress * PI * 1.4 + angle * 3 + time * 4 + variation * TWO_PI) *
+        (3 + amount * 28) * OPEN_V01_STYLE.liveDriftScale *
+        sin(progress * PI);
+      const roughness = OPEN_V01_STYLE.vertexNoise * OPEN_V01_STYLE.liveRoughnessScale;
+      const noiseTime = frameCount * OPEN_V01_STYLE.vertexNoiseSpeed;
+      const roughX =
+        (noise(i * 0.31 + 113, step * 0.23 + 37, noiseTime) - 0.5) * roughness * 2;
+      const roughY =
+        (noise(i * 0.29 + 173, step * 0.19 + 81, noiseTime) - 0.5) * roughness * 2;
+
+      curveVertex(
+        centerX + cos(angle) * radius - sin(angle) * drift + roughX,
+        centerY + sin(angle) * radius + cos(angle) * drift + roughY
+      );
+    }
+
+    endShape();
+  }
+
+  drawingContext.restore();
+  blendMode(BLEND);
+
+  if (OPEN_V01_STYLE.liveCentreSize[1] > 0) {
+    noStroke();
+    fill(
+      ...liveColour,
+      OPEN_V01_STYLE.liveCentreAlpha[0] + amount * OPEN_V01_STYLE.liveCentreAlpha[1]
+    );
+    circle(
+      centerX,
+      centerY,
+      lerp(OPEN_V01_STYLE.liveCentreSize[0], OPEN_V01_STYLE.liveCentreSize[1], amount)
+    );
+  }
+}
+
+function getOrganicContourScale(angle, strength) {
+  if (!strength) return 1;
+
+  const contourNoise = noise(
+    43 + cos(angle) * 0.92,
+    71 + sin(angle) * 0.92
+  );
+  const broadShape = constrain(map(contourNoise, 0.32, 0.68, -1, 1), -1, 1);
+  const lobes =
+    sin(angle * 2 - 0.72) * 0.44 +
+    sin(angle * 3 + 1.56) * 0.27 +
+    sin(angle * 5 - 0.18) * 0.12;
+
+  return constrain(1 + (broadShape * 0.72 + lobes) * strength, 0.58, 1.42);
 }
 
 function drawTechnicalHand(hand) {
@@ -161,7 +438,7 @@ function drawTechnicalHand(hand) {
 
   if (handDisplayMode === 1) {
     noStroke();
-    fill(...OPEN_V01_STYLE.palette.hand, 62);
+    fill(...OPEN_V01_STYLE.palette.hand, OPEN_V01_STYLE.handAlpha[0]);
 
     for (const index of TIP_INDICES) {
       circle(points[index].x, points[index].y, 3.5);
@@ -171,7 +448,7 @@ function drawTechnicalHand(hand) {
   }
 
   noFill();
-  stroke(...OPEN_V01_STYLE.palette.hand, 45);
+  stroke(...OPEN_V01_STYLE.palette.hand, OPEN_V01_STYLE.handAlpha[1]);
   strokeWeight(0.7);
 
   for (const [a, b] of HAND_CONNECTIONS) {
@@ -179,7 +456,7 @@ function drawTechnicalHand(hand) {
   }
 
   noStroke();
-  fill(...OPEN_V01_STYLE.palette.hand, 72);
+  fill(...OPEN_V01_STYLE.palette.hand, OPEN_V01_STYLE.handAlpha[2]);
 
   for (const point of points) {
     circle(point.x, point.y, 3.5);
@@ -188,6 +465,34 @@ function drawTechnicalHand(hand) {
 
 function drawBackground() {
   clear();
+}
+
+function syncRecognitionFeedback(hand, amount) {
+  if (!OPEN_V01_STYLE.recognitionFeedback) return;
+
+  const input = document.querySelector(".live-input");
+  if (!input) return;
+
+  let state = "searching";
+  let label = "LIVE FIELD · SEARCHING FOR PALM · P HAND DISPLAY · ? HELP";
+  let level = 0;
+
+  if (modelLoading || !modelReady || !videoReady) {
+    state = "loading";
+    label = "LIVE FIELD · CAMERA LOADING · P HAND DISPLAY · ? HELP";
+  } else if (hand) {
+    state = "active";
+    level = Math.round(amount * 20) * 5;
+    label = `LIVE FIELD · PALM DETECTED · OPENNESS ${level}% · P HAND DISPLAY · ? HELP`;
+  }
+
+  if (label !== lastRecognitionLabel) {
+    input.textContent = label;
+    lastRecognitionLabel = label;
+  }
+
+  input.dataset.recognition = state;
+  input.style.setProperty("--recognition-level", `${level}%`);
 }
 
 function drawHeader() {
@@ -234,6 +539,11 @@ function keyPressed() {
   }
 
   if (showHelp) return false;
+
+  if ((key === "r" || key === "R") && OPEN_V01_STYLE.persistentCanvas) {
+    initialiseAccumulationLayer();
+    return false;
+  }
 
   if (key === "p" || key === "P") {
     handDisplayMode = (handDisplayMode + 1) % 3;
@@ -297,5 +607,6 @@ function gotHands(results) {
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
+  if (OPEN_V01_STYLE.persistentCanvas) initialiseAccumulationLayer();
   if (video) video.size(width, height);
 }
