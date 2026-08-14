@@ -67,7 +67,16 @@ const OPEN_V01_DEFAULT_STYLE = {
   liveColour: null,
   liveCentreAlpha: [0, 0],
   liveCentreSize: [0, 0],
-  liveCompositeOperation: "source-over"
+  liveCompositeOperation: "source-over",
+  apertureEffect: false,
+  apertureRingCount: 0,
+  apertureParticleCount: 0,
+  apertureMaxScale: 0,
+  apertureUseDiagonal: false,
+  apertureGlowBlur: 0,
+  aperturePulseSpeed: 1,
+  apertureWaveStrength: 0,
+  apertureWaveSpeed: 1
 };
 
 const OPEN_V01_VARIANT_STYLE = window.OPEN_V01_VARIANT || {};
@@ -183,6 +192,10 @@ function drawUnfoldingForm(centerX, centerY, amount) {
   const glowColour = OPEN_V01_STYLE.glowColour || OPEN_V01_STYLE.palette.graphite;
   const usesMultiply = OPEN_V01_STYLE.compositeOperation === "multiply";
 
+  if (OPEN_V01_STYLE.apertureEffect) {
+    drawAperturePulse(centerX, centerY, amount);
+  }
+
   if (usesMultiply) blendMode(MULTIPLY);
 
   drawingContext.save();
@@ -247,6 +260,129 @@ function drawUnfoldingForm(centerX, centerY, amount) {
     OPEN_V01_STYLE.centreAlpha[0] + amount * OPEN_V01_STYLE.centreAlpha[1]
   );
   circle(centerX, centerY, lerp(9, 21, amount));
+}
+
+function drawAperturePulse(centerX, centerY, amount) {
+  const openEase = amount * amount * (3 - 2 * amount);
+  if (openEase < 0.006) return;
+  const effectPresence = pow(openEase, 0.48);
+
+  const speed = OPEN_V01_STYLE.aperturePulseSpeed;
+  const cycle = (frameCount * 0.009 * speed) % 1;
+  const primaryBeat = exp(-pow((cycle - 0.14) / 0.055, 2));
+  const secondaryBeat = exp(-pow((cycle - 0.31) / 0.085, 2)) * 0.58;
+  const breathRaw = (sin(frameCount * 0.024 * speed - HALF_PI) + 1) * 0.5;
+  const breathEase = breathRaw * breathRaw * (3 - 2 * breathRaw);
+  const heartbeatEase = constrain(primaryBeat + secondaryBeat, 0, 1);
+  const pulse = 0.82 + breathEase * 0.12 + heartbeatEase * 0.12;
+  const apertureBasis = OPEN_V01_STYLE.apertureUseDiagonal
+    ? sqrt(width * width + height * height)
+    : min(width, height);
+  const maximumRadius = apertureBasis * OPEN_V01_STYLE.apertureMaxScale * openEase;
+  const glowRadius = max(22, maximumRadius * (0.34 + pulse * 0.12));
+  const glowColour = OPEN_V01_STYLE.glowColour;
+
+  drawingContext.save();
+  drawingContext.globalCompositeOperation = "lighter";
+
+  const coreGlow = drawingContext.createRadialGradient(
+    centerX,
+    centerY,
+    0,
+    centerX,
+    centerY,
+    glowRadius
+  );
+  coreGlow.addColorStop(0, `rgba(239,253,255,${0.28 + effectPresence * 0.28})`);
+  coreGlow.addColorStop(0.18, `rgba(${glowColour.join(",")},${0.18 + effectPresence * 0.24})`);
+  coreGlow.addColorStop(0.55, `rgba(${glowColour.join(",")},${0.06 + effectPresence * 0.1})`);
+  coreGlow.addColorStop(1, `rgba(${glowColour.join(",")},0)`);
+  drawingContext.fillStyle = coreGlow;
+  drawingContext.beginPath();
+  drawingContext.arc(centerX, centerY, glowRadius, 0, TWO_PI);
+  drawingContext.fill();
+
+  noFill();
+  drawingContext.shadowColor = `rgba(${glowColour.join(",")},${0.38 + effectPresence * 0.4})`;
+  drawingContext.shadowBlur = OPEN_V01_STYLE.apertureGlowBlur * effectPresence * pulse;
+
+  for (let ring = 0; ring < OPEN_V01_STYLE.apertureRingCount; ring++) {
+    const ringPhase = (
+      frameCount * 0.0025 * speed + ring / OPEN_V01_STYLE.apertureRingCount
+    ) % 1;
+    const easedPhase = ringPhase * ringPhase * (3 - 2 * ringPhase);
+    const breathingScale = 0.985 + breathEase * 0.018 + heartbeatEase * 0.008;
+    const radius = lerp(14, maximumRadius, easedPhase) * breathingScale;
+    const fadeEnvelope = pow(sin(ringPhase * PI), 1.35);
+    const visibilityCompensation = lerp(1.55, 1, effectPresence);
+    const fade = fadeEnvelope * effectPresence * visibilityCompensation;
+    const centreDrift = maximumRadius * 0.0035 * fadeEnvelope;
+    const ringCenterX = centerX + sin(ring * 1.73 + frameCount * 0.0031) * centreDrift;
+    const ringCenterY = centerY + cos(ring * 1.29 + frameCount * 0.0027) * centreDrift;
+
+    stroke(...glowColour, fade * (42 + heartbeatEase * 18));
+    strokeWeight(0.32 + fade * 0.58);
+    noFill();
+    beginShape();
+
+    const ringSegments = 112;
+    for (let segment = 0; segment < ringSegments; segment++) {
+      const theta = segment / ringSegments * TWO_PI;
+      const waveTime = frameCount * OPEN_V01_STYLE.apertureWaveSpeed;
+      const travellingWave = sin(theta * 3 - waveTime * 0.012 + ring * 0.72);
+      const crossingWave = sin(theta * 7 + waveTime * 0.006 - ring * 0.41) * 0.38;
+      const broadSwell = sin(theta - waveTime * 0.003 + ring * 1.13) * 0.2;
+      const waveOffset =
+        (travellingWave + crossingWave + broadSwell) *
+        OPEN_V01_STYLE.apertureWaveStrength *
+        lerp(1.9, 1, effectPresence) *
+        fadeEnvelope;
+      const organicRadius = radius * (1 + waveOffset);
+      vertex(
+        ringCenterX + cos(theta) * organicRadius,
+        ringCenterY + sin(theta) * organicRadius
+      );
+    }
+
+    endShape(CLOSE);
+  }
+
+  const particleCount = OPEN_V01_STYLE.apertureParticleCount;
+  drawingContext.lineCap = "round";
+
+  for (let particle = 0; particle < particleCount; particle++) {
+    const angleNoise = noise(particle * 0.137, 31) * 0.34 - 0.17;
+    const angle = particle / particleCount * TWO_PI * 7 + angleNoise;
+    const phase = (
+      frameCount * (0.0026 + (particle % 9) * 0.00009) * speed +
+      (particle * 0.61803398875) % 1
+    ) % 1;
+    const easedPhase = 1 - pow(1 - phase, 1.8);
+    const particleBreathScale = 0.99 + breathEase * 0.015 + heartbeatEase * 0.008;
+    const radius = lerp(
+      8,
+      maximumRadius * (0.84 + (particle % 7) * 0.022),
+      easedPhase
+    ) * particleBreathScale;
+    const streak = lerp(2, 10, openEase) * (0.55 + heartbeatEase * 0.65);
+    const x = centerX + cos(angle) * radius;
+    const y = centerY + sin(angle) * radius;
+    const previousX = centerX + cos(angle) * max(0, radius - streak);
+    const previousY = centerY + sin(angle) * max(0, radius - streak);
+    const fade = pow(1 - phase, 1.2) * effectPresence;
+
+    stroke(...glowColour, 14 + fade * (92 + heartbeatEase * 48));
+    strokeWeight(0.4 + fade * 0.8);
+    line(previousX, previousY, x, y);
+
+    if (particle % 13 === 0) {
+      noStroke();
+      fill(231, 250, 255, 30 + fade * 150);
+      circle(x, y, 1.2 + fade * 1.6);
+    }
+  }
+
+  drawingContext.restore();
 }
 
 function initialiseAccumulationLayer() {

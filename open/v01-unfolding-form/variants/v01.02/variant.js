@@ -15,5 +15,14 @@ window.OPEN_V01_VARIANT = {
   maximumLengthScale: 0.68,
   glowBlur: 9,
   glowColour: [71, 178, 255],
-  compositeOperation: "lighter"
+  compositeOperation: "lighter",
+  apertureEffect: true,
+  apertureRingCount: 9,
+  apertureParticleCount: 224,
+  apertureMaxScale: 0.55,
+  apertureUseDiagonal: true,
+  apertureGlowBlur: 12,
+  aperturePulseSpeed: 0.82,
+  apertureWaveStrength: 0.024,
+  apertureWaveSpeed: 0.86
 };
