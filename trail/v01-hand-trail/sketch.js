@@ -12,6 +12,7 @@ let handDisplayMode = 1; // 0 hidden, 1 points, 2 skeleton
 
 let inkLayer;
 let streams = [];
+let inkBlooms = [];
 let previousPoint = null;
 let backgroundPoints = [];
 
@@ -33,6 +34,17 @@ const TRAIL_V01_STYLE = window.TRAIL_V01_VARIANT || {
   wetDiffusion: false,
   diffusionAlpha: 0,
   sedimentFrequency: 0,
+  sedimentGravity: [0, 0],
+  sedimentGravityAgePower: 1,
+  waterBloom: false,
+  bloomInterval: 0,
+  bloomStartRadius: 2.5,
+  bloomRadius: [0, 0],
+  bloomLife: [0, 0],
+  bloomDilution: 0,
+  bloomPaperCenterChance: 0,
+  bloomScaleBands: [[1, 1]],
+  bloomAspect: [0.78, 0.78],
   electricDrift: false,
   afterimageLength: 0,
   afterimageAlpha: 0,
@@ -161,6 +173,11 @@ function updateStreams() {
 
     stream.x += cos(flowAngle) * stream.speed;
     stream.y += sin(flowAngle) * stream.speed;
+
+    const streamAge = constrain(stream.life / stream.maxLife, 0, 1);
+    const settling = pow(streamAge, TRAIL_V01_STYLE.sedimentGravityAgePower || 1);
+    stream.x += (TRAIL_V01_STYLE.sedimentGravity?.[0] || 0) * settling;
+    stream.y += (TRAIL_V01_STYLE.sedimentGravity?.[1] || 0) * settling;
     stream.life++;
 
     const remaining = 1 - stream.life / stream.maxLife;
@@ -233,8 +250,117 @@ function updateStreams() {
     }
   }
 
+  updateInkBlooms();
+
   if (streams.length > 850) {
     streams.splice(0, streams.length - 850);
+  }
+}
+
+function updateInkBlooms() {
+  if (!TRAIL_V01_STYLE.waterBloom) return;
+
+  const interval = max(1, TRAIL_V01_STYLE.bloomInterval || 24);
+
+  if (frameCount % interval === 0 && streams.length > 16) {
+    const source = streams[floor(random(streams.length))];
+    const tone = source.tone < 0.55
+      ? TRAIL_V01_STYLE.palette.primary
+      : TRAIL_V01_STYLE.palette.secondary;
+    const scaleBands = TRAIL_V01_STYLE.bloomScaleBands || [[1, 1]];
+    const bandRoll = random();
+    const bandIndex = min(
+      scaleBands.length - 1,
+      bandRoll < 0.34 ? 0 : bandRoll < 0.82 ? 1 : 2
+    );
+    const sizeScale = random(...scaleBands[bandIndex]);
+    const startRadius = Array.isArray(TRAIL_V01_STYLE.bloomStartRadius)
+      ? random(...TRAIL_V01_STYLE.bloomStartRadius)
+      : TRAIL_V01_STYLE.bloomStartRadius || 2.5;
+    const aspectRange = TRAIL_V01_STYLE.bloomAspect || [0.78, 0.78];
+
+    inkBlooms.push({
+      x: source.x,
+      y: source.y,
+      tone,
+      life: 0,
+      maxLife: random(...TRAIL_V01_STYLE.bloomLife),
+      startRadius: startRadius * sqrt(sizeScale),
+      maxRadius:
+        random(...TRAIL_V01_STYLE.bloomRadius) *
+        sizeScale *
+        (0.78 + source.weight * 0.18),
+      aspect: random(...aspectRange),
+      rotation: random(TWO_PI),
+      paperCenter: random() < (TRAIL_V01_STYLE.bloomPaperCenterChance || 0),
+      seed: random(1000)
+    });
+
+    if (inkBlooms.length > 22) inkBlooms.shift();
+  }
+
+  for (let i = inkBlooms.length - 1; i >= 0; i--) {
+    const bloom = inkBlooms[i];
+    const age = constrain(bloom.life / bloom.maxLife, 0, 1);
+    const expansion = 1 - pow(1 - age, 2.35);
+    const radius = lerp(bloom.startRadius, bloom.maxRadius, expansion);
+    const fade = pow(1 - age, 0.72);
+    const gravity = TRAIL_V01_STYLE.sedimentGravity?.[1] || 0;
+
+    bloom.y += gravity * (0.12 + age * 0.16);
+
+    inkLayer.push();
+    inkLayer.translate(bloom.x, bloom.y);
+    inkLayer.rotate(bloom.rotation);
+    inkLayer.noStroke();
+    inkLayer.fill(...bloom.tone, fade * 0.72);
+    inkLayer.ellipse(0, 0, radius * 1.14, radius * bloom.aspect);
+
+    if (
+      TRAIL_V01_STYLE.bloomDilution > 0 &&
+      bloom.paperCenter &&
+      age < 0.82 &&
+      frameCount % 3 === 0
+    ) {
+      inkLayer.erase(TRAIL_V01_STYLE.bloomDilution * fade, 0);
+      inkLayer.noStroke();
+      inkLayer.beginShape();
+      for (let point = 0; point <= 26; point++) {
+        const angle = point / 26 * TWO_PI;
+        const dilutionEdge =
+          0.82 + noise(bloom.seed + 40, point * 0.2, bloom.life * 0.01) * 0.24;
+        inkLayer.vertex(
+          cos(angle) * radius * 0.23 * dilutionEdge,
+          sin(angle) * radius * bloom.aspect * 0.2 * dilutionEdge
+        );
+      }
+      inkLayer.endShape(CLOSE);
+      inkLayer.noErase();
+    }
+
+    inkLayer.noFill();
+    for (let ring = 0; ring < 3; ring++) {
+      const ringScale = 0.72 + ring * 0.145;
+      inkLayer.stroke(...bloom.tone, fade * (5.8 - ring * 1.15));
+      inkLayer.strokeWeight(0.45 + ring * 0.38);
+      inkLayer.beginShape();
+      for (let point = 0; point <= 34; point++) {
+        const angle = point / 34 * TWO_PI;
+        const irregularity =
+          0.86 +
+          noise(bloom.seed + ring * 7.3, point * 0.18, bloom.life * 0.012) * 0.25;
+        const ringRadius = radius * ringScale * irregularity;
+        inkLayer.vertex(
+          cos(angle) * ringRadius,
+          sin(angle) * ringRadius * bloom.aspect
+        );
+      }
+      inkLayer.endShape(CLOSE);
+    }
+    inkLayer.pop();
+
+    bloom.life++;
+    if (bloom.life > bloom.maxLife) inkBlooms.splice(i, 1);
   }
 }
 
@@ -434,6 +560,7 @@ function keyPressed() {
   if (key === "r" || key === "R") {
     inkLayer.clear();
     streams = [];
+    inkBlooms = [];
     previousPoint = null;
   }
 }
@@ -520,6 +647,7 @@ function windowResized() {
   inkLayer = createGraphics(width, height);
   inkLayer.clear();
   streams = [];
+  inkBlooms = [];
   previousPoint = null;
   createBackgroundPoints();
 }

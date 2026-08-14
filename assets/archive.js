@@ -82,8 +82,8 @@
             {
               code: "v01-ink-sediment", displayCode: "v01.01", path: "v01-hand-trail/variants/v01.01", title: "Ink Sediment",
               variantStyle: "ink-sediment",
-              statement: "The same fingertip path becomes a wet ink deposit, gathering diffused edges, damp afterimages and layered sediment.",
-              instructions: [["Begin", "Select Begin to activate the camera."], ["Move", "Move one index finger slowly through the space."], ["Deposit", "Let each wet trace settle over the paths already drawn."]],
+              statement: "The same fingertip path becomes a wet ink deposit, opening into diluted centres, feathered edges and slowly sinking sediment.",
+              instructions: [["Begin", "Select Begin to activate the camera."], ["Move", "Move one index finger slowly through the space."], ["Bloom", "Let diluted centres and feathered ink edges open across the paths already drawn."]],
               meaning: ["trace / one finger", "material / wet ink", "memory / sediment layer"]
             },
             {
