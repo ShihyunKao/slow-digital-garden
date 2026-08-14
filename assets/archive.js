@@ -146,7 +146,25 @@
           statement: "A two-hand breathing gesture becomes a memory of expansion and return.",
           archiveReading: "Each completed breath becomes an orbit-like memory. Across eight cycles, the rings move from the outer field towards the centre.",
           instructions: [["Begin", "Allow the camera and bring hands together."], ["Expand", "Open both hands fully until the field expands."], ["Return", "Return to the centre to leave one memory ring."]],
-          meaning: ["cycle / wide stretch + return", "radius / outer-to-inner order", "rings / one breath memory", "stars / surrounding constellation"]
+          meaning: ["cycle / wide stretch + return", "radius / outer-to-inner order", "rings / one breath memory", "stars / surrounding constellation"],
+          variants: [
+            {
+              code: "v03-amber-orbit", displayCode: "v03.01", path: "v03-cosmic-memory/variants/v03.01", title: "Amber Orbit",
+              variantStyle: "amber-orbit",
+              statement: "The same two-hand breath becomes a dark red and gold orbital memory, surrounded by drifting amber dust.",
+              archiveReading: "Each completed breath still becomes one orbit-like memory in the same eight-step sequence; only its material shifts into ember, gold and accumulated dust.",
+              instructions: [["Begin", "Allow the camera and bring hands together."], ["Expand", "Open both hands fully until the amber field expands."], ["Return", "Return to the centre to leave one golden memory orbit."]],
+              meaning: ["cycle / wide stretch + return", "palette / dark red + gold", "rings / amber orbit memory", "dust / surrounding particles"]
+            },
+            {
+              code: "v03-frozen-constellation", displayCode: "v03.02", path: "v03-cosmic-memory/variants/v03.02", title: "Frozen Constellation",
+              variantStyle: "frozen-constellation",
+              statement: "The same two-hand breath settles into a pale violet field of restrained, crystalline orbital memories.",
+              archiveReading: "Each completed breath still records one memory in the same eight-step sequence. Motion is visually slowed and each orbit settles as a low-contrast crystalline trace.",
+              instructions: [["Begin", "Allow the camera and bring hands together."], ["Expand", "Open both hands fully until the violet field expands."], ["Return", "Return to the centre to leave one crystalline memory trace."]],
+              meaning: ["cycle / wide stretch + return", "palette / mist violet", "rings / crystalline residence", "motion / quiet suspension"]
+            }
+          ]
         },
         {
           code: "v04", displayCode: "v04.00", path: "v04-cosmic-memory-refined", title: "Cosmic Memory Refined",

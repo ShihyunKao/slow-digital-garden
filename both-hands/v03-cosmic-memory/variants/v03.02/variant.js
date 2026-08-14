@@ -1,0 +1,32 @@
+window.BOTH_V03_VARIANT = {
+  id: "v03.02",
+  name: "Frozen Constellation",
+  palette: {
+    glowOuter: [118, 105, 137],
+    glowInner: [205, 197, 216],
+    bodyFrom: [28, 25, 35],
+    bodyTo: [72, 65, 83],
+    orbit: [184, 174, 199],
+    dust: [211, 203, 220],
+    returnLine: [153, 143, 171],
+    memory: [203, 194, 213],
+    memoryDust: [221, 214, 228],
+    handSkeleton: [181, 171, 195],
+    handPoint: [218, 211, 225]
+  },
+  ambientParticleCount: 224,
+  dustSizeScale: 0.72,
+  dustTrails: false,
+  memoryGlow: 1.5,
+  orbitalMotionScale: 0.18,
+  orbitAlphaScale: 0.58,
+  dustAlphaScale: 0.58,
+  memoryAlphaScale: 0.64,
+  facetedOrbit: true,
+  orbitSampleCount: 34,
+  facetedMemory: true,
+  memorySampleCount: 28,
+  memoryNoiseMotionScale: 0.06,
+  memoryExpansionScale: 0.18,
+  memorySparkleSpeedScale: 0.14
+};

@@ -19,6 +19,49 @@ let memoryStep = 0;
 let showHelp = false;
 let handDisplayMode = 1; // Default POINTS; P cycles POINTS → SKELETON → HIDDEN
 
+const BOTH_V03_DEFAULT_STYLE = {
+  id: "v03.00",
+  name: "Cosmic Memory",
+  palette: {
+    glowOuter: [142, 170, 135],
+    glowInner: [231, 219, 181],
+    bodyFrom: [26, 42, 40],
+    bodyTo: [76, 92, 78],
+    orbit: [220, 226, 205],
+    dust: [238, 231, 198],
+    returnLine: [213, 220, 196],
+    memory: [238, 232, 198],
+    memoryDust: [246, 238, 198],
+    handSkeleton: [230, 226, 204],
+    handPoint: [246, 238, 198]
+  },
+  ambientParticleCount: 180,
+  dustSizeScale: 1,
+  dustTrails: false,
+  memoryGlow: 0,
+  orbitalMotionScale: 1,
+  orbitAlphaScale: 1,
+  dustAlphaScale: 1,
+  memoryAlphaScale: 1,
+  facetedOrbit: false,
+  orbitSampleCount: 160,
+  facetedMemory: false,
+  memorySampleCount: 170,
+  memoryNoiseMotionScale: 1,
+  memoryExpansionScale: 1,
+  memorySparkleSpeedScale: 1
+};
+
+const BOTH_V03_VARIANT_STYLE = window.BOTH_V03_VARIANT || {};
+const BOTH_V03_STYLE = {
+  ...BOTH_V03_DEFAULT_STYLE,
+  ...BOTH_V03_VARIANT_STYLE,
+  palette: {
+    ...BOTH_V03_DEFAULT_STYLE.palette,
+    ...(BOTH_V03_VARIANT_STYLE.palette || {})
+  }
+};
+
 const HAND_CONNECTIONS = [
   [0, 1], [1, 2], [2, 3], [3, 4],
   [0, 5], [5, 6], [6, 7], [7, 8],
@@ -36,7 +79,7 @@ function setup() {
   noiseSeed(103);
   randomSeed(103);
 
-  for (let i = 0; i < 180; i++) {
+  for (let i = 0; i < BOTH_V03_STYLE.ambientParticleCount; i++) {
     stars.push({
       angle: random(TWO_PI),
       radius: random(20, 285),
@@ -140,10 +183,10 @@ function drawCentralGlow(cx, cy, r, aspect, amount) {
 
   noStroke();
 
-  fill(142, 170, 135, 20 + amount * 22);
+  fill(...BOTH_V03_STYLE.palette.glowOuter, 20 + amount * 22);
   ellipse(cx, cy, r * 2.1, r * 2.1 * aspect);
 
-  fill(231, 219, 181, 10 + amount * 14);
+  fill(...BOTH_V03_STYLE.palette.glowInner, 10 + amount * 14);
   ellipse(cx, cy, r * 1.05, r * 1.05 * aspect);
 
   drawingContext.restore();
@@ -157,9 +200,9 @@ function drawOrbitBody(cx, cy, r, aspect, amount) {
     const rr = r * (1 - t * 0.78);
 
     fill(
-      lerp(26, 76, amount),
-      lerp(42, 92, amount),
-      lerp(40, 78, amount),
+      lerp(BOTH_V03_STYLE.palette.bodyFrom[0], BOTH_V03_STYLE.palette.bodyTo[0], amount),
+      lerp(BOTH_V03_STYLE.palette.bodyFrom[1], BOTH_V03_STYLE.palette.bodyTo[1], amount),
+      lerp(BOTH_V03_STYLE.palette.bodyFrom[2], BOTH_V03_STYLE.palette.bodyTo[2], amount),
       28 - t * 1.7
     );
 
@@ -176,27 +219,27 @@ function drawOrbitLines(cx, cy, r, aspect, amount) {
     const t = i / (count - 1);
     const rr = r * (0.16 + t * 0.94);
 
-    const pulse = sin(frameCount * 0.015 + i * 0.5) * amount * 2.8;
-    const alpha = (1 - t * 0.45) * (24 + amount * 48);
+    const pulse = sin(frameCount * 0.015 * BOTH_V03_STYLE.orbitalMotionScale + i * 0.5) * amount * 2.8;
+    const alpha = (1 - t * 0.45) * (24 + amount * 48) * BOTH_V03_STYLE.orbitAlphaScale;
 
-    stroke(220, 226, 205, alpha);
+    stroke(...BOTH_V03_STYLE.palette.orbit, alpha);
     strokeWeight(lerp(1.1, 0.35, t));
 
     beginShape();
 
-    for (let a = 0; a < TWO_PI + 0.02; a += TWO_PI / 160) {
+    for (let a = 0; a < TWO_PI + 0.02; a += TWO_PI / BOTH_V03_STYLE.orbitSampleCount) {
       const n = noise(
         cos(a) * 1.4 + i * 0.17,
         sin(a) * 1.4,
-        frameCount * 0.002
+        frameCount * 0.002 * BOTH_V03_STYLE.orbitalMotionScale
       );
 
       const wave = map(n, 0, 1, 0.97, 1.035);
 
-      curveVertex(
-        cx + cos(a) * (rr * wave + pulse),
-        cy + sin(a) * (rr * wave + pulse) * aspect
-      );
+      const px = cx + cos(a) * (rr * wave + pulse);
+      const py = cy + sin(a) * (rr * wave + pulse) * aspect;
+      if (BOTH_V03_STYLE.facetedOrbit) vertex(px, py);
+      else curveVertex(px, py);
     }
 
     endShape(CLOSE);
@@ -207,21 +250,34 @@ function drawStarCurrent(cx, cy, r, aspect, amount) {
   noStroke();
 
   for (const star of stars) {
-    star.angle += star.speed * (0.4 + amount * 1.8);
+    star.angle += star.speed * (0.4 + amount * 1.8) * BOTH_V03_STYLE.orbitalMotionScale;
 
     const localRadius = star.radius * amount * star.depth;
     const px = cx + cos(star.angle) * localRadius;
     const py = cy + sin(star.angle) * localRadius * aspect;
 
-    fill(238, 231, 198, star.alpha * amount * star.depth);
-    circle(px, py, star.size * star.depth);
+    if (BOTH_V03_STYLE.dustTrails && amount > 0.08) {
+      const previousAngle = star.angle - star.speed * (10 + amount * 24);
+      stroke(...BOTH_V03_STYLE.palette.dust, star.alpha * amount * star.depth * 0.24 * BOTH_V03_STYLE.dustAlphaScale);
+      strokeWeight(max(0.35, star.size * star.depth * 0.32));
+      line(
+        cx + cos(previousAngle) * localRadius,
+        cy + sin(previousAngle) * localRadius * aspect,
+        px,
+        py
+      );
+    }
+
+    noStroke();
+    fill(...BOTH_V03_STYLE.palette.dust, star.alpha * amount * star.depth * BOTH_V03_STYLE.dustAlphaScale);
+    circle(px, py, star.size * star.depth * BOTH_V03_STYLE.dustSizeScale);
   }
 }
 
 function drawReturnLines(cx, cy, r, aspect, amount) {
   if (amount < 0.28) return;
 
-  stroke(213, 220, 196, 28 * amount);
+  stroke(...BOTH_V03_STYLE.palette.returnLine, 28 * amount);
   strokeWeight(0.6);
   noFill();
 
@@ -276,31 +332,36 @@ function drawMemoryRings() {
 
     drawingContext.save();
     drawingContext.filter = "blur(1.4px)";
+    drawingContext.shadowBlur = BOTH_V03_STYLE.memoryGlow * (0.4 + flash * 0.6);
+    drawingContext.shadowColor = `rgba(${BOTH_V03_STYLE.palette.memory.join(",")},0.55)`;
 
     noFill();
 
     for (let ring = 0; ring < 4; ring++) {
       const rt = ring / 3;
-      const rr = memory.radius * (0.9 + rt * 0.18 + expansion * 0.06);
+      const rr = memory.radius * (0.9 + rt * 0.18 + expansion * 0.06 * BOTH_V03_STYLE.memoryExpansionScale);
 
-      stroke(238, 232, 198, fade * (36 - ring * 5) + flash * 40);
+      stroke(
+        ...BOTH_V03_STYLE.palette.memory,
+        (fade * (36 - ring * 5) + flash * 40) * BOTH_V03_STYLE.memoryAlphaScale
+      );
       strokeWeight(0.7 + flash * 0.6);
 
       beginShape();
 
-      for (let a = 0; a < TWO_PI + 0.02; a += TWO_PI / 170) {
+      for (let a = 0; a < TWO_PI + 0.02; a += TWO_PI / BOTH_V03_STYLE.memorySampleCount) {
         const n = noise(
           memory.seed + cos(a) * 1.7,
           memory.seed + sin(a) * 1.7,
-          ring * 0.24 + frameCount * 0.0008
+          ring * 0.24 + frameCount * 0.0008 * BOTH_V03_STYLE.memoryNoiseMotionScale
         );
 
         const wobble = map(n, 0, 1, 0.985, 1.03);
 
-        curveVertex(
-          cos(a) * rr * wobble,
-          sin(a) * rr * memory.aspect * wobble
-        );
+        const px = cos(a) * rr * wobble;
+        const py = sin(a) * rr * memory.aspect * wobble;
+        if (BOTH_V03_STYLE.facetedMemory) vertex(px, py);
+        else curveVertex(px, py);
       }
 
       endShape(CLOSE);
@@ -314,13 +375,11 @@ function drawMemoryRings() {
       const a = (s / memory.starCount) * TWO_PI + memory.seed * 0.01;
       const rr = memory.radius * randomSeeded(s + memory.seed, 0.82, 1.15);
 
-      const sparkle = sin(frameCount * 0.04 + s * 1.7) * 0.5 + 0.5;
+      const sparkle = sin(frameCount * 0.04 * BOTH_V03_STYLE.memorySparkleSpeedScale + s * 1.7) * 0.5 + 0.5;
 
       fill(
-        246,
-        238,
-        198,
-        fade * (38 + sparkle * 28) + flash * 60
+        ...BOTH_V03_STYLE.palette.memoryDust,
+        (fade * (38 + sparkle * 28) + flash * 60) * BOTH_V03_STYLE.memoryAlphaScale
       );
 
       circle(
@@ -350,7 +409,7 @@ function drawHandDisplay() {
     const points = hand.keypoints;
 
     if (handDisplayMode === 2) {
-      stroke(230, 226, 204, 58);
+      stroke(...BOTH_V03_STYLE.palette.handSkeleton, 58);
       strokeWeight(0.75);
       noFill();
 
@@ -360,7 +419,7 @@ function drawHandDisplay() {
     }
 
     noStroke();
-    fill(246, 238, 198, 92);
+    fill(...BOTH_V03_STYLE.palette.handPoint, 92);
     const visible = handDisplayMode === 1 ? [8] : points.map((_, index) => index);
 
     for (const index of visible) {

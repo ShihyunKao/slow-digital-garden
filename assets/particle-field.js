@@ -73,8 +73,10 @@
     return [x0, height / 2];
   }
 
-  function drawBothStageField(ctx, time, width, height, seed) {
+  function drawBothStageField(ctx, time, width, height, seed, canvas) {
     const rand = mulberry32(seed * 83 + 29);
+    const amberOrbit = canvas.dataset.variant === "amber-orbit";
+    const frozenConstellation = canvas.dataset.variant === "frozen-constellation";
     const rawBreath = reduceMotion ? .62 : (Math.sin(time * .42 - .7) + 1) * .5;
     const breath = rawBreath * rawBreath * (3 - 2 * rawBreath);
     const centreY = height * .5;
@@ -109,11 +111,25 @@
       const centreLight = 1 - Math.abs(lane);
       const lineAlpha = .025 + centreLight * .075 + rand() * .035;
       const contourGradient = ctx.createLinearGradient(leftX, centreY, rightX, centreY);
-      contourGradient.addColorStop(0, `rgba(101,215,196,${lineAlpha * .42})`);
-      contourGradient.addColorStop(.18, `rgba(101,215,196,${lineAlpha * .78})`);
-      contourGradient.addColorStop(.5, `rgba(101,215,196,${lineAlpha * 1.22})`);
-      contourGradient.addColorStop(.82, `rgba(101,215,196,${lineAlpha * .78})`);
-      contourGradient.addColorStop(1, `rgba(101,215,196,${lineAlpha * .42})`);
+      if (amberOrbit) {
+        contourGradient.addColorStop(0, `rgba(104,25,30,${lineAlpha * .68})`);
+        contourGradient.addColorStop(.18, `rgba(168,66,35,${lineAlpha * .88})`);
+        contourGradient.addColorStop(.5, `rgba(240,169,61,${lineAlpha * 1.3})`);
+        contourGradient.addColorStop(.82, `rgba(168,66,35,${lineAlpha * .88})`);
+        contourGradient.addColorStop(1, `rgba(104,25,30,${lineAlpha * .68})`);
+      } else if (frozenConstellation) {
+        contourGradient.addColorStop(0, `rgba(105,96,121,${lineAlpha * .28})`);
+        contourGradient.addColorStop(.18, `rgba(142,130,160,${lineAlpha * .46})`);
+        contourGradient.addColorStop(.5, `rgba(194,184,207,${lineAlpha * .68})`);
+        contourGradient.addColorStop(.82, `rgba(142,130,160,${lineAlpha * .46})`);
+        contourGradient.addColorStop(1, `rgba(105,96,121,${lineAlpha * .28})`);
+      } else {
+        contourGradient.addColorStop(0, `rgba(101,215,196,${lineAlpha * .42})`);
+        contourGradient.addColorStop(.18, `rgba(101,215,196,${lineAlpha * .78})`);
+        contourGradient.addColorStop(.5, `rgba(101,215,196,${lineAlpha * 1.22})`);
+        contourGradient.addColorStop(.82, `rgba(101,215,196,${lineAlpha * .78})`);
+        contourGradient.addColorStop(1, `rgba(101,215,196,${lineAlpha * .42})`);
+      }
       ctx.strokeStyle = contourGradient;
       ctx.lineWidth = rand() > .86 ? .95 : .4 + rand() * .35;
       ctx.stroke();
@@ -136,7 +152,11 @@
         if (sample === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       }
-      ctx.strokeStyle = `rgba(101,215,196,${.025 + gatherStrength * .055})`;
+      ctx.strokeStyle = amberOrbit
+        ? `rgba(139,45,32,${.035 + gatherStrength * .07})`
+        : frozenConstellation
+          ? `rgba(158,145,177,${.018 + gatherStrength * .032})`
+          : `rgba(101,215,196,${.025 + gatherStrength * .055})`;
       ctx.lineWidth = filament % 5 === 0 ? .72 : .38;
       ctx.stroke();
     }
@@ -163,20 +183,32 @@
       const [previousX, previousY] = particlePoint(previousTravel);
       const centrePresence = .42 + Math.sin(travel * Math.PI) * .58;
       const bright = (.13 + rand() * .45) * centrePresence;
-      ctx.strokeStyle = `rgba(101,215,196,${bright * .12})`;
+      ctx.strokeStyle = amberOrbit
+        ? `rgba(215,109,38,${bright * .15})`
+        : frozenConstellation
+          ? `rgba(168,155,186,${bright * .07})`
+          : `rgba(101,215,196,${bright * .12})`;
       ctx.lineWidth = 2.4 + rand() * 1.3;
       ctx.beginPath();
       ctx.moveTo(previousX, previousY);
       ctx.lineTo(x, y);
       ctx.stroke();
-      ctx.strokeStyle = `rgba(101,215,196,${bright})`;
+      ctx.strokeStyle = amberOrbit
+        ? `rgba(244,178,68,${bright})`
+        : frozenConstellation
+          ? `rgba(194,184,207,${bright * .58})`
+          : `rgba(101,215,196,${bright})`;
       ctx.lineWidth = .35 + rand() * .65;
       ctx.beginPath();
       ctx.moveTo(previousX, previousY);
       ctx.lineTo(x, y);
       ctx.stroke();
       if (particle % 11 === 0) {
-        ctx.fillStyle = `rgba(232,225,216,${.28 + rand() * .45})`;
+        ctx.fillStyle = amberOrbit
+          ? `rgba(255,218,125,${.32 + rand() * .5})`
+          : frozenConstellation
+            ? `rgba(216,207,225,${.17 + rand() * .28})`
+            : `rgba(232,225,216,${.28 + rand() * .45})`;
         ctx.fillRect(x - .7, y - .7, 1.4, 1.4);
       }
     }
@@ -187,14 +219,14 @@
     [leftX, rightX].forEach((x, index) => {
       const pulse = 5 + breath * 9 + index * 1.5;
       const glow = ctx.createRadialGradient(x, centreY, 0, x, centreY, pulse * 3.4);
-      glow.addColorStop(0, "rgba(232,225,216,.55)");
-      glow.addColorStop(.16, "rgba(101,215,196,.28)");
-      glow.addColorStop(1, "rgba(101,215,196,0)");
+      glow.addColorStop(0, amberOrbit ? "rgba(255,223,140,.62)" : frozenConstellation ? "rgba(220,212,228,.34)" : "rgba(232,225,216,.55)");
+      glow.addColorStop(.16, amberOrbit ? "rgba(225,123,38,.34)" : frozenConstellation ? "rgba(151,139,171,.14)" : "rgba(101,215,196,.28)");
+      glow.addColorStop(1, amberOrbit ? "rgba(118,28,30,0)" : frozenConstellation ? "rgba(105,96,121,0)" : "rgba(101,215,196,0)");
       ctx.fillStyle = glow;
       ctx.beginPath();
       ctx.arc(x, centreY, pulse * 3.4, 0, TAU);
       ctx.fill();
-      ctx.fillStyle = "rgba(232,225,216,.78)";
+      ctx.fillStyle = amberOrbit ? "rgba(255,226,151,.88)" : frozenConstellation ? "rgba(216,208,224,.52)" : "rgba(232,225,216,.78)";
       ctx.beginPath();
       ctx.arc(x, centreY, 1.5, 0, TAU);
       ctx.fill();
@@ -1143,7 +1175,7 @@ function drawTrailMaterial(ctx, type, time, width, height, seed) {
     }
 
     if (!compact && type === "both") {
-      drawBothStageField(ctx, time, width, height, seed);
+      drawBothStageField(ctx, time, width, height, seed, canvas);
       return;
     }
 

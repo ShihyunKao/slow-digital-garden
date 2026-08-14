@@ -17,6 +17,8 @@
     "both-hands/v01-breathing-garden": ["03", "BOTH HANDS", "01.00", "Breathing Garden", "both-hands", "v01", "P HAND DISPLAY · R RESET · ? HELP"],
     "both-hands/v02-breathing-cosmos": ["03", "BOTH HANDS", "02.00", "Breathing Cosmos", "both-hands", "v02", "P HAND DISPLAY · R RESET · ? HELP"],
     "both-hands/v03-cosmic-memory": ["03", "BOTH HANDS", "03.00", "Cosmic Memory", "both-hands", "v03", "P HAND DISPLAY · R RESET · ? HELP"],
+    "both-hands/v03-cosmic-memory/variants/v03.01": ["03", "BOTH HANDS", "03.01", "Amber Orbit", "both-hands", "v03-amber-orbit", "P HAND DISPLAY · R RESET · ? HELP", "../../../../"],
+    "both-hands/v03-cosmic-memory/variants/v03.02": ["03", "BOTH HANDS", "03.02", "Frozen Constellation", "both-hands", "v03-frozen-constellation", "P HAND DISPLAY · R RESET · ? HELP", "../../../../"],
     "both-hands/v04-cosmic-memory-refined": ["03", "BOTH HANDS", "04.00", "Cosmic Memory Refined", "both-hands", "v04", "P HAND DISPLAY · R RESET · ? HELP"],
     "both-hands/v05-breath-quality": ["03", "BOTH HANDS", "05.00", "Breath Quality", "both-hands", "v05", "P HAND DISPLAY · R RESET · ? HELP"],
     "both-hands/v06-session-archive": ["03", "BOTH HANDS", "06.00", "Session Archive", "both-hands", "v06", "P HAND DISPLAY · R RESET · ? HELP"],
