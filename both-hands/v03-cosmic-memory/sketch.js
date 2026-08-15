@@ -18,6 +18,10 @@ let amberSources = null;
 let amberSpawnAccumulator = 0;
 let amberInputPrimed = false;
 let amberActivation = 0;
+let crystalSegments = [];
+let crystalCaptureCounter = 0;
+let crystalGrowthActive = false;
+let crystalGrowthFrames = 0;
 
 let wasOpen = false;
 let memoryStep = 0;
@@ -55,6 +59,11 @@ const BOTH_V03_DEFAULT_STYLE = {
   memoryNoiseMotionScale: 1,
   memoryExpansionScale: 1,
   memorySparkleSpeedScale: 1,
+  memoryFadeInFrames: 1,
+  memoryFlashScale: 1,
+  memoryStartScale: 1,
+  memoryDustSizeScale: 1,
+  responsiveFieldScale: false,
   particleSystem: false,
   particleLimit: 0,
   particleSeedCount: 0,
@@ -68,7 +77,17 @@ const BOTH_V03_DEFAULT_STYLE = {
   memoryParticleCount: 0,
   memoryOpenThreshold: 0.82,
   memoryReturnThreshold: 0.42,
-  particleCoreCount: 0
+  particleCoreCount: 0,
+  crystalConnections: false,
+  crystalJoinedThreshold: 0.5,
+  crystalCaptureInterval: 12,
+  crystalSegmentsPerCapture: 2,
+  crystalSegmentLimit: 2400,
+  crystalProjectionScale: 1.35,
+  crystalResponsiveScale: false,
+  crystalGrowthFrames: 110,
+  crystalLineAlpha: 24,
+  crystalLineWeight: 0.65
 };
 
 const BOTH_V03_VARIANT_STYLE = window.BOTH_V03_VARIANT || {};
@@ -124,8 +143,10 @@ function draw() {
 
   if (showHelp) {
     wasOpen = false;
+    crystalGrowthActive = false;
   } else {
     detectBreathMemory();
+    if (BOTH_V03_STYLE.crystalConnections) updateCrystalGrowth();
   }
 
   if (BOTH_V03_STYLE.particleSystem) {
@@ -134,7 +155,12 @@ function draw() {
   } else {
     drawCosmicField(breath);
   }
-  drawMemoryRings();
+  if (BOTH_V03_STYLE.crystalConnections) {
+    drawMemoryRings();
+    drawCrystalConnections();
+  } else {
+    drawMemoryRings();
+  }
   if (BOTH_V03_STYLE.particleSystem) {
     drawAmberParticleCore(breath);
   }
@@ -165,6 +191,11 @@ function detectBreathMemory() {
     previousBreath >= BOTH_V03_STYLE.memoryReturnThreshold
   ) {
     addMemory();
+    if (BOTH_V03_STYLE.crystalConnections) {
+      crystalGrowthActive = true;
+      crystalGrowthFrames = 0;
+      captureCrystalConnections();
+    }
     wasOpen = false;
   }
 }
@@ -201,15 +232,16 @@ function addMemory() {
 function drawCosmicField(amount) {
   const cx = width / 2;
   const cy = height / 2 + 20;
+  const fieldScale = getResponsiveFieldScale();
 
   const eased = easeInOutCubic(amount);
-  const radius = lerp(74, 278, eased);
+  const radius = lerp(74, 278, eased) * fieldScale;
   const aspect = lerp(0.36, 0.64, eased);
 
   drawCentralGlow(cx, cy, radius, aspect, eased);
   drawOrbitBody(cx, cy, radius, aspect, eased);
   drawOrbitLines(cx, cy, radius, aspect, eased);
-  drawStarCurrent(cx, cy, radius, aspect, eased);
+  drawStarCurrent(cx, cy, radius, aspect, eased, fieldScale);
   drawReturnLines(cx, cy, radius, aspect, eased);
 }
 
@@ -500,13 +532,13 @@ function drawOrbitLines(cx, cy, r, aspect, amount) {
   }
 }
 
-function drawStarCurrent(cx, cy, r, aspect, amount) {
+function drawStarCurrent(cx, cy, r, aspect, amount, fieldScale = 1) {
   noStroke();
 
   for (const star of stars) {
     star.angle += star.speed * (0.4 + amount * 1.8) * BOTH_V03_STYLE.orbitalMotionScale;
 
-    const localRadius = star.radius * amount * star.depth;
+    const localRadius = star.radius * amount * star.depth * fieldScale;
     const px = cx + cos(star.angle) * localRadius;
     const py = cy + sin(star.angle) * localRadius * aspect;
 
@@ -560,6 +592,109 @@ function drawReturnLines(cx, cy, r, aspect, amount) {
   }
 }
 
+function captureCrystalConnections() {
+  if (showHelp || hands.length < 2) return;
+
+  const fingertipIndices = [4, 8, 12, 16, 20];
+  const orderedHands = hands
+    .slice(0, 2)
+    .map(hand => ({
+      hand,
+      centreX: hand.keypoints.reduce((sum, point) => sum + point.x, 0) / hand.keypoints.length
+    }))
+    .sort((a, b) => a.centreX - b.centreX)
+    .map(item => item.hand);
+
+  const leftTips = fingertipIndices.map(index => orderedHands[0].keypoints[index]);
+  const rightTips = fingertipIndices.map(index => orderedHands[1].keypoints[index]);
+  const allTips = [...leftTips, ...rightTips];
+  const handCentre = allTips.reduce((centre, point) => ({
+    x: centre.x + point.x / allTips.length,
+    y: centre.y + point.y / allTips.length
+  }), { x: 0, y: 0 });
+  const fieldCentre = { x: width / 2, y: height / 2 + 20 };
+  const viewportProjection = BOTH_V03_STYLE.crystalResponsiveScale
+    ? map(constrain(min(width, height), 700, 1800), 700, 1800, 1, 1.22)
+    : 1;
+  const projectionScale = BOTH_V03_STYLE.crystalProjectionScale * viewportProjection;
+  const project = point => ({
+    x: fieldCentre.x + (point.x - handCentre.x) * projectionScale,
+    y: fieldCentre.y + (point.y - handCentre.y) * projectionScale
+  });
+
+  for (let link = 0; link < BOTH_V03_STYLE.crystalSegmentsPerCapture; link++) {
+    const leftIndex = (crystalCaptureCounter * 2 + link) % leftTips.length;
+    const rightIndex = (crystalCaptureCounter * 3 + link * 2 + 1) % rightTips.length;
+    const start = project(leftTips[leftIndex]);
+    const end = project(rightTips[rightIndex]);
+    crystalSegments.push({
+      x1: start.x,
+      y1: start.y,
+      x2: end.x,
+      y2: end.y,
+      born: frameCount,
+      alpha: BOTH_V03_STYLE.crystalLineAlpha * randomSeeded(
+        crystalCaptureCounter * 17 + link * 31 + 503,
+        0.62,
+        1
+      )
+    });
+  }
+  crystalCaptureCounter++;
+
+  if (crystalSegments.length > BOTH_V03_STYLE.crystalSegmentLimit) {
+    crystalSegments.splice(0, crystalSegments.length - BOTH_V03_STYLE.crystalSegmentLimit);
+  }
+}
+
+function updateCrystalGrowth() {
+  if (!crystalGrowthActive) return;
+
+  if (hands.length < 2 || targetBreath > BOTH_V03_STYLE.crystalJoinedThreshold) {
+    crystalGrowthActive = false;
+    crystalGrowthFrames = 0;
+    return;
+  }
+
+  crystalGrowthFrames++;
+  if (crystalGrowthFrames % BOTH_V03_STYLE.crystalCaptureInterval === 0) {
+    captureCrystalConnections();
+  }
+}
+
+function drawCrystalConnections() {
+  if (crystalSegments.length === 0) return;
+
+  push();
+  blendMode(BLEND);
+  strokeWeight(BOTH_V03_STYLE.crystalLineWeight);
+  noFill();
+
+  for (const segment of crystalSegments) {
+    const growth = easeOutCubic(constrain(
+      (frameCount - segment.born) / BOTH_V03_STYLE.crystalGrowthFrames,
+      0,
+      1
+    ));
+    const endX = lerp(segment.x1, segment.x2, growth);
+    const endY = lerp(segment.y1, segment.y2, growth);
+
+    stroke(...BOTH_V03_STYLE.palette.memory, segment.alpha * (0.72 + growth * 0.28));
+    line(segment.x1, segment.y1, endX, endY);
+
+    if (growth >= 1) {
+      noStroke();
+      fill(...BOTH_V03_STYLE.palette.memoryDust, segment.alpha * 0.42);
+      circle(segment.x1, segment.y1, 1.25);
+      circle(segment.x2, segment.y2, 1.25);
+      strokeWeight(BOTH_V03_STYLE.crystalLineWeight);
+      noFill();
+    }
+  }
+
+  pop();
+}
+
 function drawMemoryRings() {
   if (BOTH_V03_STYLE.particleSystem) {
     drawAmberMemoryParticles();
@@ -584,6 +719,13 @@ function drawMemoryRings() {
     const fade = 1 - easeInCubic(t);
     const expansion = easeOutCubic(constrain(t * 1.4, 0, 1));
     const flash = memory.flash;
+    const displayRadius = memory.radius * getResponsiveFieldScale();
+    const formation = easeInOutCubic(constrain(
+      memory.age / BOTH_V03_STYLE.memoryFadeInFrames,
+      0,
+      1
+    ));
+    const formationScale = lerp(BOTH_V03_STYLE.memoryStartScale, 1, formation);
 
     push();
     translate(cx, cy);
@@ -598,13 +740,17 @@ function drawMemoryRings() {
 
     for (let ring = 0; ring < 4; ring++) {
       const rt = ring / 3;
-      const rr = memory.radius * (0.9 + rt * 0.18 + expansion * 0.06 * BOTH_V03_STYLE.memoryExpansionScale);
+      const rr = displayRadius
+        * (0.9 + rt * 0.18 + expansion * 0.06 * BOTH_V03_STYLE.memoryExpansionScale)
+        * formationScale;
 
       stroke(
         ...BOTH_V03_STYLE.palette.memory,
-        (fade * (36 - ring * 5) + flash * 40) * BOTH_V03_STYLE.memoryAlphaScale
+        (fade * (36 - ring * 5) + flash * 40 * BOTH_V03_STYLE.memoryFlashScale)
+          * BOTH_V03_STYLE.memoryAlphaScale
+          * formation
       );
-      strokeWeight(0.7 + flash * 0.6);
+      strokeWeight(0.7 + flash * 0.6 * BOTH_V03_STYLE.memoryFlashScale);
 
       beginShape();
 
@@ -632,24 +778,34 @@ function drawMemoryRings() {
 
     for (let s = 0; s < memory.starCount; s++) {
       const a = (s / memory.starCount) * TWO_PI + memory.seed * 0.01;
-      const rr = memory.radius * randomSeeded(s + memory.seed, 0.82, 1.15);
+      const rr = displayRadius
+        * randomSeeded(s + memory.seed, 0.82, 1.15)
+        * formationScale;
 
       const sparkle = sin(frameCount * 0.04 * BOTH_V03_STYLE.memorySparkleSpeedScale + s * 1.7) * 0.5 + 0.5;
 
       fill(
         ...BOTH_V03_STYLE.palette.memoryDust,
-        (fade * (38 + sparkle * 28) + flash * 60) * BOTH_V03_STYLE.memoryAlphaScale
+        (fade * (38 + sparkle * 28) + flash * 60 * BOTH_V03_STYLE.memoryFlashScale)
+          * BOTH_V03_STYLE.memoryAlphaScale
+          * formation
       );
 
       circle(
         cos(a) * rr,
         sin(a) * rr * memory.aspect,
-        randomSeeded(s + 200, 1.8, 4.6) + sparkle * 1.2
+        (randomSeeded(s + 200, 1.8, 4.6) + sparkle * 1.2)
+          * BOTH_V03_STYLE.memoryDustSizeScale
       );
     }
 
     pop();
   }
+}
+
+function getResponsiveFieldScale() {
+  if (!BOTH_V03_STYLE.responsiveFieldScale) return 1;
+  return map(constrain(min(width, height), 700, 1800), 700, 1800, 1, 1.45);
 }
 
 function drawAmberMemoryParticles() {
@@ -984,6 +1140,12 @@ function keyPressed() {
     memories = [];
     wasOpen = false;
     memoryStep = 0;
+    if (BOTH_V03_STYLE.crystalConnections) {
+      crystalSegments = [];
+      crystalCaptureCounter = 0;
+      crystalGrowthActive = false;
+      crystalGrowthFrames = 0;
+    }
     if (BOTH_V03_STYLE.particleSystem) {
       amberParticles = [];
       amberSpawnAccumulator = 0;

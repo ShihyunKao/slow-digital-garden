@@ -159,10 +159,10 @@
             {
               code: "v03-frozen-constellation", displayCode: "v03.02", path: "v03-cosmic-memory/variants/v03.02", title: "Frozen Constellation",
               variantStyle: "frozen-constellation",
-              statement: "The same two-hand breath settles into a pale violet field of restrained, crystalline orbital memories.",
-              archiveReading: "Each completed breath still records one memory in the same eight-step sequence. Motion is visually slowed and each orbit settles as a low-contrast crystalline trace.",
-              instructions: [["Begin", "Allow the camera and bring hands together."], ["Expand", "Open both hands fully until the violet field expands."], ["Return", "Return to the centre to leave one crystalline memory trace."]],
-              meaning: ["cycle / wide stretch + return", "palette / mist violet", "rings / crystalline residence", "motion / quiet suspension"]
+              statement: "The same two-hand breath settles into a pale violet field where each completed expansion and return grows a persistent crystalline mesh.",
+              archiveReading: "Each completed breath still records one memory in the same eight-step sequence. A new group of straight fingertip connections is added only after the hands fully open and return to the centre.",
+              instructions: [["Begin", "Allow the camera and bring hands together."], ["Expand", "Open both hands fully until the violet field expands."], ["Crystallise", "Complete the return to the centre to grow the next geometric connections."]],
+              meaning: ["cycle / wide stretch + return", "trigger / completed gesture", "lines / fingertip connections", "memory / persistent crystal mesh"]
             }
           ]
         },

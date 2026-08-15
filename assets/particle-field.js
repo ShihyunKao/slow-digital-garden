@@ -3,6 +3,7 @@
   const TAU = Math.PI * 2;
   const openStageStates = new WeakMap();
   const bothFieldStates = new WeakMap();
+  const frozenStageStates = new WeakMap();
 
   function mulberry32(seed) {
     return () => {
@@ -210,6 +211,81 @@
             ? `rgba(216,207,225,${.17 + rand() * .28})`
             : `rgba(232,225,216,${.28 + rand() * .45})`;
         ctx.fillRect(x - .7, y - .7, 1.4, 1.4);
+      }
+    }
+
+    if (frozenConstellation) {
+      let crystalState = frozenStageStates.get(canvas);
+      if (!crystalState || crystalState.width !== width || crystalState.height !== height) {
+        const crystalRand = mulberry32(seed * 137 + 73);
+        const anchors = Array.from({ length: 28 }, () => {
+          const angle = crystalRand() * TAU;
+          const radius = Math.sqrt(crystalRand());
+          return [
+            width * .5 + Math.cos(angle) * width * .26 * radius,
+            centreY + Math.sin(angle) * height * .31 * radius
+          ];
+        });
+        const links = Array.from({ length: 190 }, () => {
+          const start = Math.floor(crystalRand() * anchors.length);
+          let end = Math.floor(crystalRand() * anchors.length);
+          if (end === start) end = (end + 5) % anchors.length;
+          return [start, end, .075 + crystalRand() * .075];
+        });
+        crystalState = {
+          width,
+          height,
+          anchors,
+          links,
+          growth: 18,
+          targetGrowth: 18,
+          wasOpen: false,
+          lastTime: time
+        };
+        frozenStageStates.set(canvas, crystalState);
+      }
+
+      const elapsed = Math.max(0, Math.min(.1, time - crystalState.lastTime));
+      crystalState.lastTime = time;
+      if (breath > .82) crystalState.wasOpen = true;
+      if (crystalState.wasOpen && breath < .42) {
+        crystalState.targetGrowth = Math.min(
+          crystalState.links.length,
+          crystalState.targetGrowth + 3
+        );
+        crystalState.wasOpen = false;
+      }
+      crystalState.growth = Math.min(
+        crystalState.targetGrowth,
+        crystalState.growth + elapsed * 5.4
+      );
+
+      const completedLinks = Math.min(crystalState.links.length, Math.floor(crystalState.growth));
+      const partialGrowth = crystalState.growth - completedLinks;
+      ctx.globalCompositeOperation = "source-over";
+      ctx.lineWidth = .72;
+      for (let link = 0; link < completedLinks; link++) {
+        const [startIndex, endIndex, alpha] = crystalState.links[link];
+        const start = crystalState.anchors[startIndex];
+        const end = crystalState.anchors[endIndex];
+        ctx.strokeStyle = `rgba(196,185,208,${alpha})`;
+        ctx.beginPath();
+        ctx.moveTo(start[0], start[1]);
+        ctx.lineTo(end[0], end[1]);
+        ctx.stroke();
+      }
+      if (completedLinks < crystalState.links.length && partialGrowth > 0) {
+        const [startIndex, endIndex, alpha] = crystalState.links[completedLinks];
+        const start = crystalState.anchors[startIndex];
+        const end = crystalState.anchors[endIndex];
+        ctx.strokeStyle = `rgba(205,195,216,${alpha * .9})`;
+        ctx.beginPath();
+        ctx.moveTo(start[0], start[1]);
+        ctx.lineTo(
+          start[0] + (end[0] - start[0]) * partialGrowth,
+          start[1] + (end[1] - start[1]) * partialGrowth
+        );
+        ctx.stroke();
       }
     }
 
