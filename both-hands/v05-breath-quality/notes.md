@@ -4,9 +4,9 @@
 
 How can the quality of a slow two-hand stretching gesture influence the visual memory it leaves behind?
 
-## Change from V04
+## Change from V03.00
 
-V04 refined the Cosmic Memory interaction and interface. V05 makes each memory ring different by measuring qualities within a complete opening-and-return cycle.
+V03.00 refined the Cosmic Memory interaction and interface. V05 makes each memory ring different by measuring qualities within a complete opening-and-return cycle.
 
 ## Interaction
 

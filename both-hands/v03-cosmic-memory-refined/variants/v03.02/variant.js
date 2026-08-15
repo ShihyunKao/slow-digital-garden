@@ -1,5 +1,5 @@
 window.BOTH_V03_VARIANT = {
-  id: "v03.01",
+  id: "v03.02",
   name: "Amber Orbit",
   palette: {
     glowOuter: [126, 25, 27],
@@ -15,6 +15,7 @@ window.BOTH_V03_VARIANT = {
     handPoint: [255, 207, 112]
   },
   ambientParticleCount: 0,
+  particleArtworkScale: 1.9,
   particleSystem: true,
   particleLimit: 1900,
   particleSeedCount: 300,

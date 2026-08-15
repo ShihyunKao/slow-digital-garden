@@ -1,9 +1,9 @@
-# Both Hands V04: Cosmic Memory — Refined
+# Both Hands V03.00: Cosmic Memory Refined
 
 ## Purpose
-This version refines V03 in response to tutor feedback. It preserves the successful cosmic-memory interaction while making the physical range clearer and the interface quieter.
+This is the primary V03 study. It preserves the successful cosmic-memory interaction while making the physical range clearer and the interface quieter.
 
-## Changes from V03
+## Refinements
 - The field contracts to a much smaller centre when hands are close together.
 - Its maximum radius is reduced so the full form remains inside the frame.
 - The sketch opens with a dedicated help screen, so instructions do not remain over the artwork.

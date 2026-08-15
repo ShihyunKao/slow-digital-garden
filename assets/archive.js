@@ -142,14 +142,21 @@
           meaning: ["distance / hands apart", "scale / field expansion", "ripples / breathing contours", "particles / slow orbital drift"]
         },
         {
-          code: "v03", displayCode: "v03.00", path: "v03-cosmic-memory", title: "Cosmic Memory",
-          statement: "A two-hand breathing gesture becomes a memory of expansion and return.",
-          archiveReading: "Each completed breath becomes an orbit-like memory. Across eight cycles, the rings move from the outer field towards the centre.",
-          instructions: [["Begin", "Allow the camera and bring hands together."], ["Expand", "Open both hands fully until the field expands."], ["Return", "Return to the centre to leave one memory ring."]],
-          meaning: ["cycle / wide stretch + return", "radius / outer-to-inner order", "rings / one breath memory", "stars / surrounding constellation"],
+          code: "v03", displayCode: "v03.00", path: "v03-cosmic-memory-refined", title: "Cosmic Memory Refined",
+          statement: "A slow two-hand movement leaves a sequence of orbit-like memories.",
+          archiveReading: "Each completed stretch becomes one orbit-like memory. Across eight cycles, the archive moves steadily from the outer field towards its centre.",
+          instructions: [["Begin", "Move both hands close together."], ["Stretch", "Stretch slowly apart until the field fully opens."], ["Return", "Return to the centre to leave one memory ring."]],
+          meaning: ["cycle / wide stretch + return", "radius / outer-to-inner order", "orbits / one memory ring", "stars / surrounding constellation"],
           variants: [
             {
-              code: "v03-amber-orbit", displayCode: "v03.01", path: "v03-cosmic-memory/variants/v03.01", title: "Amber Orbit",
+              code: "v03-cosmic-memory", displayCode: "v03.01", path: "v03-cosmic-memory-refined/variants/v03.01", title: "Cosmic Memory",
+              statement: "A two-hand breathing gesture becomes a memory of expansion and return.",
+              archiveReading: "Each completed breath becomes an orbit-like memory. Across eight cycles, the rings move from the outer field towards the centre.",
+              instructions: [["Begin", "Allow the camera and bring hands together."], ["Expand", "Open both hands fully until the field expands."], ["Return", "Return to the centre to leave one memory ring."]],
+              meaning: ["cycle / wide stretch + return", "radius / outer-to-inner order", "rings / one breath memory", "stars / surrounding constellation"]
+            },
+            {
+              code: "v03-amber-orbit", displayCode: "v03.02", path: "v03-cosmic-memory-refined/variants/v03.02", title: "Amber Orbit",
               variantStyle: "amber-orbit",
               statement: "Two hands become gravitational sources, gathering tiny gold and dark-red particles into a slowly turning microscopic nebula.",
               archiveReading: "Each completed breath still enters the same eight-step sequence. The memory is held by long-lived orbital particles rather than drawn lines.",
@@ -157,21 +164,14 @@
               meaning: ["cycle / wide stretch + return", "source / two-hand gravity", "material / gold + dark-red particles", "memory / long-lived orbital drift"]
             },
             {
-              code: "v03-frozen-constellation", displayCode: "v03.02", path: "v03-cosmic-memory/variants/v03.02", title: "Frozen Constellation",
+              code: "v03-frozen-constellation", displayCode: "v03.03", path: "v03-cosmic-memory-refined/variants/v03.03", title: "Frozen Constellation",
               variantStyle: "frozen-constellation",
               statement: "The same two-hand breath settles into a pale violet field where each completed expansion and return grows a persistent crystalline mesh.",
-              archiveReading: "Each completed breath still records one memory in the same eight-step sequence. A new group of straight fingertip connections is added only after the hands fully open and return to the centre.",
+              archiveReading: "Each completed breath still records one memory in the same eight-step sequence. A new group of straight fingertip connections is added only after the hands fully open and return to the centre. Their span follows the hands' apparent size: closer to the camera creates a wider crystal field, while farther away keeps it concentrated.",
               instructions: [["Begin", "Allow the camera and bring hands together."], ["Expand", "Open both hands fully until the violet field expands."], ["Crystallise", "Complete the return to the centre to grow the next geometric connections."]],
-              meaning: ["cycle / wide stretch + return", "trigger / completed gesture", "lines / fingertip connections", "memory / persistent crystal mesh"]
+              meaning: ["cycle / wide stretch + return", "trigger / completed gesture", "scale / camera proximity", "memory / persistent crystal mesh"]
             }
           ]
-        },
-        {
-          code: "v04", displayCode: "v04.00", path: "v04-cosmic-memory-refined", title: "Cosmic Memory Refined",
-          statement: "A slow two-hand movement leaves a sequence of orbit-like memories.",
-          archiveReading: "Each completed stretch becomes one orbit-like memory. Across eight cycles, the archive moves steadily from the outer field towards its centre.",
-          instructions: [["Begin", "Move both hands close together."], ["Stretch", "Stretch slowly apart until the field fully opens."], ["Return", "Return to the centre to leave one memory ring."]],
-          meaning: ["cycle / wide stretch + return", "radius / outer-to-inner order", "orbits / one memory ring", "stars / surrounding constellation"]
         },
         {
           code: "v05", displayCode: "v05.00", path: "v05-breath-quality", title: "Breath Quality",

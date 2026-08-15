@@ -29,7 +29,7 @@ let showHelp = false;
 let handDisplayMode = 1; // Default POINTS; P cycles POINTS → SKELETON → HIDDEN
 
 const BOTH_V03_DEFAULT_STYLE = {
-  id: "v03.00",
+  id: "v03.01",
   name: "Cosmic Memory",
   palette: {
     glowOuter: [142, 170, 135],
@@ -64,6 +64,9 @@ const BOTH_V03_DEFAULT_STYLE = {
   memoryStartScale: 1,
   memoryDustSizeScale: 1,
   responsiveFieldScale: false,
+  matchRefinedFieldSize: false,
+  particleArtworkScale: 1,
+  crystalArtworkScale: 1,
   particleSystem: false,
   particleLimit: 0,
   particleSeedCount: 0,
@@ -151,18 +154,26 @@ function draw() {
 
   if (BOTH_V03_STYLE.particleSystem) {
     updateAmberSources();
-    drawAmberParticleField(breath);
+    drawScaledArtwork(BOTH_V03_STYLE.particleArtworkScale, () => {
+      drawAmberParticleField(breath);
+    });
   } else {
     drawCosmicField(breath);
   }
   if (BOTH_V03_STYLE.crystalConnections) {
     drawMemoryRings();
-    drawCrystalConnections();
+    drawScaledArtwork(BOTH_V03_STYLE.crystalArtworkScale, drawCrystalConnections);
   } else {
-    drawMemoryRings();
+    if (BOTH_V03_STYLE.particleSystem) {
+      drawScaledArtwork(BOTH_V03_STYLE.particleArtworkScale, drawMemoryRings);
+    } else {
+      drawMemoryRings();
+    }
   }
   if (BOTH_V03_STYLE.particleSystem) {
-    drawAmberParticleCore(breath);
+    drawScaledArtwork(BOTH_V03_STYLE.particleArtworkScale, () => {
+      drawAmberParticleCore(breath);
+    });
   }
   drawHandDisplay();
   drawInterface();
@@ -719,7 +730,7 @@ function drawMemoryRings() {
     const fade = 1 - easeInCubic(t);
     const expansion = easeOutCubic(constrain(t * 1.4, 0, 1));
     const flash = memory.flash;
-    const displayRadius = memory.radius * getResponsiveFieldScale();
+    const displayRadius = memory.radius * getMemoryDisplayScale();
     const formation = easeInOutCubic(constrain(
       memory.age / BOTH_V03_STYLE.memoryFadeInFrames,
       0,
@@ -804,8 +815,31 @@ function drawMemoryRings() {
 }
 
 function getResponsiveFieldScale() {
+  if (BOTH_V03_STYLE.matchRefinedFieldSize) {
+    return min(width * 0.44, height * 0.68) / 278;
+  }
   if (!BOTH_V03_STYLE.responsiveFieldScale) return 1;
   return map(constrain(min(width, height), 700, 1800), 700, 1800, 1, 1.45);
+}
+
+function getMemoryDisplayScale() {
+  if (BOTH_V03_STYLE.matchRefinedFieldSize) {
+    return min(width * 0.42, height * 0.64) / 330;
+  }
+  return getResponsiveFieldScale();
+}
+
+function drawScaledArtwork(artworkScale, drawArtwork) {
+  push();
+  if (artworkScale !== 1) {
+    const centreX = width / 2;
+    const centreY = height / 2 + 20;
+    translate(centreX, centreY);
+    scale(artworkScale);
+    translate(-centreX, -centreY);
+  }
+  drawArtwork();
+  pop();
 }
 
 function drawAmberMemoryParticles() {
@@ -925,7 +959,7 @@ function drawExhibitionCaption() {
 
   fill(168, 187, 163, 130);
   textSize(10);
-  text("GESTURE STUDY 03.00 / BREATHING MEMORY RINGS", inset, 47);
+  text("GESTURE STUDY 03.01 / BREATHING MEMORY RINGS", inset, 47);
 
   textAlign(RIGHT, TOP);
   fill(211, 216, 198, 128);
@@ -975,7 +1009,7 @@ function drawHelpScreen() {
   textAlign(LEFT, TOP);
   fill(174, 191, 166, 180);
   textSize(11);
-  text("GESTURE STUDY 03.00", left, panel.y + (compact ? 24 : 36));
+  text("GESTURE STUDY 03.01", left, panel.y + (compact ? 24 : 36));
 
   fill(238, 235, 216, 240);
   textSize(compact ? 28 : 36);

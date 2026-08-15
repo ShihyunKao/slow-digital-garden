@@ -1,10 +1,10 @@
-# Both Hands V03: Cosmic Memory
+# Both Hands V03.01: Cosmic Memory
 
 ## Question
 Can a two-hand breathing gesture create a visual memory of expansion and return?
 
 ## Change from V02
-V02 created a cosmic breathing field controlled by the distance between two hands. V03 keeps this spatial system but adds memory: when the hands open and then return, the system leaves behind a faint orbit-like trace.
+V02 created a cosmic breathing field controlled by the distance between two hands. V03.01 keeps this spatial system but adds memory: when the hands open and then return, the system leaves behind a faint orbit-like trace.
 
 ## Interaction
 Select **Begin** to activate the camera. The distance between both index fingers controls the field. Moving the hands apart opens the cosmos. Bringing them back together creates a memory ring.

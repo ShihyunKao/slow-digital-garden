@@ -211,7 +211,7 @@ function drawExhibitionCaption() {
 
   fill(168, 187, 163, 130);
   textSize(10);
-  text("GESTURE STUDY 04.00  /  TWO-HAND MEMORY FIELD", inset, 47);
+  text("GESTURE STUDY 03.00  /  TWO-HAND MEMORY FIELD", inset, 47);
 
   textAlign(RIGHT, TOP);
   fill(211, 216, 198, 128);
@@ -263,11 +263,11 @@ function drawHelpScreen() {
   fill(174, 191, 166, 180);
   textSize(11);
   textStyle(NORMAL);
-  text("GESTURE STUDY 04.00", left, panel.y + (compact ? 25 : 38));
+  text("GESTURE STUDY 03.00", left, panel.y + (compact ? 25 : 38));
 
   fill(238, 235, 216, 240);
   textSize(compact ? 28 : 36);
-  text("Cosmic Memory", left, panel.y + (compact ? 46 : 65));
+  text("Cosmic Memory Refined", left, panel.y + (compact ? 46 : 65));
 
   if (compact) {
     drawCompactHelp(panel, left, rightEdge - left);

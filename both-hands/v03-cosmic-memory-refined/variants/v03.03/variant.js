@@ -1,5 +1,5 @@
 window.BOTH_V03_VARIANT = {
-  id: "v03.02",
+  id: "v03.03",
   name: "Frozen Constellation",
   palette: {
     glowOuter: [118, 105, 137],
@@ -34,6 +34,8 @@ window.BOTH_V03_VARIANT = {
   memoryStartScale: 0.72,
   memoryDustSizeScale: 0.58,
   responsiveFieldScale: true,
+  matchRefinedFieldSize: true,
+  crystalArtworkScale: 1.1,
   crystalConnections: true,
   crystalJoinedThreshold: 0.5,
   crystalCaptureInterval: 12,
