@@ -13,6 +13,11 @@ let previousBreath = 0;
 
 let stars = [];
 let memories = [];
+let amberParticles = [];
+let amberSources = null;
+let amberSpawnAccumulator = 0;
+let amberInputPrimed = false;
+let amberActivation = 0;
 
 let wasOpen = false;
 let memoryStep = 0;
@@ -49,7 +54,21 @@ const BOTH_V03_DEFAULT_STYLE = {
   memorySampleCount: 170,
   memoryNoiseMotionScale: 1,
   memoryExpansionScale: 1,
-  memorySparkleSpeedScale: 1
+  memorySparkleSpeedScale: 1,
+  particleSystem: false,
+  particleLimit: 0,
+  particleSeedCount: 0,
+  particleSpawnRate: 0,
+  particleLifeMin: 1200,
+  particleLifeMax: 2400,
+  particleGravity: 0,
+  particleSwirl: 0,
+  particleDrag: 1,
+  memoryLife: 1400,
+  memoryParticleCount: 0,
+  memoryOpenThreshold: 0.82,
+  memoryReturnThreshold: 0.42,
+  particleCoreCount: 0
 };
 
 const BOTH_V03_VARIANT_STYLE = window.BOTH_V03_VARIANT || {};
@@ -89,6 +108,10 @@ function setup() {
       depth: random(0.4, 1.0)
     });
   }
+
+  if (BOTH_V03_STYLE.particleSystem) {
+    seedAmberParticleField(BOTH_V03_STYLE.particleSeedCount);
+  }
   beginExperience();
 }
 
@@ -105,8 +128,16 @@ function draw() {
     detectBreathMemory();
   }
 
-  drawCosmicField(breath);
+  if (BOTH_V03_STYLE.particleSystem) {
+    updateAmberSources();
+    drawAmberParticleField(breath);
+  } else {
+    drawCosmicField(breath);
+  }
   drawMemoryRings();
+  if (BOTH_V03_STYLE.particleSystem) {
+    drawAmberParticleCore(breath);
+  }
   drawHandDisplay();
   drawInterface();
 }
@@ -124,11 +155,15 @@ function getBreathAmount() {
 }
 
 function detectBreathMemory() {
-  if (breath > 0.82) {
+  if (breath > BOTH_V03_STYLE.memoryOpenThreshold) {
     wasOpen = true;
   }
 
-  if (wasOpen && breath < 0.42 && previousBreath >= 0.42) {
+  if (
+    wasOpen &&
+    breath < BOTH_V03_STYLE.memoryReturnThreshold &&
+    previousBreath >= BOTH_V03_STYLE.memoryReturnThreshold
+  ) {
     addMemory();
     wasOpen = false;
   }
@@ -145,14 +180,15 @@ function addMemory() {
 
   memories.push({
     age: 0,
-    life: 1400,
+    life: BOTH_V03_STYLE.memoryLife,
     radius: radius + random(-8, 8),
     aspect: random(0.48, 0.68),
     rotation: random(-0.04, 0.04),
     seed: random(1000),
     starCount: floor(random(42, 68)),
     flash: 1,
-    step: memoryStep
+    step: memoryStep,
+    particleCount: BOTH_V03_STYLE.memoryParticleCount
   });
 
   memoryStep++;
@@ -175,6 +211,224 @@ function drawCosmicField(amount) {
   drawOrbitLines(cx, cy, radius, aspect, eased);
   drawStarCurrent(cx, cy, radius, aspect, eased);
   drawReturnLines(cx, cy, radius, aspect, eased);
+}
+
+function seedAmberParticleField(count) {
+  const cx = width / 2;
+  const cy = height / 2 + 20;
+
+  for (let i = 0; i < count; i++) {
+    const angle = random(TWO_PI);
+    const radius = pow(random(), 0.62) * min(width, height) * 0.24;
+    const particle = createAmberParticle(
+      cx + cos(angle) * radius,
+      cy + sin(angle) * radius * random(0.42, 0.7),
+      random(0.2, 0.75),
+      true
+    );
+    particle.age = random(0, particle.life * 0.28);
+    amberParticles.push(particle);
+  }
+}
+
+function updateAmberSources() {
+  const fallbackGap = min(width, height) * 0.17;
+  let leftTarget = { x: width / 2 - fallbackGap, y: height / 2 + 20 };
+  let rightTarget = { x: width / 2 + fallbackGap, y: height / 2 + 20 };
+
+  if (hands.length >= 2) {
+    const first = hands[0].keypoints[8];
+    const second = hands[1].keypoints[8];
+    if (first.x <= second.x) {
+      leftTarget = first;
+      rightTarget = second;
+    } else {
+      leftTarget = second;
+      rightTarget = first;
+    }
+  }
+
+  if (!amberSources) {
+    amberSources = {
+      left: { ...leftTarget },
+      right: { ...rightTarget },
+      midpoint: {
+        x: (leftTarget.x + rightTarget.x) / 2,
+        y: (leftTarget.y + rightTarget.y) / 2
+      }
+    };
+  }
+
+  // The sources ease towards the hands so the nebula responds gravitationally
+  // instead of sticking directly to every small tracking movement.
+  const sourceEase = hands.length >= 2 ? 0.035 : 0.012;
+  amberSources.left.x = lerp(amberSources.left.x, leftTarget.x, sourceEase);
+  amberSources.left.y = lerp(amberSources.left.y, leftTarget.y, sourceEase);
+  amberSources.right.x = lerp(amberSources.right.x, rightTarget.x, sourceEase);
+  amberSources.right.y = lerp(amberSources.right.y, rightTarget.y, sourceEase);
+  amberSources.midpoint.x = (amberSources.left.x + amberSources.right.x) / 2;
+  amberSources.midpoint.y = (amberSources.left.y + amberSources.right.y) / 2;
+}
+
+function createAmberParticle(x, y, amount, seeded = false) {
+  const angle = random(TWO_PI);
+  const initialSpeed = seeded ? random(0.06, 0.22) : random(0.12, 0.42 + amount * 0.18);
+  const life = random(BOTH_V03_STYLE.particleLifeMin, BOTH_V03_STYLE.particleLifeMax);
+
+  return {
+    x: x + randomGaussian() * (seeded ? 4 : 2.2),
+    y: y + randomGaussian() * (seeded ? 3 : 1.6),
+    vx: cos(angle) * initialSpeed,
+    vy: sin(angle) * initialSpeed,
+    age: 0,
+    life,
+    size: random(0.8, 2),
+    tone: random(),
+    alpha: random(0.5, 1),
+    direction: random() > 0.18 ? 1 : -1
+  };
+}
+
+function primeAmberParticleResponse(midpoint) {
+  const count = min(320, max(0, BOTH_V03_STYLE.particleLimit - amberParticles.length));
+  const radiusLimit = min(width, height) * 0.13;
+
+  for (let i = 0; i < count; i++) {
+    const angle = random(TWO_PI);
+    const radius = pow(random(), 0.72) * radiusLimit;
+    const particle = createAmberParticle(
+      midpoint.x + cos(angle) * radius,
+      midpoint.y + sin(angle) * radius * random(0.45, 0.72),
+      0.7
+    );
+    const tangentSpeed = random(0.18, 0.5) * particle.direction;
+    particle.vx = -sin(angle) * tangentSpeed;
+    particle.vy = cos(angle) * tangentSpeed * 0.72;
+    particle.age = random(95, 240);
+    particle.alpha = random(0.72, 1);
+    amberParticles.push(particle);
+  }
+}
+
+function addAmberForce(particle, source, strength) {
+  const dx = source.x - particle.x;
+  const dy = source.y - particle.y;
+  const distanceSquared = dx * dx + dy * dy + 2600;
+  const distanceValue = sqrt(distanceSquared);
+  const acceleration = strength / distanceSquared;
+
+  particle.vx += dx * acceleration;
+  particle.vy += dy * acceleration;
+
+  return { dx, dy, distanceValue };
+}
+
+function drawAmberParticleField(amount) {
+  if (!amberSources) return;
+
+  const midpoint = amberSources.midpoint;
+  const eased = easeInOutCubic(amount);
+
+  if (hands.length >= 2 && !amberInputPrimed) {
+    amberInputPrimed = true;
+    amberActivation = 1;
+    primeAmberParticleResponse(midpoint);
+  }
+
+  amberActivation = max(eased, amberActivation * 0.975);
+
+  if (hands.length >= 2 && eased > 0.025) {
+    amberSpawnAccumulator += BOTH_V03_STYLE.particleSpawnRate * (0.22 + eased * 0.78);
+    while (amberSpawnAccumulator >= 1 && amberParticles.length < BOTH_V03_STYLE.particleLimit) {
+      amberParticles.push(createAmberParticle(midpoint.x, midpoint.y, eased));
+      amberSpawnAccumulator--;
+    }
+  }
+
+  blendMode(ADD);
+  noStroke();
+
+  for (let i = amberParticles.length - 1; i >= 0; i--) {
+    const particle = amberParticles[i];
+    particle.age++;
+
+    if (
+      particle.age > particle.life ||
+      particle.x < -180 || particle.x > width + 180 ||
+      particle.y < -180 || particle.y > height + 180
+    ) {
+      amberParticles.splice(i, 1);
+      continue;
+    }
+
+    addAmberForce(particle, amberSources.left, BOTH_V03_STYLE.particleGravity * (0.62 + eased * 0.62));
+    addAmberForce(particle, amberSources.right, BOTH_V03_STYLE.particleGravity * (0.62 + eased * 0.62));
+    const centreForce = addAmberForce(particle, midpoint, BOTH_V03_STYLE.particleGravity * 0.72);
+
+    const tangentStrength = BOTH_V03_STYLE.particleSwirl * particle.direction;
+    particle.vx += (-centreForce.dy / centreForce.distanceValue) * tangentStrength;
+    particle.vy += (centreForce.dx / centreForce.distanceValue) * tangentStrength;
+
+    particle.vx *= BOTH_V03_STYLE.particleDrag;
+    particle.vy *= BOTH_V03_STYLE.particleDrag;
+    particle.x += particle.vx;
+    particle.y += particle.vy;
+
+    const lifeProgress = particle.age / particle.life;
+    const fadeIn = constrain(particle.age / 90, 0, 1);
+    const fadeOut = constrain((1 - lifeProgress) / 0.16, 0, 1);
+    const alpha = 215 * particle.alpha * fadeIn * fadeOut * (0.9 + amberActivation * 0.22);
+
+    if (particle.tone < 0.36) {
+      fill(...BOTH_V03_STYLE.palette.bodyTo, alpha * 0.58);
+    } else if (particle.tone < 0.88) {
+      fill(...BOTH_V03_STYLE.palette.dust, alpha);
+    } else {
+      fill(...BOTH_V03_STYLE.palette.memoryDust, alpha * 0.9);
+    }
+    circle(particle.x, particle.y, particle.size);
+  }
+
+  blendMode(BLEND);
+}
+
+function drawAmberParticleCore(amount) {
+  if (!amberSources || BOTH_V03_STYLE.particleCoreCount <= 0) return;
+
+  const midpoint = amberSources.midpoint;
+  const eased = easeInOutCubic(amount);
+  const count = BOTH_V03_STYLE.particleCoreCount;
+  const coreRadius = lerp(28, 76, eased);
+  const rotation = frameCount * 0.0065;
+  const goldenAngle = PI * (3 - sqrt(5));
+
+  blendMode(ADD);
+  noStroke();
+
+  for (let i = 0; i < count; i++) {
+    const normalized = (i + 0.5) / count;
+    const radius = sqrt(normalized) * coreRadius;
+    const depth = 1 - normalized;
+    const direction = i % 9 === 0 ? -1 : 1;
+    const angle = i * goldenAngle + rotation * direction * (0.45 + depth * 1.4);
+    const flutter = sin(frameCount * 0.011 + i * 0.73) * (1.2 + eased * 2.4);
+    const x = midpoint.x + cos(angle) * (radius + flutter);
+    const y = midpoint.y + sin(angle) * (radius + flutter) * lerp(0.58, 0.78, eased);
+    const sparkle = sin(frameCount * 0.032 + i * 1.31) * 0.5 + 0.5;
+    const alpha = 78 + depth * 116 + sparkle * 44;
+
+    if (i % 7 === 0) {
+      fill(...BOTH_V03_STYLE.palette.bodyTo, alpha * 0.58);
+    } else if (i % 11 === 0) {
+      fill(...BOTH_V03_STYLE.palette.memoryDust, alpha);
+    } else {
+      fill(...BOTH_V03_STYLE.palette.dust, alpha * 0.88);
+    }
+
+    circle(x, y, 0.9 + sparkle * 0.9);
+  }
+
+  blendMode(BLEND);
 }
 
 function drawCentralGlow(cx, cy, r, aspect, amount) {
@@ -307,6 +561,11 @@ function drawReturnLines(cx, cy, r, aspect, amount) {
 }
 
 function drawMemoryRings() {
+  if (BOTH_V03_STYLE.particleSystem) {
+    drawAmberMemoryParticles();
+    return;
+  }
+
   const cx = width / 2;
   const cy = height / 2 + 20;
 
@@ -391,6 +650,63 @@ function drawMemoryRings() {
 
     pop();
   }
+}
+
+function drawAmberMemoryParticles() {
+  const cx = width / 2;
+  const cy = height / 2 + 20;
+
+  blendMode(ADD);
+  noStroke();
+
+  for (let i = memories.length - 1; i >= 0; i--) {
+    const memory = memories[i];
+    memory.age++;
+    memory.flash *= 0.965;
+
+    if (memory.age > memory.life) {
+      memories.splice(i, 1);
+      continue;
+    }
+
+    const t = memory.age / memory.life;
+    const fadeIn = constrain(memory.age / 18, 0, 1);
+    const fadeOut = constrain((1 - t) / 0.18, 0, 1);
+    const fade = fadeIn * fadeOut;
+    const rotation = memory.rotation + memory.age * 0.00011 * (memory.step % 2 === 0 ? 1 : -1);
+    const count = memory.particleCount || 130;
+
+    for (let particleIndex = 0; particleIndex < count; particleIndex++) {
+      const phase = randomSeeded(memory.seed + particleIndex * 7.31, 0, TWO_PI);
+      const radialScatter = randomSeeded(memory.seed + particleIndex * 11.73, 0.78, 1.2);
+      const slowDrift = sin(memory.age * 0.0014 + particleIndex * 0.61) * memory.radius * 0.012;
+      const radius = memory.radius * radialScatter + slowDrift;
+      const angle = phase + rotation;
+      const x = cx + cos(angle) * radius;
+      const y = cy + sin(angle) * radius * memory.aspect;
+      const tone = randomSeeded(memory.seed + particleIndex * 3.17, 0, 1);
+      const particleAlpha = fade * (
+        randomSeeded(memory.seed + particleIndex * 5.43, 46, 138) +
+        memory.flash * 105
+      );
+
+      if (tone < 0.38) {
+        fill(...BOTH_V03_STYLE.palette.bodyTo, particleAlpha * 0.7);
+      } else if (tone < 0.9) {
+        fill(...BOTH_V03_STYLE.palette.memory, particleAlpha);
+      } else {
+        fill(...BOTH_V03_STYLE.palette.memoryDust, particleAlpha);
+      }
+
+      circle(
+        x,
+        y,
+        randomSeeded(memory.seed + particleIndex * 13.19, 0.8, 1.9)
+      );
+    }
+  }
+
+  blendMode(BLEND);
 }
 
 function drawSpaceBackground() {
@@ -668,6 +984,13 @@ function keyPressed() {
     memories = [];
     wasOpen = false;
     memoryStep = 0;
+    if (BOTH_V03_STYLE.particleSystem) {
+      amberParticles = [];
+      amberSpawnAccumulator = 0;
+      amberInputPrimed = false;
+      amberActivation = 0;
+      seedAmberParticleField(floor(BOTH_V03_STYLE.particleSeedCount * 0.45));
+    }
   }
 }
 

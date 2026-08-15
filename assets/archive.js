@@ -151,10 +151,10 @@
             {
               code: "v03-amber-orbit", displayCode: "v03.01", path: "v03-cosmic-memory/variants/v03.01", title: "Amber Orbit",
               variantStyle: "amber-orbit",
-              statement: "The same two-hand breath becomes a dark red and gold orbital memory, surrounded by drifting amber dust.",
-              archiveReading: "Each completed breath still becomes one orbit-like memory in the same eight-step sequence; only its material shifts into ember, gold and accumulated dust.",
-              instructions: [["Begin", "Allow the camera and bring hands together."], ["Expand", "Open both hands fully until the amber field expands."], ["Return", "Return to the centre to leave one golden memory orbit."]],
-              meaning: ["cycle / wide stretch + return", "palette / dark red + gold", "rings / amber orbit memory", "dust / surrounding particles"]
+              statement: "Two hands become gravitational sources, gathering tiny gold and dark-red particles into a slowly turning microscopic nebula.",
+              archiveReading: "Each completed breath still enters the same eight-step sequence. The memory is held by long-lived orbital particles rather than drawn lines.",
+              instructions: [["Begin", "Allow the camera and bring hands together."], ["Emit", "Open both hands to release warm particles at their midpoint."], ["Return", "Return to the centre to preserve one slowly orbiting particle memory."]],
+              meaning: ["cycle / wide stretch + return", "source / two-hand gravity", "material / gold + dark-red particles", "memory / long-lived orbital drift"]
             },
             {
               code: "v03-frozen-constellation", displayCode: "v03.02", path: "v03-cosmic-memory/variants/v03.02", title: "Frozen Constellation",

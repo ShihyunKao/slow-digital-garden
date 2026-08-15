@@ -14,8 +14,19 @@ window.BOTH_V03_VARIANT = {
     handSkeleton: [184, 119, 73],
     handPoint: [255, 207, 112]
   },
-  ambientParticleCount: 286,
-  dustSizeScale: 0.82,
-  dustTrails: true,
-  memoryGlow: 11
+  ambientParticleCount: 0,
+  particleSystem: true,
+  particleLimit: 1900,
+  particleSeedCount: 300,
+  particleSpawnRate: 5.2,
+  particleLifeMin: 12000,
+  particleLifeMax: 30000,
+  particleGravity: 1.45,
+  particleSwirl: 0.019,
+  particleDrag: 0.995,
+  memoryLife: 18000,
+  memoryParticleCount: 300,
+  memoryOpenThreshold: 0.62,
+  memoryReturnThreshold: 0.38,
+  particleCoreCount: 280
 };
