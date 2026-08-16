@@ -16,6 +16,7 @@ let imprints = [];
 let driftStars = [];
 let showHelp = false;
 let handDisplayMode = 1; // Default POINTS; P cycles POINTS → SKELETON → HIDDEN
+const palmImprintVariant = window.OPEN_V03_VARIANT || null;
 
 const HAND_CONNECTIONS = [
   [0, 1], [1, 2], [2, 3], [3, 4],
@@ -182,7 +183,7 @@ function createImprint(points) {
     });
   }
 
-  return {
+  const imprint = {
     points,
     center: { x: cx, y: cy },
     age: 0,
@@ -192,6 +193,12 @@ function createImprint(points) {
     scale: random(0.96, 1.04),
     flash: 1
   };
+
+  if (palmImprintVariant?.createImprint) {
+    imprint.variantData = palmImprintVariant.createImprint(points, imprint.center);
+  }
+
+  return imprint;
 }
 
 function drawImprints() {
@@ -221,9 +228,13 @@ function drawSingleImprint(imprint) {
   scale(imprint.scale);
   translate(-imprint.center.x, -imprint.center.y);
 
-  drawPalmAura(imprint, fade, appear);
-  drawPalmLines(imprint, fade, appear);
-  drawPalmParticles(imprint, fade, appear);
+  if (palmImprintVariant?.drawImprint) {
+    palmImprintVariant.drawImprint(imprint, fade, appear);
+  } else {
+    drawPalmAura(imprint, fade, appear);
+    drawPalmLines(imprint, fade, appear);
+    drawPalmParticles(imprint, fade, appear);
+  }
 
   pop();
 }
@@ -339,10 +350,11 @@ function drawHandDisplay() {
 
   const hand = hands[0];
   const points = hand.keypoints;
+  const handPalette = palmImprintVariant?.handPalette;
 
   if (handDisplayMode === 2) {
     noFill();
-    stroke(230, 226, 204, 75);
+    stroke(...(handPalette?.skeleton || [230, 226, 204, 75]));
     strokeWeight(1);
 
     for (const [a, b] of HAND_CONNECTIONS) {
@@ -351,7 +363,9 @@ function drawHandDisplay() {
   }
 
   noStroke();
-  fill(246, 238, 198, 55 + openness * 105);
+  const pointColour = handPalette?.points || [246, 238, 198];
+  const pointAlpha = handPalette?.pointAlpha || [55, 160];
+  fill(pointColour[0], pointColour[1], pointColour[2], lerp(pointAlpha[0], pointAlpha[1], openness));
   const displayPoints = handDisplayMode === 1 ? [8] : points.map((_, index) => index);
 
   for (const index of displayPoints) {
@@ -375,8 +389,12 @@ function drawMousePreview() {
     { x: cx, y: cy }
   ];
 
+  const handPalette = palmImprintVariant?.handPalette;
+  const previewSkeleton = handPalette?.previewSkeleton || [230, 226, 204];
+  const previewPoints = handPalette?.previewPoints || [246, 238, 198];
+
   noFill();
-  stroke(230, 226, 204, 30 + openness * 60);
+  stroke(previewSkeleton[0], previewSkeleton[1], previewSkeleton[2], 30 + openness * 60);
   strokeWeight(0.7);
 
   for (let i = 0; i < 5; i++) {
@@ -384,7 +402,7 @@ function drawMousePreview() {
   }
 
   noStroke();
-  fill(246, 238, 198, 42 + openness * 78);
+  fill(previewPoints[0], previewPoints[1], previewPoints[2], 42 + openness * 78);
 
   for (let i = 0; i < 5; i++) {
     circle(pts[i].x, pts[i].y, 3.5 + openness * 3);

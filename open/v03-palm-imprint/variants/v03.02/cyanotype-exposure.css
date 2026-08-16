@@ -1,0 +1,107 @@
+:root {
+  --cyanotype-blue: #052b4f;
+  --cyanotype-deep: #031d38;
+  --cyanotype-cyan: #92d4d4;
+  --cyanotype-milk: #e8edd9;
+}
+
+html,
+body.cyanotype-exposure {
+  background: var(--cyanotype-blue) !important;
+}
+
+body.cyanotype-exposure::before,
+body.cyanotype-exposure::after {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+}
+
+body.cyanotype-exposure::before {
+  z-index: 0;
+  opacity: 0.92;
+  background:
+    radial-gradient(ellipse at 28% 42%, rgba(79, 167, 184, 0.2), transparent 34%),
+    radial-gradient(ellipse at 72% 61%, rgba(26, 91, 130, 0.22), transparent 39%),
+    linear-gradient(116deg, #031b35 0%, #07385f 48%, #032544 100%);
+}
+
+body.cyanotype-exposure::after {
+  z-index: 2;
+  opacity: 0.18;
+  background-image:
+    radial-gradient(circle, rgba(221, 237, 219, 0.2) 0 0.5px, transparent 0.8px),
+    repeating-linear-gradient(88deg, rgba(216, 237, 219, 0.035) 0 1px, transparent 1px 9px),
+    repeating-linear-gradient(7deg, transparent 0 15px, rgba(105, 191, 198, 0.04) 16px, transparent 17px 31px);
+  background-size: 14px 17px, auto, auto;
+  mix-blend-mode: screen;
+}
+
+canvas {
+  position: relative;
+  z-index: 1;
+}
+
+.live-shell {
+  --live-bone: #e8edd9;
+  --live-moss: #79b7bd;
+  --live-teal: #9ad7d5;
+  z-index: 1000;
+}
+
+.live-shell::before {
+  opacity: 0.17;
+  mix-blend-mode: screen;
+}
+
+.live-input,
+.live-return {
+  color: rgba(205, 231, 219, 0.66);
+}
+
+.live-return:hover,
+.live-return:focus-visible {
+  color: var(--cyanotype-milk);
+}
+
+.live-help {
+  color: var(--cyanotype-milk);
+  background: rgba(2, 18, 35, 0.74);
+}
+
+.live-help__panel {
+  border-color: rgba(130, 200, 204, 0.36);
+  background: rgba(4, 39, 70, 0.97);
+  box-shadow: 20px 24px 68px rgba(0, 9, 24, 0.56);
+}
+
+.live-help__panel::before {
+  background: var(--cyanotype-cyan);
+}
+
+.live-help__eyebrow,
+.live-help__number {
+  color: var(--cyanotype-cyan);
+}
+
+.live-help__title,
+.live-help__step h2,
+.live-help__return {
+  color: var(--cyanotype-milk);
+}
+
+.live-help__intro,
+.live-help__step p,
+.live-help__keys {
+  color: rgba(210, 232, 218, 0.7);
+}
+
+.live-help__steps,
+.live-help__return {
+  border-color: rgba(132, 199, 202, 0.3);
+}
+
+.live-help__step + .live-help__step::before {
+  background: rgba(132, 199, 202, 0.24);
+}

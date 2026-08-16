@@ -12,6 +12,7 @@ let handDisplayMode = 1; // Default POINTS; P cycles POINTS → SKELETON → HID
 let openness = 0;
 let targetOpenness = 0;
 let backgroundPoints = [];
+const layeredBloomVariant = window.OPEN_V02_VARIANT || null;
 
 const HAND_CONNECTIONS = [
   [0, 1], [1, 2], [2, 3], [3, 4],
@@ -54,7 +55,11 @@ function draw() {
   openness = lerp(openness, targetOpenness, 0.055);
 
   if (!showHelp) {
-    drawLayeredBloom(width / 2, height * 0.53, openness);
+    if (layeredBloomVariant?.drawBloom) {
+      layeredBloomVariant.drawBloom(width / 2, height * 0.53, openness);
+    } else {
+      drawLayeredBloom(width / 2, height * 0.53, openness);
+    }
     drawTechnicalHand(hand);
   }
 
@@ -146,10 +151,11 @@ function drawTechnicalHand(hand) {
   if (!hand || handDisplayMode === 0) return;
 
   const points = hand.keypoints;
+  const handPalette = layeredBloomVariant?.handPalette;
 
   if (handDisplayMode === 1) {
     noStroke();
-    fill(240, 231, 194, 62);
+    fill(...(handPalette?.points || [240, 231, 194, 62]));
 
     for (const index of TIP_INDICES) {
       circle(points[index].x, points[index].y, 3.5);
@@ -159,7 +165,7 @@ function drawTechnicalHand(hand) {
   }
 
   noFill();
-  stroke(230, 226, 204, 45);
+  stroke(...(handPalette?.skeleton || [230, 226, 204, 45]));
   strokeWeight(0.7);
 
   for (const [a, b] of HAND_CONNECTIONS) {
@@ -167,7 +173,7 @@ function drawTechnicalHand(hand) {
   }
 
   noStroke();
-  fill(240, 231, 194, 72);
+  fill(...(handPalette?.pointsStrong || [240, 231, 194, 72]));
 
   for (const point of points) {
     circle(point.x, point.y, 3.5);

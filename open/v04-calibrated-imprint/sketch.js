@@ -8,11 +8,12 @@ let handDisplayMode = 1;
 let imprints = [], driftStars = [];
 let openness = 0, targetOpenness = 0;
 let canStamp = true, openHoldFrames = 0, stampProgress = 0;
+const heldImprintVariant = window.OPEN_V04_VARIANT || null;
 
 const OPEN_RATIO = 2.12;
 const TRIGGER_RATIO = 1.66;
 const RESET_RATIO = 1.43;
-const HOLD_FRAMES = 18;
+const HOLD_FRAMES = 48;
 
 const HAND_CONNECTIONS = [
   [0, 1], [1, 2], [2, 3], [3, 4],
@@ -45,6 +46,9 @@ function draw() {
   if (!showHelp) updateStamp(metrics);
 
   drawImprints();
+  if (!showHelp && heldImprintVariant?.drawHoldPreview) {
+    heldImprintVariant.drawHoldPreview(metrics, stampProgress);
+  }
   drawHandDisplay(metrics);
   drawInterface();
 }
@@ -140,7 +144,11 @@ function addImprint(points) {
       vx: random(-0.09, 0.09), vy: random(-0.14, 0.02), size: random(0.8, 3.3), alpha: random(28, 88), seed: random(1000)
     });
   }
-  imprints.push({ points, center, particles, age: 0, life: 760, rotation: random(-0.04, 0.04), scale: random(0.96, 1.04), flash: 1 });
+  const imprint = { points, center, particles, age: 0, life: 760, rotation: random(-0.04, 0.04), scale: random(0.96, 1.04), flash: 1 };
+  if (heldImprintVariant?.createImprint) {
+    imprint.variantData = heldImprintVariant.createImprint(points, center);
+  }
+  imprints.push(imprint);
   if (imprints.length > 7) imprints.shift();
 }
 
@@ -151,11 +159,15 @@ function drawImprints() {
     const t = imprint.age / imprint.life;
     const fade = 1 - easeInCubic(t);
     const appear = easeOutCubic(constrain(t * 5, 0, 1));
-    push(); translate(imprint.center.x, imprint.center.y); rotate(imprint.rotation); scale(imprint.scale); translate(-imprint.center.x, -imprint.center.y);
-    drawPalmAura(imprint, fade, appear);
-    drawPalmLines(imprint, fade, appear);
-    drawPalmParticles(imprint, fade, appear);
-    pop();
+    if (heldImprintVariant?.drawImprint) {
+      heldImprintVariant.drawImprint(imprint, fade, appear);
+    } else {
+      push(); translate(imprint.center.x, imprint.center.y); rotate(imprint.rotation); scale(imprint.scale); translate(-imprint.center.x, -imprint.center.y);
+      drawPalmAura(imprint, fade, appear);
+      drawPalmLines(imprint, fade, appear);
+      drawPalmParticles(imprint, fade, appear);
+      pop();
+    }
   }
 }
 
@@ -200,16 +212,23 @@ function drawHandDisplay(metrics) {
   if (inputMode === "mouse") return;
   if (!metrics || handDisplayMode === 0) return;
   const points = metrics.points;
+  const handPalette = heldImprintVariant?.handPalette;
   if (handDisplayMode === 2) {
-    noFill(); stroke(230, 226, 204, 75); strokeWeight(1);
+    noFill(); stroke(...(handPalette?.skeleton || [230, 226, 204, 75])); strokeWeight(1);
     for (const [a, b] of HAND_CONNECTIONS) line(points[a].x, points[a].y, points[b].x, points[b].y);
   }
-  noStroke(); fill(246, 238, 198, 70 + openness * 100);
+  const pointColour = handPalette?.points || [246, 238, 198];
+  const pointAlpha = handPalette?.pointAlpha || [70, 170];
+  noStroke(); fill(pointColour[0], pointColour[1], pointColour[2], lerp(pointAlpha[0], pointAlpha[1], openness));
   const visible = handDisplayMode === 1 ? [8] : points.map((_, index) => index);
   for (const index of visible) circle(points[index].x, points[index].y, handDisplayMode === 1 ? 8 : 4);
 
   if (canStamp && metrics.ratio > TRIGGER_RATIO) {
-    drawStampHalo(points);
+    if (heldImprintVariant?.drawHoldIndicator) {
+      heldImprintVariant.drawHoldIndicator(points, stampProgress);
+    } else {
+      drawStampHalo(points);
+    }
   }
 }
 

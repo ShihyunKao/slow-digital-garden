@@ -1,0 +1,112 @@
+:root {
+  --lens-deep: #071318;
+  --lens-blue: #7199a4;
+  --lens-oil: #76977f;
+  --lens-pearl: #dfe4db;
+}
+
+html,
+body.liquid-lens {
+  background: var(--lens-deep) !important;
+}
+
+body.liquid-lens::before,
+body.liquid-lens::after {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+}
+
+body.liquid-lens::before {
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 42% 68% at 16% 35%, transparent 0 61%, rgba(174, 207, 204, 0.026) 63%, rgba(77, 121, 126, 0.036) 66%, transparent 70%),
+    radial-gradient(ellipse 56% 38% at 73% 56%, rgba(112, 157, 148, 0.026) 0 33%, transparent 36% 52%, rgba(187, 213, 207, 0.024) 54%, transparent 58%),
+    radial-gradient(ellipse 34% 50% at 47% 86%, transparent 0 55%, rgba(79, 118, 105, 0.03) 58%, transparent 63%),
+    radial-gradient(ellipse at 32% 39%, rgba(91, 137, 146, 0.07), transparent 38%),
+    radial-gradient(ellipse at 71% 59%, rgba(87, 119, 93, 0.052), transparent 43%),
+    linear-gradient(122deg, #061116 0%, #0b2024 48%, #071517 100%);
+}
+
+body.liquid-lens::after {
+  z-index: 2;
+  opacity: 0.11;
+  background-image:
+    repeating-radial-gradient(ellipse 62% 34% at 22% 43%, transparent 0 31px, rgba(197, 220, 216, 0.024) 33px, transparent 36px 61px),
+    repeating-radial-gradient(ellipse 43% 68% at 81% 62%, transparent 0 42px, rgba(112, 155, 139, 0.025) 44px, transparent 47px 79px),
+    radial-gradient(circle, rgba(214, 227, 218, 0.18) 0 0.45px, transparent 0.8px),
+    radial-gradient(ellipse at 18% 72%, transparent 0 18%, rgba(163, 190, 185, 0.055) 19%, transparent 20% 100%);
+  background-size: 116% 104%, 112% 118%, 16px 19px, auto;
+  mix-blend-mode: screen;
+}
+
+canvas {
+  position: relative;
+  z-index: 1;
+}
+
+.live-shell {
+  --live-bone: #dfe4db;
+  --live-moss: #789980;
+  --live-teal: #89aeb3;
+  z-index: 1000;
+}
+
+.live-shell::before {
+  opacity: 0.13;
+  mix-blend-mode: screen;
+}
+
+.live-input,
+.live-return {
+  color: rgba(177, 207, 202, 0.65);
+}
+
+.live-return:hover,
+.live-return:focus-visible {
+  color: var(--lens-pearl);
+}
+
+.live-help {
+  color: var(--lens-pearl);
+  background: rgba(3, 12, 16, 0.77);
+}
+
+.live-help__panel {
+  border-color: rgba(123, 163, 164, 0.34);
+  background:
+    linear-gradient(118deg, rgba(102, 145, 148, 0.1), rgba(70, 101, 77, 0.06)),
+    rgba(7, 25, 29, 0.98);
+  box-shadow: 22px 28px 66px rgba(0, 6, 8, 0.55), inset 1px 0 rgba(215, 229, 220, 0.12);
+}
+
+.live-help__panel::before {
+  background: var(--lens-oil);
+}
+
+.live-help__eyebrow,
+.live-help__number {
+  color: #8db7b8;
+}
+
+.live-help__title,
+.live-help__step h2,
+.live-help__return {
+  color: var(--lens-pearl);
+}
+
+.live-help__intro,
+.live-help__step p,
+.live-help__keys {
+  color: rgba(190, 211, 204, 0.69);
+}
+
+.live-help__steps,
+.live-help__return {
+  border-color: rgba(120, 157, 151, 0.3);
+}
+
+.live-help__step + .live-help__step::before {
+  background: rgba(120, 157, 151, 0.23);
+}

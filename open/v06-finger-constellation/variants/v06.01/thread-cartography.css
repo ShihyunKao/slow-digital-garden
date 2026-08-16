@@ -1,0 +1,115 @@
+:root {
+  --thread-ink: #041016;
+  --thread-deep: #071820;
+  --thread-bone: #e3dfcf;
+  --thread-teal: #6d9c95;
+  --thread-moss: #4c6764;
+}
+
+html,
+body.thread-cartography {
+  background: var(--thread-ink) !important;
+}
+
+body.thread-cartography::before,
+body.thread-cartography::after {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+}
+
+body.thread-cartography::before {
+  z-index: 0;
+  background:
+    conic-gradient(from 214deg at 11% 79%, transparent 0 8deg, rgba(111, 157, 149, 0.038) 8.15deg 8.45deg, transparent 8.7deg 29deg, rgba(111, 157, 149, 0.024) 29.15deg 29.38deg, transparent 29.6deg 58deg, rgba(197, 199, 184, 0.019) 58.15deg 58.34deg, transparent 58.55deg),
+    conic-gradient(from 31deg at 85% 16%, transparent 0 12deg, rgba(197, 199, 184, 0.022) 12.18deg 12.42deg, transparent 12.65deg 43deg, rgba(111, 157, 149, 0.031) 43.16deg 43.44deg, transparent 43.68deg 75deg, rgba(111, 157, 149, 0.018) 75.16deg 75.36deg, transparent 75.58deg),
+    linear-gradient(164deg, transparent 0 21%, rgba(111, 157, 149, 0.021) 21.08%, transparent 21.19% 47%, rgba(197, 199, 184, 0.016) 47.08%, transparent 47.2% 76%, rgba(111, 157, 149, 0.018) 76.08%, transparent 76.2%),
+    linear-gradient(108deg, transparent 0 31%, rgba(101, 146, 139, 0.026) 31.08%, transparent 31.2% 69%, rgba(101, 146, 139, 0.018) 69.08%, transparent 69.2%),
+    linear-gradient(90deg, transparent 0 12%, rgba(103, 145, 139, 0.032) 12.08%, transparent 12.16% 88%, rgba(103, 145, 139, 0.025) 88.08%, transparent 88.16%),
+    linear-gradient(0deg, transparent 0 19%, rgba(103, 145, 139, 0.02) 19.08%, transparent 19.16% 81%, rgba(103, 145, 139, 0.022) 81.08%, transparent 81.16%),
+    linear-gradient(137deg, transparent 0 16%, rgba(35, 74, 75, 0.075) 31%, rgba(38, 79, 80, 0.12) 42%, transparent 61%),
+    linear-gradient(34deg, transparent 0 27%, rgba(45, 75, 76, 0.09) 45%, transparent 67%),
+    linear-gradient(128deg, #020b10 0%, #071922 49%, #030d13 100%);
+}
+
+body.thread-cartography::after {
+  z-index: 2;
+  opacity: 0.14;
+  background-image:
+    linear-gradient(102deg, transparent 0 47.8%, rgba(224, 220, 203, 0.075) 47.9%, transparent 48.02%),
+    repeating-linear-gradient(11deg, transparent 0 18px, rgba(222, 220, 206, 0.032) 18.5px, transparent 19px 37px),
+    repeating-linear-gradient(93deg, transparent 0 53px, rgba(90, 133, 127, 0.025) 54px, transparent 55px 108px),
+    radial-gradient(circle, rgba(213, 213, 199, 0.19) 0 0.42px, transparent 0.75px);
+  background-position: 0 0, 0 0, 0 0, 5px 9px;
+  background-size: auto, auto, auto, 29px 31px;
+  mix-blend-mode: screen;
+}
+
+canvas {
+  position: relative;
+  z-index: 1;
+}
+
+.live-shell {
+  --live-bone: var(--thread-bone);
+  --live-moss: #71827c;
+  --live-teal: #79aaa2;
+  z-index: 1000;
+}
+
+.live-shell::before {
+  opacity: 0.1;
+  mix-blend-mode: screen;
+}
+
+.live-input,
+.live-return {
+  color: rgba(187, 198, 187, 0.62);
+}
+
+.live-return:hover,
+.live-return:focus-visible {
+  color: var(--thread-bone);
+}
+
+.live-help {
+  color: var(--thread-bone);
+  background: rgba(2, 9, 12, 0.82);
+}
+
+.live-help__panel {
+  border-color: rgba(105, 151, 144, 0.3);
+  background: rgba(5, 18, 23, 0.98);
+  box-shadow: 22px 28px 66px rgba(0, 0, 0, 0.54), inset 1px 0 rgba(227, 223, 207, 0.045);
+}
+
+.live-help__panel::before {
+  background: #6d9c95;
+}
+
+.live-help__eyebrow,
+.live-help__number {
+  color: #79aaa2;
+}
+
+.live-help__title,
+.live-help__step h2,
+.live-help__return {
+  color: var(--thread-bone);
+}
+
+.live-help__intro,
+.live-help__step p,
+.live-help__keys {
+  color: rgba(190, 196, 184, 0.66);
+}
+
+.live-help__steps,
+.live-help__return {
+  border-color: rgba(105, 151, 144, 0.25);
+}
+
+.live-help__step + .live-help__step::before {
+  background: rgba(105, 151, 144, 0.2);
+}

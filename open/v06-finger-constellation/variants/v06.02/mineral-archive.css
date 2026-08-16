@@ -1,0 +1,110 @@
+:root {
+  --mineral-night: #090b15;
+  --mineral-violet: #80758f;
+  --mineral-grey: #9ca4ad;
+  --mineral-ice: #b7dce8;
+  --mineral-white: #e6eaec;
+}
+
+html,
+body.mineral-archive {
+  background: var(--mineral-night) !important;
+}
+
+body.mineral-archive::before,
+body.mineral-archive::after {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+}
+
+body.mineral-archive::before {
+  z-index: 0;
+  background:
+    linear-gradient(90deg, transparent 0 17%, rgba(143, 135, 160, 0.035) 17.08%, transparent 17.18% 39%, rgba(179, 215, 226, 0.025) 39.08%, transparent 39.18% 63%, rgba(143, 135, 160, 0.03) 63.08%, transparent 63.18% 84%, rgba(179, 215, 226, 0.022) 84.08%, transparent 84.18%),
+    repeating-linear-gradient(0deg, transparent 0 73px, rgba(160, 169, 178, 0.027) 74px, transparent 75px 148px),
+    linear-gradient(119deg, transparent 0 34%, rgba(123, 113, 143, 0.06) 45%, transparent 58%),
+    linear-gradient(61deg, transparent 0 42%, rgba(139, 180, 196, 0.045) 52%, transparent 63%),
+    linear-gradient(138deg, #070912 0%, #101321 51%, #080a14 100%);
+}
+
+body.mineral-archive::after {
+  z-index: 2;
+  opacity: 0.17;
+  background-image:
+    linear-gradient(117deg, transparent 0 28%, rgba(193, 222, 230, 0.08) 28.06%, transparent 28.14% 66%, rgba(146, 132, 166, 0.075) 66.06%, transparent 66.16%),
+    linear-gradient(72deg, transparent 0 46%, rgba(196, 205, 211, 0.065) 46.05%, transparent 46.13%),
+    radial-gradient(circle, rgba(214, 222, 226, 0.18) 0 0.42px, transparent 0.78px);
+  background-position: 0 0, 0 0, 7px 11px;
+  background-size: auto, auto, 31px 37px;
+  mix-blend-mode: screen;
+}
+
+canvas {
+  position: relative;
+  z-index: 1;
+}
+
+.live-shell {
+  --live-bone: var(--mineral-white);
+  --live-moss: #7f8790;
+  --live-teal: var(--mineral-ice);
+  z-index: 1000;
+}
+
+.live-shell::before {
+  opacity: 0.08;
+  mix-blend-mode: screen;
+}
+
+.live-input,
+.live-return {
+  color: rgba(171, 181, 188, 0.62);
+}
+
+.live-return:hover,
+.live-return:focus-visible {
+  color: var(--mineral-ice);
+}
+
+.live-help {
+  color: var(--mineral-white);
+  background: rgba(5, 6, 12, 0.84);
+}
+
+.live-help__panel {
+  border-color: rgba(149, 161, 180, 0.3);
+  background: rgba(12, 14, 25, 0.98);
+  box-shadow: 22px 28px 68px rgba(0, 0, 0, 0.6), inset 1px 0 rgba(183, 220, 232, 0.045);
+}
+
+.live-help__panel::before {
+  background: #9f91af;
+}
+
+.live-help__eyebrow,
+.live-help__number {
+  color: var(--mineral-ice);
+}
+
+.live-help__title,
+.live-help__step h2,
+.live-help__return {
+  color: var(--mineral-white);
+}
+
+.live-help__intro,
+.live-help__step p,
+.live-help__keys {
+  color: rgba(185, 194, 201, 0.67);
+}
+
+.live-help__steps,
+.live-help__return {
+  border-color: rgba(149, 161, 180, 0.26);
+}
+
+.live-help__step + .live-help__step::before {
+  background: rgba(149, 161, 180, 0.21);
+}

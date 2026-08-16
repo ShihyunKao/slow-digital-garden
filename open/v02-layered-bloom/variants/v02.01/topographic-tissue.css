@@ -1,0 +1,106 @@
+:root {
+  --tissue-paper: #c9c3b2;
+  --tissue-paper-light: #ddd6c2;
+  --tissue-moss: #6f755d;
+  --tissue-brown: #786450;
+  --tissue-ink: #37372f;
+}
+
+html,
+body.topographic-tissue {
+  background: var(--tissue-paper) !important;
+}
+
+body.topographic-tissue::before,
+body.topographic-tissue::after {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+}
+
+body.topographic-tissue::before {
+  z-index: 0;
+  opacity: 0.62;
+  background:
+    linear-gradient(104deg, rgba(244, 238, 218, 0.42) 0%, rgba(224, 217, 195, 0.12) 39%, rgba(91, 79, 61, 0.15) 100%),
+    repeating-linear-gradient(83deg, rgba(78, 72, 60, 0.026) 0 1px, transparent 1px 8px),
+    repeating-linear-gradient(7deg, rgba(255, 250, 230, 0.045) 0 1px, transparent 1px 13px);
+}
+
+body.topographic-tissue::after {
+  z-index: 2;
+  opacity: 0.26;
+  background:
+    radial-gradient(ellipse at 29% 46%, rgba(255, 248, 222, 0.28), transparent 33%),
+    radial-gradient(ellipse at 72% 54%, rgba(72, 63, 48, 0.14), transparent 48%);
+  mix-blend-mode: multiply;
+}
+
+canvas {
+  position: relative;
+  z-index: 1;
+}
+
+.live-shell {
+  --live-bone: #38372f;
+  --live-moss: #6f755d;
+  --live-teal: #6a7259;
+  z-index: 1000;
+}
+
+.live-shell::before {
+  opacity: 0.07;
+  mix-blend-mode: multiply;
+}
+
+.live-input,
+.live-return {
+  color: rgba(67, 65, 54, 0.72);
+}
+
+.live-return:hover,
+.live-return:focus-visible {
+  color: var(--tissue-brown);
+}
+
+.live-help {
+  color: var(--tissue-ink);
+  background: rgba(77, 70, 57, 0.4);
+}
+
+.live-help__panel {
+  border-color: rgba(88, 83, 68, 0.42);
+  background: rgba(207, 201, 183, 0.97);
+  box-shadow: 18px 20px 58px rgba(69, 59, 43, 0.24);
+}
+
+.live-help__panel::before {
+  background: var(--tissue-brown);
+}
+
+.live-help__eyebrow,
+.live-help__number {
+  color: var(--tissue-moss);
+}
+
+.live-help__title,
+.live-help__step h2,
+.live-help__return {
+  color: var(--tissue-ink);
+}
+
+.live-help__intro,
+.live-help__step p,
+.live-help__keys {
+  color: rgba(65, 63, 53, 0.72);
+}
+
+.live-help__steps,
+.live-help__return {
+  border-color: rgba(90, 86, 71, 0.32);
+}
+
+.live-help__step + .live-help__step::before {
+  background: rgba(90, 86, 71, 0.24);
+}

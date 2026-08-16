@@ -15,6 +15,7 @@ let targetOpenness = 0;
 let canRelease = true;
 let blooms = [];
 let paperGrain = [];
+const pressureBloomVariant = window.OPEN_V05_VARIANT || null;
 
 const OPEN_RATIO = 2.12;
 const RESET_RATIO = 1.43;
@@ -63,7 +64,7 @@ function draw() {
 
   if (!showHelp) {
     updateRelease(metrics);
-    drawLiveField(source);
+    drawLiveField(source, metrics);
     drawHandDisplay(metrics);
   }
 
@@ -135,15 +136,15 @@ function updateRelease(metrics) {
     : metrics && metrics.ratio < RESET_RATIO;
 
   if (isOpen && canRelease) {
-    addBloom(source.x, source.y);
+    addBloom(source.x, source.y, metrics);
     canRelease = false;
   }
 
   if (isReset) canRelease = true;
 }
 
-function addBloom(x, y) {
-  blooms.push({
+function addBloom(x, y, metrics) {
+  const bloom = {
     x,
     y,
     age: 0,
@@ -152,13 +153,24 @@ function addBloom(x, y) {
     aspect: random(0.78, 1.18),
     seed: random(1000),
     strength: random(0.78, 1.12)
-  });
+  };
+
+  if (pressureBloomVariant?.createBloom) {
+    bloom.variantData = pressureBloomVariant.createBloom(bloom, metrics);
+  }
+
+  blooms.push(bloom);
 
   if (blooms.length > 8) blooms.shift();
 }
 
-function drawLiveField(point) {
+function drawLiveField(point, metrics) {
   if (!point || openness < 0.04) return;
+
+  if (pressureBloomVariant?.drawLiveField) {
+    pressureBloomVariant.drawLiveField(point, openness, blooms, metrics);
+    return;
+  }
 
   const amount = easeOutCubic(openness);
   const radius = lerp(14, min(width, height) * 0.085, amount);
@@ -182,6 +194,11 @@ function drawBloomMemories() {
 }
 
 function drawSingleBloom(bloom) {
+  if (pressureBloomVariant?.drawBloom) {
+    pressureBloomVariant.drawBloom(bloom, blooms);
+    return;
+  }
+
   const t = bloom.age / bloom.life;
   const expand = easeOutCubic(constrain(t * 1.45, 0, 1));
   const fade = 1 - easeInCubic(t);
@@ -346,10 +363,11 @@ function drawHandDisplay(metrics) {
   if (inputMode === "mouse" || !metrics || handDisplayMode === 0) return;
 
   const points = metrics.points;
+  const handPalette = pressureBloomVariant?.handPalette;
 
   if (handDisplayMode === 2) {
     noFill();
-    stroke(230, 226, 204, 58);
+    stroke(...(handPalette?.skeleton || [230, 226, 204, 58]));
     strokeWeight(0.75);
 
     for (const [a, b] of HAND_CONNECTIONS) {
@@ -359,7 +377,8 @@ function drawHandDisplay(metrics) {
 
   const visible = handDisplayMode === 1 ? [9] : points.map((_, index) => index);
   noStroke();
-  fill(246, 238, 198, 78);
+  const pointColour = handPalette?.points || [246, 238, 198];
+  fill(pointColour[0], pointColour[1], pointColour[2], handPalette?.pointAlpha || 78);
 
   for (const index of visible) {
     circle(points[index].x, points[index].y, handDisplayMode === 1 ? 7 : 4);

@@ -22,6 +22,7 @@ let saveFlash = 0;
 let savedPosition = null;
 let constellations = [];
 let backgroundPoints = [];
+const fingerConstellationVariant = window.OPEN_V06_VARIANT || null;
 
 const OPEN_RATIO = 2.12;
 const TRIGGER_RATIO = 1.68;
@@ -198,15 +199,17 @@ function addConstellation(fingertips) {
   const center = averagePoint(points);
   const links = buildDistanceNetwork(points);
 
-  for (let i = 0; i < constellations.length; i++) {
-    const existing = constellations[i];
-    const direction = existing.seed * 0.017;
-    const separation = min(16 + (i + 1) * 3.5, 76);
-    existing.targetOffsetX = cos(direction) * separation;
-    existing.targetOffsetY = sin(direction) * separation * 0.62 - min(i * 1.5, 22);
+  if (!fingerConstellationVariant) {
+    for (let i = 0; i < constellations.length; i++) {
+      const existing = constellations[i];
+      const direction = existing.seed * 0.017;
+      const separation = min(16 + (i + 1) * 3.5, 76);
+      existing.targetOffsetX = cos(direction) * separation;
+      existing.targetOffsetY = sin(direction) * separation * 0.62 - min(i * 1.5, 22);
+    }
   }
 
-  constellations.push({
+  const constellation = {
     points,
     links,
     center,
@@ -219,7 +222,13 @@ function addConstellation(fingertips) {
     scale: random(0.98, 1.025),
     flash: 1,
     seed: random(1000)
-  });
+  };
+
+  if (fingerConstellationVariant?.configureConstellation) {
+    constellation.variantData = fingerConstellationVariant.configureConstellation(constellation, constellations.length);
+  }
+
+  constellations.push(constellation);
 
   savedPosition = center;
   saveFlash = 105;
@@ -280,6 +289,17 @@ function drawLiveConstellation(metrics) {
 
   const links = buildDistanceNetwork(points);
   const amount = easeOutCubic(openness);
+
+  if (fingerConstellationVariant?.drawLiveConstellation) {
+    fingerConstellationVariant.drawLiveConstellation(
+      points,
+      links,
+      amount,
+      constrain(stableFrames / STABLE_FRAMES_REQUIRED, 0, 1),
+      lockedFingertips
+    );
+    return;
+  }
 
   drawConstellationShape(points, links, amount * 0.58, amount, 0, true);
 
@@ -359,6 +379,11 @@ function drawConstellationMemories() {
     constellation.offsetX = lerp(constellation.offsetX, constellation.targetOffsetX, 0.025);
     constellation.offsetY = lerp(constellation.offsetY, constellation.targetOffsetY, 0.025);
 
+    if (fingerConstellationVariant?.drawConstellationMemory) {
+      fingerConstellationVariant.drawConstellationMemory(constellation);
+      continue;
+    }
+
     const appear = easeOutCubic(constrain(constellation.age / 18, 0, 1));
     const settle = easeOutCubic(constrain(constellation.age / 260, 0, 1));
     const opacity = lerp(1, 0.82, settle);
@@ -432,7 +457,8 @@ function drawTechnicalHand(metrics) {
 
   if (handDisplayMode === 1) {
     noStroke();
-    fill(240, 231, 194, 62);
+    const pointColour = fingerConstellationVariant?.handPalette?.points || [240, 231, 194];
+    fill(pointColour[0], pointColour[1], pointColour[2], fingerConstellationVariant?.handPalette?.pointAlpha || 62);
 
     for (const point of metrics.fingertips) {
       circle(point.x, point.y, 3.5);
@@ -442,7 +468,7 @@ function drawTechnicalHand(metrics) {
   }
 
   noFill();
-  stroke(230, 226, 204, 45);
+  stroke(...(fingerConstellationVariant?.handPalette?.skeleton || [230, 226, 204, 45]));
   strokeWeight(0.7);
 
   for (const [a, b] of HAND_CONNECTIONS) {
@@ -450,7 +476,8 @@ function drawTechnicalHand(metrics) {
   }
 
   noStroke();
-  fill(240, 231, 194, 72);
+  const pointColour = fingerConstellationVariant?.handPalette?.points || [240, 231, 194];
+  fill(pointColour[0], pointColour[1], pointColour[2], fingerConstellationVariant?.handPalette?.skeletonPointAlpha || 72);
 
   for (const point of metrics.points) {
     circle(point.x, point.y, 3.5);

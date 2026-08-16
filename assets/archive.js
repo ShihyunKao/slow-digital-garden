@@ -33,31 +33,111 @@
           code: "v02", displayCode: "v02.00", path: "v02-layered-bloom", title: "Layered Bloom",
           statement: "An opening palm unfolds a layered contour field. A small movement becomes a slow, shifting expansion.",
           instructions: [["Begin", "Select Begin and allow access to the camera."], ["Open", "Show one hand and open your palm slowly."], ["Gather", "Open and close to unfold and gather the contour field."]],
-          meaning: ["gesture / open palm", "contours / layered field", "motion / expand + gather"]
+          meaning: ["gesture / open palm", "contours / layered field", "motion / expand + gather"],
+          variants: [
+            {
+              code: "v02-topographic", displayCode: "v02.01", path: "v02-layered-bloom/variants/v02.01", title: "Topographic Tissue",
+              variantStyle: "topographic-tissue",
+              statement: "The original layered palm field becomes an off-centre vertical tissue section, unfolding as fibrous paper contours with delayed depth.",
+              instructions: [["Begin", "Select Begin and allow access to the camera."], ["Unfold", "Open one hand slowly to separate the paper-like contour layers."], ["Settle", "Close the hand and let the delayed layers gather into one compact section."]],
+              meaning: ["gesture / open palm", "material / fibrous paper", "rhythm / staggered settling", "composition / vertical section"]
+            },
+            {
+              code: "v02-phase", displayCode: "v02.02", path: "v02-layered-bloom/variants/v02.02", title: "Phase Bloom",
+              variantStyle: "phase-bloom",
+              statement: "The layered palm field becomes a fan of refractive membranes whose delayed expansion produces interference, moiré and chromatic phase echoes.",
+              instructions: [["Begin", "Select Begin and allow access to the camera."], ["Phase", "Open one hand slowly to release the transparent membrane layers."], ["Echo", "Close the hand and watch each delayed phase gather into the dark centre."]],
+              meaning: ["gesture / open palm", "material / refractive film", "rhythm / delayed phase echoes", "composition / diagonal fan"]
+            }
+          ]
         },
         {
           code: "v03", displayCode: "v03.00", path: "v03-palm-imprint", title: "Palm Imprint",
           statement: "Each fully opened palm leaves a temporary constellation-like imprint.",
           instructions: [["Begin", "Select Begin and allow access to the camera."], ["Open", "Show one hand and open your palm slowly."], ["Imprint", "Relax, then open again to leave another imprint."]],
-          meaning: ["gesture / open palm", "points / constellation", "memory / temporary imprint"]
+          meaning: ["gesture / open palm", "points / constellation", "memory / temporary imprint"],
+          variants: [
+            {
+              code: "v03-dust-negative", displayCode: "v03.01", path: "v03-palm-imprint/variants/v03.01", title: "Dust Negative",
+              variantStyle: "dust-negative",
+              statement: "A fully opened palm displaces a field of charcoal dust, leaving a temporary memory made from absent space rather than illuminated points.",
+              instructions: [["Begin", "Select Begin and allow access to the camera."], ["Displace", "Open one hand fully to push the dust away from its silhouette."], ["Refill", "Relax, then watch the dust settle and slowly return before making another imprint."]],
+              meaning: ["gesture / open palm", "material / charcoal dust", "memory / negative space", "light / low side illumination"]
+            },
+            {
+              code: "v03-cyanotype", displayCode: "v03.02", path: "v03-palm-imprint/variants/v03.02", title: "Cyanotype Exposure",
+              variantStyle: "cyanotype-exposure",
+              statement: "Each fully opened palm becomes a cyanotype specimen. Camera distance sets the handprint scale—nearer hands expose larger samples, while farther hands remain compact—and pale particles slowly develop inside each frame before washing back into Prussian blue.",
+              instructions: [["Begin", "Select Begin and allow access to the camera."], ["Expose", "Open one hand fully. Move nearer for a larger specimen or farther away for a more compact exposure."], ["Develop", "Watch the particle handprint emerge inside the frame, hold, then wash away."]],
+              meaning: ["gesture / open palm", "distance / photographic scale", "material / photosensitive paper", "rhythm / expose + develop + wash", "memory / overlapping specimens"]
+            }
+          ]
         },
         {
           code: "v04", displayCode: "v04.00", path: "v04-calibrated-imprint", title: "Held Imprint",
           statement: "A briefly held open palm leaves a deliberate, temporary constellation-like imprint.",
           instructions: [["Begin", "Select Begin and allow access to the camera."], ["Open", "Relax your hand, then open your palm slowly."], ["Hold", "Hold until the small ring closes to leave an imprint."]],
-          meaning: ["gesture / held palm", "time / closing ring", "memory / deliberate imprint"]
+          meaning: ["gesture / held palm", "time / closing ring", "memory / deliberate imprint"],
+          variants: [
+            {
+              code: "v04-embossed-seal", displayCode: "v04.01", path: "v04-calibrated-imprint/variants/v04.01", title: "Embossed Seal",
+              variantStyle: "embossed-seal",
+              statement: "A held open palm slowly presses into warm archival paper. The depression deepens as the timer closes, then fixes at once as an embossed seal in a regular specimen grid.",
+              instructions: [["Begin", "Select Begin and allow access to the camera."], ["Press", "Hold one palm open while the paper depression grows deeper."], ["Seal", "Complete the hold to lock the relief into the next archive grid cell."]],
+              meaning: ["gesture / held palm", "material / embossed paper", "depth / timed pressure", "composition / archive grid"]
+            },
+            {
+              code: "v04-thermal-plate", displayCode: "v04.02", path: "v04-calibrated-imprint/variants/v04.02", title: "Thermal Plate",
+              variantStyle: "thermal-plate",
+              statement: "A held open palm accumulates heat from dark red through amber to a brief white-hot centre. The completed thermal trace remains where the hand appeared and cools slowly in place.",
+              instructions: [["Begin", "Select Begin and allow access to the camera."], ["Heat", "Hold one palm open and watch its internal temperature rise."], ["Cool", "Complete the hold to preserve the trace at its real position as it slowly cools."]],
+              meaning: ["gesture / held palm", "time / accumulated heat", "material / thermal plate", "memory / cooling in place"]
+            }
+          ]
         },
         {
           code: "v05", displayCode: "v05.00", path: "v05-pressure-bloom", title: "Pressure Bloom",
           statement: "An opening palm becomes a soft pressure field. Each release leaves a circular memory that slowly dissipates.",
           instructions: [["Begin", "Select Begin and allow access to the camera."], ["Press", "Open one palm slowly to create a pressure field."], ["Release", "Close, then open again to leave another memory."]],
-          meaning: ["gesture / opening palm", "field / soft pressure", "memory / slow release"]
+          meaning: ["gesture / opening palm", "field / soft pressure", "memory / slow release"],
+          variants: [
+            {
+              code: "v05-liquid-lens", displayCode: "v05.01", path: "v05-pressure-bloom/variants/v05.01", title: "Liquid Lens",
+              variantStyle: "liquid-lens",
+              statement: "An opening palm stretches a transparent oil-water membrane with refractive depth. Each released lens rebounds slowly, while overlapping pressure memories squeeze and reshape one another.",
+              instructions: [["Begin", "Select Begin and allow access to the camera."], ["Stretch", "Open one palm to expand the liquid lens beyond its resting edge."], ["Rebound", "Close, then open again and let the released membranes press, refract and settle together."]],
+              meaning: ["gesture / opening palm", "material / liquid membrane", "motion / elastic rebound", "light / local caustics"]
+            },
+            {
+              code: "v05-acoustic-compression", displayCode: "v05.02", path: "v05-pressure-bloom/variants/v05.02", title: "Acoustic Compression",
+              variantStyle: "acoustic-compression",
+              statement: "An opening palm compresses a monochrome acoustic field. Release sends a directional elliptical wavefront outward; its bright edge darkens, fractures and persists as a granular aftershock.",
+              instructions: [["Begin", "Select Begin and allow access to the camera."], ["Compress", "Open one palm to condense the directional pressure slice."], ["Release", "Close, then open again to send a wavefront through flash, fracture and aftershock."]],
+              meaning: ["gesture / opening palm", "material / acoustic scan", "rhythm / compression + release", "memory / granular aftershock"]
+            }
+          ]
         },
         {
           code: "v06", displayCode: "v06.00", path: "v06-finger-constellation", title: "Finger Constellation",
           statement: "Five fingertips become five stars. Each open hand adds a persistent map to an accumulating bodily archive.",
           instructions: [["Begin", "Select Begin and allow access to the camera."], ["Arrange", "Arrange the five stars, then hold until they brighten."], ["Preserve", "Close the hand to preserve the locked constellation."]],
-          meaning: ["points / five fingertips", "field / open hand", "light / held brightness", "memory / locked constellation"]
+          meaning: ["points / five fingertips", "field / open hand", "light / held brightness", "memory / locked constellation"],
+          variants: [
+            {
+              code: "v06-thread-cartography", displayCode: "v06.01", path: "v06-finger-constellation/variants/v06.01", title: "Thread Cartography",
+              variantStyle: "thread-cartography",
+              statement: "Five fingertip nodes become a weighted body map of fibre, stitch and tension. Holding the palm draws its threads taut; closing lets them sag slightly before the map fixes at a new archive coordinate.",
+              instructions: [["Begin", "Select Begin and allow access to the camera."], ["Tension", "Arrange the five nodes and hold the palm open until the fibres draw taut."], ["Archive", "Close the hand to let the threads settle and preserve the map at its next coordinate."]],
+              meaning: ["points / fingertip nodes", "material / fibre + stitch", "tension / held palm", "archive / coordinate map"]
+            },
+            {
+              code: "v06-mineral-archive", displayCode: "v06.02", path: "v06-finger-constellation/variants/v06.02", title: "Mineral Archive",
+              variantStyle: "mineral-archive",
+              statement: "Five fingertips become mineral growth points. Holding the palm extends crystalline facets and hairline fractures; closing freezes the formation into a vertically ordered geological archive.",
+              instructions: [["Begin", "Select Begin and allow access to the camera."], ["Grow", "Arrange the five crystal seeds and hold the palm open as their facets extend."], ["Freeze", "Close the hand to arrest the growth and preserve it in the next vertical stratum."]],
+              meaning: ["points / crystal seeds", "material / mineral facets", "time / outward growth", "archive / vertical strata"]
+            }
+          ]
         }
       ],
       materials: [

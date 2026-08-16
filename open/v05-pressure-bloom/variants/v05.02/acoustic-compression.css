@@ -1,0 +1,107 @@
+:root {
+  --acoustic-black: #050506;
+  --acoustic-white: #e5e5e1;
+  --acoustic-grey: #777a7d;
+  --acoustic-red: #b7221e;
+}
+
+html,
+body.acoustic-compression {
+  background: var(--acoustic-black) !important;
+}
+
+body.acoustic-compression::before,
+body.acoustic-compression::after {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+}
+
+body.acoustic-compression::before {
+  z-index: 0;
+  background:
+    linear-gradient(90deg, transparent 0 18%, rgba(183, 34, 30, 0.026) 18.1%, transparent 18.2% 72%, rgba(183, 34, 30, 0.018) 72.1%, transparent 72.2%),
+    radial-gradient(ellipse at 49% 48%, rgba(129, 132, 134, 0.075), transparent 48%),
+    linear-gradient(118deg, #030304 0%, #0a0a0b 52%, #030304 100%);
+}
+
+body.acoustic-compression::after {
+  z-index: 2;
+  opacity: 0.22;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 5px, rgba(226, 227, 224, 0.04) 6px, transparent 7px 12px),
+    radial-gradient(circle, rgba(224, 225, 222, 0.2) 0 0.4px, transparent 0.75px),
+    radial-gradient(circle, rgba(183, 34, 30, 0.22) 0 0.42px, transparent 0.8px);
+  background-position: 0 0, 0 0, 9px 13px;
+  background-size: auto, 17px 21px, 37px 41px;
+  mix-blend-mode: screen;
+}
+
+canvas {
+  position: relative;
+  z-index: 1;
+}
+
+.live-shell {
+  --live-bone: #e5e5e1;
+  --live-moss: #74777a;
+  --live-teal: #b7221e;
+  z-index: 1000;
+}
+
+.live-shell::before {
+  opacity: 0.08;
+  mix-blend-mode: screen;
+}
+
+.live-input,
+.live-return {
+  color: rgba(203, 204, 201, 0.64);
+}
+
+.live-return:hover,
+.live-return:focus-visible {
+  color: var(--acoustic-white);
+}
+
+.live-help {
+  color: var(--acoustic-white);
+  background: rgba(2, 2, 3, 0.8);
+}
+
+.live-help__panel {
+  border-color: rgba(147, 149, 151, 0.32);
+  background: rgba(9, 9, 10, 0.98);
+  box-shadow: 22px 28px 66px rgba(0, 0, 0, 0.62), inset 1px 0 rgba(229, 229, 225, 0.08);
+}
+
+.live-help__panel::before {
+  background: var(--acoustic-red);
+}
+
+.live-help__eyebrow,
+.live-help__number {
+  color: #b9bbbc;
+}
+
+.live-help__title,
+.live-help__step h2,
+.live-help__return {
+  color: var(--acoustic-white);
+}
+
+.live-help__intro,
+.live-help__step p,
+.live-help__keys {
+  color: rgba(191, 193, 193, 0.66);
+}
+
+.live-help__steps,
+.live-help__return {
+  border-color: rgba(137, 139, 141, 0.28);
+}
+
+.live-help__step + .live-help__step::before {
+  background: rgba(137, 139, 141, 0.22);
+}

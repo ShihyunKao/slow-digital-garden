@@ -1,0 +1,110 @@
+:root {
+  --seal-paper: #ddd8ca;
+  --seal-paper-light: #ece8dc;
+  --seal-graphite: #565247;
+  --seal-shadow: #8f897b;
+  --seal-gold: #80612f;
+}
+
+html,
+body.embossed-seal {
+  background: var(--seal-paper) !important;
+}
+
+body.embossed-seal::before,
+body.embossed-seal::after {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+}
+
+body.embossed-seal::before {
+  z-index: 0;
+  background:
+    linear-gradient(90deg, rgba(255, 253, 245, 0.48) 0%, rgba(255, 253, 245, 0.16) 35%, rgba(91, 84, 71, 0.09) 77%, rgba(70, 63, 52, 0.15) 100%),
+    radial-gradient(ellipse at 30% 43%, rgba(255, 254, 246, 0.42), transparent 38%),
+    linear-gradient(112deg, #e5e1d5 0%, #d8d3c5 55%, #c9c3b5 100%);
+}
+
+body.embossed-seal::after {
+  z-index: 2;
+  opacity: 0.34;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 31px, rgba(94, 87, 72, 0.055) 32px, transparent 33px 64px),
+    repeating-linear-gradient(90deg, transparent 0 31px, rgba(94, 87, 72, 0.045) 32px, transparent 33px 64px),
+    repeating-linear-gradient(7deg, rgba(255, 255, 250, 0.025) 0 1px, transparent 1px 11px),
+    radial-gradient(circle, rgba(85, 78, 65, 0.14) 0 0.45px, transparent 0.8px);
+  background-size: auto, auto, auto, 13px 17px;
+  mix-blend-mode: multiply;
+}
+
+canvas {
+  position: relative;
+  z-index: 1;
+}
+
+.live-shell {
+  --live-bone: #4e4b42;
+  --live-moss: #756f61;
+  --live-teal: #80612f;
+  z-index: 1000;
+}
+
+.live-shell::before {
+  opacity: 0.08;
+  mix-blend-mode: multiply;
+}
+
+.live-input,
+.live-return {
+  color: rgba(71, 68, 59, 0.68);
+}
+
+.live-return:hover,
+.live-return:focus-visible {
+  color: #332f28;
+}
+
+.live-help {
+  color: var(--seal-graphite);
+  background: rgba(83, 78, 67, 0.22);
+}
+
+.live-help__panel {
+  border-color: rgba(91, 84, 70, 0.34);
+  background:
+    linear-gradient(90deg, rgba(255, 253, 245, 0.3), rgba(104, 96, 80, 0.06)),
+    rgba(225, 220, 207, 0.98);
+  box-shadow: 18px 22px 48px rgba(75, 68, 55, 0.22), inset 2px 0 rgba(255, 254, 248, 0.48), inset -2px 0 rgba(92, 84, 70, 0.08);
+}
+
+.live-help__panel::before {
+  background: var(--seal-gold);
+}
+
+.live-help__eyebrow,
+.live-help__number {
+  color: var(--seal-gold);
+}
+
+.live-help__title,
+.live-help__step h2,
+.live-help__return {
+  color: #454139;
+}
+
+.live-help__intro,
+.live-help__step p,
+.live-help__keys {
+  color: rgba(72, 68, 59, 0.68);
+}
+
+.live-help__steps,
+.live-help__return {
+  border-color: rgba(103, 95, 79, 0.3);
+}
+
+.live-help__step + .live-help__step::before {
+  background: rgba(103, 95, 79, 0.24);
+}

@@ -483,6 +483,107 @@
     const variant = canvas.dataset.variant || "";
     const carbonVeil = variant === "carbon-veil";
     const luminousAperture = variant === "luminous-aperture";
+    const topographicTissue = variant === "topographic-tissue";
+    const phaseBloom = variant === "phase-bloom";
+    const dustNegative = variant === "dust-negative";
+    const cyanotypeExposure = variant === "cyanotype-exposure";
+    const embossedSeal = variant === "embossed-seal";
+    const thermalPlate = variant === "thermal-plate";
+    const liquidLens = variant === "liquid-lens";
+    const acousticCompression = variant === "acoustic-compression";
+    const threadCartography = variant === "thread-cartography";
+    const mineralArchive = variant === "mineral-archive";
+    const stagePalette = mineralArchive
+      ? {
+          background: "#0b0d18",
+          wash: "rgba(11,13,24,.052)",
+          wide: "rgba(98,89,126,.07)",
+          middle: "rgba(139,157,181,.16)",
+          fine: "rgba(181,222,235,.45)",
+          dot: "rgba(230,235,238,.86)"
+        }
+      : threadCartography
+      ? {
+          background: "#061116",
+          wash: "rgba(6,17,22,.05)",
+          wide: "rgba(69,105,103,.06)",
+          middle: "rgba(104,151,143,.14)",
+          fine: "rgba(222,220,206,.39)",
+          dot: "rgba(231,226,208,.82)"
+        }
+      : acousticCompression
+      ? {
+          background: "#050506",
+          wash: "rgba(5,5,6,.06)",
+          wide: "rgba(103,106,110,.06)",
+          middle: "rgba(187,190,192,.14)",
+          fine: "rgba(238,239,235,.42)",
+          dot: "rgba(182,28,24,.78)"
+        }
+      : liquidLens
+      ? {
+          background: "#071318",
+          wash: "rgba(7,19,24,.048)",
+          wide: "rgba(89,129,137,.065)",
+          middle: "rgba(105,154,135,.15)",
+          fine: "rgba(181,215,216,.4)",
+          dot: "rgba(232,234,217,.82)"
+        }
+      : thermalPlate
+      ? {
+          background: "#070303",
+          wash: "rgba(7,3,3,.055)",
+          wide: "rgba(68,4,3,.08)",
+          middle: "rgba(169,37,7,.2)",
+          fine: "rgba(245,142,27,.48)",
+          dot: "rgba(255,239,194,.9)"
+        }
+      : embossedSeal
+      ? {
+          background: "#d9d4c7",
+          wash: "rgba(217,212,199,.072)",
+          wide: "rgba(116,107,91,.052)",
+          middle: "rgba(147,136,117,.13)",
+          fine: "rgba(92,84,70,.32)",
+          dot: "rgba(121,88,42,.68)"
+        }
+      : cyanotypeExposure
+      ? {
+          background: "#052b4f",
+          wash: "rgba(5,43,79,.045)",
+          wide: "rgba(93,185,199,.065)",
+          middle: "rgba(151,218,219,.15)",
+          fine: "rgba(226,238,218,.43)",
+          dot: "rgba(235,242,221,.84)"
+        }
+      : dustNegative
+      ? {
+          background: "#0c0b0a",
+          wash: "rgba(12,11,10,.042)",
+          wide: "rgba(69,52,45,.052)",
+          middle: "rgba(115,91,78,.12)",
+          fine: "rgba(170,153,139,.3)",
+          dot: "rgba(183,165,150,.66)"
+        }
+      : topographicTissue
+      ? {
+          background: "#12130f",
+          wash: "rgba(18,19,15,.045)",
+          wide: "rgba(120,101,76,.052)",
+          middle: "rgba(121,132,101,.13)",
+          fine: "rgba(219,211,190,.38)",
+          dot: "rgba(221,214,195,.8)"
+        }
+      : phaseBloom
+        ? {
+            background: "#080921",
+            wash: "rgba(8,9,33,.045)",
+            wide: "rgba(96,104,255,.075)",
+            middle: "rgba(201,51,154,.17)",
+            fine: "rgba(219,231,255,.52)",
+            dot: "rgba(226,236,255,.9)"
+          }
+        : null;
     let state = openStageStates.get(canvas);
     if (!state || state.width !== width || state.height !== height || state.variant !== variant) {
       const rand = mulberry32(seed * 97 + 41);
@@ -505,13 +606,13 @@
       state = { width, height, variant, rand, spawn, particles: Array.from({ length: count }, spawn), frames: 0 };
       openStageStates.set(canvas, state);
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = carbonVeil ? "#b8b0a2" : luminousAperture ? "#020916" : "#07100d";
+      ctx.fillStyle = stagePalette?.background || (carbonVeil ? "#b8b0a2" : luminousAperture ? "#020916" : "#07100d");
       ctx.fillRect(0, 0, width, height);
     }
 
     // This follows the supplied Trail field: particles spiral inward while the
     // translucent frame wash preserves a soft record of their previous paths.
-    ctx.fillStyle = carbonVeil ? "rgba(184,176,162,.07)" : luminousAperture ? "rgba(2,9,22,.055)" : "rgba(7,16,13,.045)";
+    ctx.fillStyle = stagePalette?.wash || (carbonVeil ? "rgba(184,176,162,.07)" : luminousAperture ? "rgba(2,9,22,.055)" : "rgba(7,16,13,.045)");
     ctx.fillRect(0, 0, width, height);
     ctx.lineCap = "round";
     const path = new Path2D();
@@ -538,16 +639,16 @@
       ctx.shadowBlur = 12;
       ctx.shadowColor = "rgba(82,181,255,.62)";
     }
-    ctx.strokeStyle = carbonVeil ? "rgba(43,41,37,.032)" : luminousAperture ? "rgba(57,148,255,.11)" : "rgba(101,215,196,.049)";
+    ctx.strokeStyle = stagePalette?.wide || (carbonVeil ? "rgba(43,41,37,.032)" : luminousAperture ? "rgba(57,148,255,.11)" : "rgba(101,215,196,.049)");
     ctx.lineWidth = 3.4;
     ctx.stroke(path);
-    ctx.strokeStyle = carbonVeil ? "rgba(62,57,51,.09)" : luminousAperture ? "rgba(92,202,255,.3)" : "rgba(101,215,196,.112)";
+    ctx.strokeStyle = stagePalette?.middle || (carbonVeil ? "rgba(62,57,51,.09)" : luminousAperture ? "rgba(92,202,255,.3)" : "rgba(101,215,196,.112)");
     ctx.lineWidth = 1.7;
     ctx.stroke(path);
-    ctx.strokeStyle = carbonVeil ? "rgba(43,41,37,.34)" : luminousAperture ? "rgba(215,244,255,.82)" : "rgba(101,215,196,.35)";
+    ctx.strokeStyle = stagePalette?.fine || (carbonVeil ? "rgba(43,41,37,.34)" : luminousAperture ? "rgba(215,244,255,.82)" : "rgba(101,215,196,.35)");
     ctx.lineWidth = .8;
     ctx.stroke(path);
-    ctx.fillStyle = carbonVeil ? "rgba(43,41,37,.58)" : luminousAperture ? "rgba(231,250,255,.95)" : "rgba(232,225,216,.78)";
+    ctx.fillStyle = stagePalette?.dot || (carbonVeil ? "rgba(43,41,37,.58)" : luminousAperture ? "rgba(231,250,255,.95)" : "rgba(232,225,216,.78)");
     dots.forEach(([x, y]) => ctx.fillRect(x, y, 1.35, 1.35));
     ctx.restore();
     state.frames += 1;

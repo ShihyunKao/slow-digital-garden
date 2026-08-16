@@ -1,0 +1,108 @@
+:root {
+  --thermal-black: #070303;
+  --thermal-red: #8f1907;
+  --thermal-amber: #ef8c1c;
+  --thermal-white: #fff0c7;
+}
+
+html,
+body.thermal-plate {
+  background: var(--thermal-black) !important;
+}
+
+body.thermal-plate::before,
+body.thermal-plate::after {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+}
+
+body.thermal-plate::before {
+  z-index: 0;
+  background:
+    radial-gradient(ellipse at 48% 48%, rgba(72, 8, 4, 0.13), transparent 48%),
+    linear-gradient(116deg, #030202 0%, #0b0303 50%, #020101 100%);
+}
+
+body.thermal-plate::after {
+  z-index: 2;
+  opacity: 0.18;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 4px, rgba(255, 129, 35, 0.032) 5px, transparent 6px 10px),
+    radial-gradient(circle, rgba(255, 171, 62, 0.23) 0 0.42px, transparent 0.75px),
+    radial-gradient(circle, rgba(104, 12, 5, 0.28) 0 0.6px, transparent 0.9px);
+  background-position: 0 0, 0 0, 8px 11px;
+  background-size: auto, 17px 19px, 23px 29px;
+  mix-blend-mode: screen;
+}
+
+canvas {
+  position: relative;
+  z-index: 1;
+}
+
+.live-shell {
+  --live-bone: #f6c47a;
+  --live-moss: #a94116;
+  --live-teal: #f08c1d;
+  z-index: 1000;
+}
+
+.live-shell::before {
+  opacity: 0.09;
+  mix-blend-mode: screen;
+}
+
+.live-input,
+.live-return {
+  color: rgba(237, 145, 68, 0.66);
+}
+
+.live-return:hover,
+.live-return:focus-visible {
+  color: var(--thermal-white);
+}
+
+.live-help {
+  color: var(--thermal-white);
+  background: rgba(2, 0, 0, 0.78);
+}
+
+.live-help__panel {
+  border-color: rgba(207, 73, 18, 0.36);
+  background:
+    linear-gradient(90deg, rgba(98, 14, 5, 0.13), rgba(7, 2, 2, 0.06)),
+    rgba(13, 4, 3, 0.98);
+  box-shadow: 22px 28px 64px rgba(0, 0, 0, 0.58), inset 1px 0 rgba(255, 159, 48, 0.13);
+}
+
+.live-help__panel::before {
+  background: var(--thermal-amber);
+}
+
+.live-help__eyebrow,
+.live-help__number {
+  color: var(--thermal-amber);
+}
+
+.live-help__title,
+.live-help__step h2,
+.live-help__return {
+  color: var(--thermal-white);
+}
+
+.live-help__intro,
+.live-help__step p,
+.live-help__keys {
+  color: rgba(244, 190, 128, 0.68);
+}
+
+.live-help__steps,
+.live-help__return {
+  border-color: rgba(191, 64, 14, 0.32);
+}
+
+.live-help__step + .live-help__step::before {
+  background: rgba(191, 64, 14, 0.24);
+}
