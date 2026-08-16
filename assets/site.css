@@ -286,7 +286,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .version-family.has-variants:hover .version-variants,
 .version-family.has-variants:focus-within .version-variants,
 .version-family.has-variants:has(.version-row--variant.is-selected) .version-variants {
-  max-height: 240px;
+  max-height: 360px;
   opacity: 1;
 }
 .version-family.has-variants:hover .version-variants > .version-row,

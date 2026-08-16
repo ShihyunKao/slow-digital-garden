@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phase Bloom — Layered Bloom</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.11.3/lib/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ml5@1.0.1/dist/ml5.min.js"></script>
+    <script src="variant.js"></script>
+    <script src="../../../../assets/live-shell.js" defer></script>
+    <link rel="stylesheet" href="../../../../assets/live-help.css" />
+    <link rel="stylesheet" href="phase-bloom.css" />
+
+    <style>
+      html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
+      canvas { display: block; }
+    </style>
+  </head>
+
+  <body class="phase-bloom">
+    <section id="live-help" class="live-help" aria-hidden="true" aria-label="Phase Bloom field guide" hidden>
+      <div class="live-help__panel">
+        <p class="live-help__eyebrow">GESTURE STUDY 01.05&nbsp; / &nbsp;FIELD GUIDE</p>
+        <h1 class="live-help__title">Phase Bloom</h1>
+        <p class="live-help__intro">The original layered palm field becomes a fan of refractive membranes.<br />Its open-and-close response remains unchanged.</p>
+
+        <div class="live-help__steps">
+          <article class="live-help__step"><span class="live-help__number">01</span><h2>CAMERA</h2><p>Allow camera access when the browser asks.</p></article>
+          <article class="live-help__step"><span class="live-help__number">02</span><h2>PHASE</h2><p>Open one hand slowly to release the transparent membrane layers.</p></article>
+          <article class="live-help__step"><span class="live-help__number">03</span><h2>ECHO</h2><p>Close the hand and watch each delayed phase gather into the dark centre.</p></article>
+        </div>
+
+        <div class="live-help__footer">
+          <span class="live-help__keys">P&nbsp; HAND DISPLAY&nbsp;&nbsp;&nbsp;&nbsp; ?&nbsp; CLOSE</span>
+          <button id="live-help-return" class="live-help__return" type="button">RETURN TO LIVE FIELD&nbsp; →</button>
+        </div>
+      </div>
+    </section>
+    <script src="../v01.03/sketch.js"></script>
+  </body>
+</html>

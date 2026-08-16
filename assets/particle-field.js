@@ -483,6 +483,7 @@
     const variant = canvas.dataset.variant || "";
     const carbonVeil = variant === "carbon-veil";
     const luminousAperture = variant === "luminous-aperture";
+    const redStrata = variant === "red-strata";
     const topographicTissue = variant === "topographic-tissue";
     const phaseBloom = variant === "phase-bloom";
     const dustNegative = variant === "dust-negative";
@@ -493,7 +494,16 @@
     const acousticCompression = variant === "acoustic-compression";
     const threadCartography = variant === "thread-cartography";
     const mineralArchive = variant === "mineral-archive";
-    const stagePalette = mineralArchive
+    const stagePalette = redStrata
+      ? {
+          background: "#0d0a09",
+          wash: "rgba(13,10,9,.05)",
+          wide: "rgba(60,45,40,.08)",
+          middle: "rgba(113,58,48,.18)",
+          fine: "rgba(164,79,63,.48)",
+          dot: "rgba(201,190,179,.88)"
+        }
+      : mineralArchive
       ? {
           background: "#0b0d18",
           wash: "rgba(11,13,24,.052)",
