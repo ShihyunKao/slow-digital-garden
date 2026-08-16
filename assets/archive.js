@@ -174,35 +174,37 @@
           ]
         },
         {
-          code: "v05", displayCode: "v05.00", path: "v05-breath-quality", title: "Breath Quality",
+          code: "v04", displayCode: "v04.00", path: "v04-breath-quality", title: "Breath Quality",
           statement: "Each complete two-hand movement leaves a ring shaped by its speed, steadiness, balance and pause.",
           archiveReading: "Each completed stretch becomes a ring whose surface reveals the quality of movement.",
           instructions: [["Begin", "Allow the camera and bring hands together."], ["Open", "Open slowly and pause in the extended position."], ["Return", "Return slowly to create one quality-based memory ring."]],
           meaning: ["completeness / slow + steady", "texture / movement steadiness", "tilt / vertical hand balance", "stars / open-palm pause"]
         },
         {
-          code: "v06", displayCode: "v06.00", path: "v06-session-archive", title: "Session Archive",
-          statement: "Eight gentle stretches record nested contours and connect them into one personal bodily star map.",
-          archiveReading: "A fixed golden-angle sequence gives the archive its underlying structure; each stretch introduces a subtle bodily variation.",
-          instructions: [["Begin", "Allow the camera and bring hands together."], ["Open", "Open slowly, pause, then return to fix one contour."], ["Complete", "Complete eight stretches to reveal your body map."]],
-          meaning: ["sequence / golden-angle placement", "tilt / subtle hand correction", "distance / movement slowness", "stars / open-palm pause"]
-        },
-        {
-          code: "v07", displayCode: "v07.00", path: "v07-session-archive-refined", title: "Session Archive Refined",
-          statement: "Eight gentle stretches record nested contours and connect them into one personal bodily star map.",
-          archiveReading: "Each anchor turns one completed stretch into a small record of pace, pause, steadiness and duration.",
-          instructions: [["Begin", "Allow the camera and bring hands together."], ["Open", "Open slowly, pause, then return to fix one contour."], ["Complete", "Complete eight stretches to reveal your body map."]],
-          meaning: ["distance / movement slowness", "size / open-palm pause", "light / movement steadiness", "stars / stretch duration"]
-        },
-        {
-          code: "v08", displayCode: "v08.00", path: "v08-session-archive-spatial", title: "Session Archive Spatial",
+          code: "v05", displayCode: "v05.00", path: "v05-session-archive-spatial", title: "Session Archive Spatial",
           statement: "Eight gentle stretches record nested contours and connect them into one personal bodily star map.",
           archiveReading: "While both hands are widely open, the system averages the midpoint between the two index fingers. Shift the whole stretch left, right, up or down; the anchor follows the same direction.",
           instructions: [["Begin", "Allow the camera and bring hands together."], ["Shift", "Open slowly and shift the full stretch through space."], ["Complete", "Return and complete eight stretches to reveal the map."]],
-          meaning: ["direction / two-hand midpoint", "distance / movement slowness", "size / open-palm pause", "light / steadiness", "stars / stretch duration"]
+          meaning: ["direction / two-hand midpoint", "distance / movement slowness", "size / open-palm pause", "light / steadiness", "stars / stretch duration"],
+          variants: [
+            {
+              code: "v05-session-archive", displayCode: "v05.01", path: "v05-session-archive-spatial/variants/v05.01", title: "Session Archive",
+              statement: "Eight gentle stretches record nested contours and connect them into one personal bodily star map.",
+              archiveReading: "A fixed golden-angle sequence gives the archive its underlying structure; each stretch introduces a subtle bodily variation.",
+              instructions: [["Begin", "Allow the camera and bring hands together."], ["Open", "Open slowly, pause, then return to fix one contour."], ["Complete", "Complete eight stretches to reveal your body map."]],
+              meaning: ["sequence / golden-angle placement", "tilt / subtle hand correction", "distance / movement slowness", "stars / open-palm pause"]
+            },
+            {
+              code: "v05-session-archive-refined", displayCode: "v05.02", path: "v05-session-archive-spatial/variants/v05.02", title: "Session Archive Refined",
+              statement: "Eight gentle stretches record nested contours and connect them into one personal bodily star map.",
+              archiveReading: "Each anchor turns one completed stretch into a small record of pace, pause, steadiness and duration.",
+              instructions: [["Begin", "Allow the camera and bring hands together."], ["Open", "Open slowly, pause, then return to fix one contour."], ["Complete", "Complete eight stretches to reveal your body map."]],
+              meaning: ["distance / movement slowness", "size / open-palm pause", "light / movement steadiness", "stars / stretch duration"]
+            }
+          ]
         },
         {
-          code: "v09", displayCode: "v09.00", path: "v09-trajectory-archive", title: "Trajectory Archive",
+          code: "v06", displayCode: "v06.00", path: "v06-trajectory-archive", title: "Trajectory Archive",
           statement: "Eight gentle stretches build a quiet field, while their anchors and chronological path remain visually central.",
           archiveReading: "At the end of each stretch, hold both hands together where you want the anchor to appear. The system samples the midpoint between the two index fingers and places the anchor in the same direction.",
           instructions: [["Begin", "Allow the camera and bring hands together."], ["Open + return", "Open until the contour closes, then return."], ["Complete", "Hold hands together to place each of eight anchors."]],

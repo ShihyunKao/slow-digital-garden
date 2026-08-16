@@ -1,12 +1,12 @@
-# Both Hands V08: Session Archive Spatial
+# Both Hands V05.00: Session Archive Spatial
 
 ## Question
 
 Can repeated two-hand stretches accumulate into a personal visual archive of one movement session?
 
-## Change from V07
+## Relationship to V05.02
 
-V07 derives anchor direction from a combination of temporal and qualitative movement data. V08 separates direction from those qualities: anchor direction now records where the two-hand stretch takes place in camera space, while slowness remains responsible only for distance from the centre. This makes the left and right halves of the archive directly accessible through bodily position.
+V05.02 derives anchor direction from a combination of temporal and qualitative movement data. V05.00 separates direction from those qualities: anchor direction records where the two-hand stretch takes place in camera space, while slowness remains responsible only for distance from the centre. This makes the left and right halves of the archive directly accessible through bodily position.
 
 ## Interaction
 
@@ -27,7 +27,7 @@ Selecting **Begin** starts the camera in **Points** mode. `P` cycles hand visibi
 
 ## Design intention
 
-The final image is not a stack of eight independent results. It is one topographic and constellation-like record of repetition, pace, pauses and bodily variation across a short session. The live scanning arc, fixed contours and cross-layer signature distinguish the archive from V05's individual quality rings.
+The final image is not a stack of eight independent results. It is one topographic and constellation-like record of repetition, pace, pauses and bodily variation across a short session. The live scanning arc, fixed contours and cross-layer signature distinguish the archive from V04's individual quality rings.
 
 ## Technical experiment
 

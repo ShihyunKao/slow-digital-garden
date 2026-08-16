@@ -13,13 +13,7 @@ let handDisplayMode = 1; // Default POINTS; P cycles POINTS → SKELETON → HID
 let breath = 0;
 let targetBreath = 0;
 let previousBreath = 0;
-let currentInput = {
-  amount: 0,
-  symmetry: 1,
-  tilt: 0,
-  midpointX: 0.5,
-  midpointY: 0.5
-};
+let currentInput = { amount: 0, symmetry: 1, tilt: 0 };
 let cycle = null;
 let readyForCycle = true;
 
@@ -30,9 +24,6 @@ let completionAge = 0;
 let savedFlash = 0;
 
 const SESSION_LENGTH = 8;
-const OPEN_EXTENT_THRESHOLD = 0.88;
-const LIVE_REVEAL_RATE = 0.0065;
-const CLOSE_HOLD_FRAMES = 14;
 const HAND_CONNECTIONS = [
   [0, 1], [1, 2], [2, 3], [3, 4],
   [0, 5], [5, 6], [6, 7], [7, 8],
@@ -90,27 +81,18 @@ function syncHelpOverlay() {
 
 function getBreathInput() {
   if (hands.length < 2) {
-    return {
-      amount: max(0, breath - 0.04),
-      symmetry: 1,
-      tilt: 0,
-      midpointX: 0.5,
-      midpointY: 0.5
-    };
+    return { amount: max(0, breath - 0.04), symmetry: 1, tilt: 0 };
   }
 
   const a = hands[0].keypoints[8];
   const b = hands[1].keypoints[8];
-  const handDistance = dist(a.x, a.y, b.x, b.y);
-  const maximumDistance = width * 0.78;
+  const maximumDistance = min(width * 0.72, height * 1.15);
   const tilt = constrain((a.y - b.y) / (height * 0.23), -1, 1);
 
   return {
-    amount: constrain(map(handDistance, 48, maximumDistance, 0, 1), 0, 1),
+    amount: constrain(map(dist(a.x, a.y, b.x, b.y), 48, maximumDistance, 0, 1), 0, 1),
     symmetry: 1 - abs(tilt),
-    tilt,
-    midpointX: constrain((a.x + b.x) / 2 / width, 0, 1),
-    midpointY: constrain((a.y + b.y) / 2 / height, 0, 1)
+    tilt
   };
 }
 
@@ -124,15 +106,7 @@ function createCycle() {
     deltaSquaredSum: 0,
     symmetrySum: 0,
     tiltSum: 0,
-    pauseFrames: 0,
-    wideMidXSum: 0,
-    wideMidYSum: 0,
-    wideFrames: 0,
-    closeMidXValues: [],
-    closeMidYValues: [],
-    closeHoldFrames: 0,
-    liveSeed: random(1000),
-    liveProgress: 0
+    pauseFrames: 0
   };
 }
 
@@ -150,6 +124,7 @@ function updateSessionCycle() {
   if (!cycle) return;
 
   cycle.maxBreath = max(cycle.maxBreath, breath);
+  cycle.opened = cycle.opened || breath > 0.68;
   cycle.symmetrySum += currentInput.symmetry;
   cycle.tiltSum += currentInput.tilt;
   cycle.sampleFrames++;
@@ -160,55 +135,11 @@ function updateSessionCycle() {
     cycle.movingFrames++;
   }
 
-  if (
-    breath > OPEN_EXTENT_THRESHOLD - 0.06 &&
-    absoluteDelta < 0.0055
-  ) {
+  if (breath > 0.65 && absoluteDelta < 0.0055) {
     cycle.pauseFrames++;
   }
 
-  if (breath > 0.68) {
-    cycle.wideMidXSum += currentInput.midpointX;
-    cycle.wideMidYSum += currentInput.midpointY;
-    cycle.wideFrames++;
-  }
-
-  const targetLiveProgress = constrain(
-    map(breath, 0.24, OPEN_EXTENT_THRESHOLD, 0, 1),
-    0,
-    1
-  );
-
-  if (targetLiveProgress > cycle.liveProgress) {
-    cycle.liveProgress = min(
-      targetLiveProgress,
-      cycle.liveProgress + LIVE_REVEAL_RATE
-    );
-  }
-
-  cycle.opened =
-    cycle.opened ||
-    (
-      breath >= OPEN_EXTENT_THRESHOLD &&
-      cycle.liveProgress >= 0.995
-    );
-
-  if (
-    cycle.opened &&
-    breath < 0.34 &&
-    absoluteDelta < 0.0065 &&
-    hands.length >= 2
-  ) {
-    cycle.closeMidXValues.push(currentInput.midpointX);
-    cycle.closeMidYValues.push(currentInput.midpointY);
-    cycle.closeHoldFrames++;
-  }
-
-  if (
-    cycle.opened &&
-    breath < 0.3 &&
-    cycle.closeHoldFrames >= CLOSE_HOLD_FRAMES
-  ) {
+  if (cycle.opened && breath < 0.3) {
     addSessionMemory(cycle);
     cycle = null;
     return;
@@ -232,21 +163,6 @@ function calculateQuality(record) {
   const tilt = constrain(record.tiltSum / sampleFrames, -1, 1);
   const pause = constrain(record.pauseFrames / 85, 0, 1);
   const duration = constrain(map(record.sampleFrames, 55, 280, 0, 1), 0, 1);
-  const wideFrames = max(record.wideFrames, 1);
-  const hasFinalHold =
-    record.closeMidXValues.length >= CLOSE_HOLD_FRAMES;
-  const averageMidX = hasFinalHold
-    ? medianValue(record.closeMidXValues)
-    : record.wideFrames > 0
-      ? record.wideMidXSum / wideFrames
-      : 0.5;
-  const averageMidY = hasFinalHold
-    ? medianValue(record.closeMidYValues)
-    : record.wideFrames > 0
-      ? record.wideMidYSum / wideFrames
-      : 0.5;
-  const horizontalPosition = constrain(map(averageMidX, 0.36, 0.64, -1, 1), -1, 1);
-  const verticalPosition = constrain(map(averageMidY, 0.27, 0.73, -1, 1), -1, 1);
   const coherence = constrain(slowness * 0.56 + steadiness * 0.44, 0, 1);
 
   return {
@@ -256,8 +172,6 @@ function calculateQuality(record) {
     tilt,
     pause,
     duration,
-    horizontalPosition,
-    verticalPosition,
     coherence
   };
 }
@@ -266,15 +180,14 @@ function addSessionMemory(record) {
   const quality = calculateQuality(record);
   const progress = sessionStep / max(SESSION_LENGTH - 1, 1);
   const maximumRadius = min(width * 0.39, height * 0.58);
-  let directionX = quality.horizontalPosition;
-  let directionY = quality.verticalPosition;
-
-  if (abs(directionX) + abs(directionY) < 0.12) {
-    directionX = quality.tilt;
-    directionY = map(quality.pause, 0, 1, -0.72, 0.72);
-  }
-
-  const anchorAngle = atan2(directionY, directionX);
+  const qualityX =
+    (quality.slowness - 0.5) * 1.15 +
+    quality.tilt * 1.05;
+  const qualityY =
+    (quality.pause - 0.35) * 0.95 +
+    (quality.duration - 0.5) * 0.72 +
+    (quality.steadiness - 0.5) * 0.48;
+  const anchorAngle = atan2(qualityY, qualityX);
 
   const memory = {
     step: sessionStep,
@@ -282,11 +195,11 @@ function addSessionMemory(record) {
     radius: lerp(maximumRadius, maximumRadius * 0.2, progress),
     aspect: lerp(0.5, 0.64, quality.balance),
     rotation: quality.tilt * 0.18,
-    seed: record.liveSeed,
+    seed: random(1000),
     flash: 1,
     completeness: lerp(0.76, 0.995, quality.coherence),
     brightness: lerp(0.58, 1, quality.coherence),
-    roughness: lerp(0.078, 0.024, quality.steadiness),
+    roughness: lerp(0.055, 0.009, quality.steadiness),
     starCount: floor(lerp(5, 22, quality.duration)),
     anchorAngle,
     anchorScale: lerp(0.76, 1.08, quality.slowness),
@@ -305,14 +218,6 @@ function addSessionMemory(record) {
     sessionComplete = true;
     completionAge = 0;
   }
-}
-
-function medianValue(values) {
-  const sorted = [...values].sort((a, b) => a - b);
-  const middle = floor(sorted.length / 2);
-
-  if (sorted.length % 2 === 1) return sorted[middle];
-  return (sorted[middle - 1] + sorted[middle]) / 2;
 }
 
 function buildArchiveContour(memory) {
@@ -397,171 +302,48 @@ function drawArchiveScaffold(amount) {
     const current = i === sessionStep && !sessionComplete;
 
     noFill();
-    stroke(187, 205, 180, recorded ? 1.2 : current ? 4 : 0.7);
-    strokeWeight(current ? 0.3 : 0.18);
+    stroke(187, 205, 180, recorded ? 8 : current ? 22 : 6);
+    strokeWeight(current ? 0.65 : 0.35);
     ellipse(cx, cy, rr * 2, rr * 2 * guideAspect);
 
     const markerAngle = -HALF_PI;
     noStroke();
-    fill(213, 220, 199, recorded ? 8 : current ? 44 : 3);
+    fill(213, 220, 199, recorded ? 38 : current ? 95 : 18);
     circle(
       cx + cos(markerAngle) * rr,
       cy + sin(markerAngle) * rr * guideAspect,
-      current ? 3 : 1.4
+      current ? 3.8 : 2.2
     );
   }
 
   if (sessionComplete || sessionStep >= SESSION_LENGTH) return;
 
   const rr = getArchiveRadius(sessionStep);
-  if (cycle) {
-    drawLiveStabilityContour(cycle, cx, cy, rr);
-  }
-}
-
-function getLiveContourAspect(record) {
-  const sampleFrames = max(record.sampleFrames, 1);
-  const balance = constrain(record.symmetrySum / sampleFrames, 0, 1);
-  return lerp(0.5, 0.64, balance);
-}
-
-function drawLiveStabilityContour(record, cx, cy, radius) {
-  const aspect = getLiveContourAspect(record);
-  const sampleFrames = max(record.sampleFrames, 1);
-  const rotation = constrain(record.tiltSum / sampleFrames, -1, 1) * 0.18;
-  const movingFrames = max(record.movingFrames, 1);
-  const meanDelta = record.deltaSum / movingFrames;
-  const variance = max(
-    0,
-    record.deltaSquaredSum / movingFrames - meanDelta * meanDelta
-  );
-  const deviation = sqrt(variance);
-  const slowness =
-    1 - constrain(map(meanDelta, 0.006, 0.045, 0, 1), 0, 1);
-  const steadiness =
-    1 - constrain(map(deviation, 0.001, 0.024, 0, 1), 0, 1);
-  const coherence = constrain(slowness * 0.56 + steadiness * 0.44, 0, 1);
-  const roughness = lerp(0.078, 0.024, steadiness);
-  const completeness = lerp(0.76, 0.995, coherence);
-  const reveal = easeOutCubic(record.liveProgress);
-  const startAngle = -HALF_PI;
-  const endAngle = startAngle + TWO_PI * reveal;
-
-  push();
-  translate(cx, cy);
-  rotate(rotation);
+  const eased = easeInOutCubic(amount);
+  const sweepEnd = -HALF_PI + TWO_PI * eased;
 
   drawingContext.save();
-  drawingContext.shadowBlur = 18 + steadiness * 10;
-  drawingContext.shadowColor = "rgba(228, 226, 193, 0.42)";
-
-  drawLiveContourPass(
-    record,
-    radius,
-    aspect,
-    roughness,
-    completeness,
-    endAngle,
-    3.1,
-    18 + steadiness * 24
-  );
-  drawLiveContourPass(
-    record,
-    radius,
-    aspect,
-    roughness,
-    completeness,
-    endAngle,
-    0.72 + steadiness * 0.32,
-    72 + steadiness * 105
-  );
-
-  const tracker = getLiveContourPoint(
-    record,
-    endAngle,
-    radius,
-    aspect,
-    roughness
-  );
-  noStroke();
-  fill(250, 241, 201, 145 + steadiness * 95);
-  circle(tracker.x, tracker.y, 4.2 + steadiness * 2.5);
-
-  drawingContext.restore();
-  pop();
-}
-
-function drawLiveContourPass(
-  record,
-  radius,
-  aspect,
-  roughness,
-  completeness,
-  endAngle,
-  weight,
-  alpha
-) {
-  const angleStep = TWO_PI / 180;
-  let drawingSegment = false;
-
+  drawingContext.shadowBlur = 18 + eased * 16;
+  drawingContext.shadowColor = "rgba(228, 226, 193, 0.38)";
   noFill();
-  stroke(239, 233, 201, alpha);
-  strokeWeight(weight);
-
-  for (
-    let angle = -HALF_PI;
-    angle <= endAngle + angleStep;
-    angle += angleStep
-  ) {
-    const limitedAngle = min(angle, endAngle);
-    const gate = noise(
-      record.liveSeed + cos(limitedAngle) * 1.72,
-      record.liveSeed + sin(limitedAngle) * 1.72,
-      0.42
-    );
-    const visible = gate < completeness * 0.62 + 0.37;
-
-    if (visible) {
-      if (!drawingSegment) {
-        beginShape();
-        drawingSegment = true;
-      }
-
-      const point = getLiveContourPoint(
-        record,
-        limitedAngle,
-        radius,
-        aspect,
-        roughness
-      );
-      vertex(point.x, point.y);
-    } else if (drawingSegment) {
-      endShape();
-      drawingSegment = false;
-    }
-  }
-
-  if (drawingSegment) endShape();
-}
-
-function getLiveContourPoint(
-  record,
-  angle,
-  radius,
-  aspect,
-  roughness
-) {
-  const surface = noise(
-    record.liveSeed * 0.51 + cos(angle) * 2.35,
-    record.liveSeed * 0.51 + sin(angle) * 2.35,
-    0.18
+  stroke(239, 233, 201, 32 + eased * 105);
+  strokeWeight(0.85 + eased * 0.45);
+  arc(cx, cy, rr * 2, rr * 2 * guideAspect, -HALF_PI, sweepEnd);
+  noStroke();
+  fill(250, 241, 201, 80 + eased * 165);
+  circle(
+    cx + cos(sweepEnd) * rr,
+    cy + sin(sweepEnd) * rr * guideAspect,
+    3.2 + eased * 3.2
   );
-  const wobble = map(surface, 0, 1, 1 - roughness, 1 + roughness);
+  drawingContext.restore();
 
-  return {
-    x: cos(angle) * radius * wobble,
-    y: sin(angle) * radius * aspect * wobble
-  };
+  drawingContext.save();
+  drawingContext.filter = "blur(22px)";
+  noStroke();
+  fill(117, 153, 124, 5 + eased * 13);
+  ellipse(cx, cy, rr * 2.12, rr * 2.12 * guideAspect);
+  drawingContext.restore();
 }
 
 function drawArchiveRings() {
@@ -601,9 +383,9 @@ function drawArchiveContour(memory, opacity) {
     235,
     232,
     207,
-    (13 + memory.brightness * 38 + memory.flash * 21) * opacity
+    (22 + memory.brightness * 66 + memory.flash * 34) * opacity
   );
-  strokeWeight(0.34 + memory.brightness * 0.34 + memory.flash * 0.12);
+  strokeWeight(0.42 + memory.brightness * 0.48 + memory.flash * 0.18);
 
   for (const segment of memory.contourSegments) {
     beginShape();
@@ -617,8 +399,8 @@ function drawArchiveStars(memory, opacity) {
 
   for (const star of memory.stars) {
     const pulse = sin(frameCount * 0.024 + star.phase) * 0.5 + 0.5;
-    fill(245, 237, 198, (38 + memory.brightness * 78 + pulse * 28) * opacity);
-    circle(star.x, star.y, star.size * 1.08 + pulse * 0.72);
+    fill(245, 237, 198, (28 + memory.brightness * 62 + pulse * 22) * opacity);
+    circle(star.x, star.y, star.size + pulse * 0.6);
   }
 }
 
@@ -641,32 +423,19 @@ function drawAnchorStar(memory, opacity) {
   const stabilityLight = lerp(0.55, 1, memory.quality.steadiness);
 
   drawingContext.save();
-  drawingContext.shadowBlur = 18 + memory.flash * 18;
-  drawingContext.shadowColor = "rgba(246, 236, 194, 0.72)";
-  noFill();
-  stroke(
-    246,
-    236,
-    194,
-    (32 + stabilityLight * 40 + pulse * 18 + memory.flash * 45) * opacity
-  );
-  strokeWeight(0.55);
-  circle(
-    anchor.x,
-    anchor.y,
-    memory.anchorSize * 2.3 + pulse * 2.8 + memory.flash * 4
-  );
+  drawingContext.shadowBlur = 12 + memory.flash * 14;
+  drawingContext.shadowColor = "rgba(246, 236, 194, 0.58)";
   noStroke();
   fill(
     251,
     241,
     199,
-    (128 + stabilityLight * 112 + pulse * 46 + memory.flash * 82) * opacity
+    (95 + stabilityLight * 105 + pulse * 42 + memory.flash * 70) * opacity
   );
   circle(
     anchor.x,
     anchor.y,
-    memory.anchorSize * 1.08 + pulse * 1.7 + memory.flash * 2.8
+    memory.anchorSize + pulse * 1.4 + memory.flash * 2.5
   );
   drawingContext.restore();
 }
@@ -677,15 +446,11 @@ function drawNewArchiveReveal(memory) {
   const anchor = getAnchorPoint(memory, progress, false);
 
   drawingContext.save();
-  drawingContext.shadowBlur = 30;
-  drawingContext.shadowColor = "rgba(246, 236, 194, 0.78)";
-  noFill();
-  stroke(249, 239, 198, 150 * fade);
-  strokeWeight(0.7);
-  circle(anchor.x, anchor.y, 19 + (1 - progress) * 24);
+  drawingContext.shadowBlur = 22;
+  drawingContext.shadowColor = "rgba(246, 236, 194, 0.6)";
   noStroke();
-  fill(252, 242, 201, 238 * fade);
-  circle(anchor.x, anchor.y, 8 + memory.flash * 3.5);
+  fill(252, 242, 201, 210 * fade);
+  circle(anchor.x, anchor.y, 7 + memory.flash * 3);
   drawingContext.restore();
 }
 
@@ -701,24 +466,12 @@ function drawArchivePath() {
   push();
   translate(cx, cy);
 
-  const pathPresence = constrain(map(memories.length, 2, SESSION_LENGTH, 0.72, 1), 0, 1);
-
   drawingContext.save();
-  drawingContext.shadowBlur = 18 + finalReveal * 16;
-  drawingContext.shadowColor = "rgba(236, 228, 191, 0.52)";
+  drawingContext.shadowBlur = 10 + finalReveal * 12;
+  drawingContext.shadowColor = "rgba(236, 228, 191, 0.34)";
   noFill();
-  stroke(219, 224, 197, (26 + finalReveal * 30) * pathPresence);
-  strokeWeight(3.2 + finalReveal * 1.2);
-  drawArchivePathShape();
-
-  stroke(243, 235, 198, (92 + finalReveal * 92) * pathPresence);
-  strokeWeight(0.72 + finalReveal * 0.38);
-  drawArchivePathShape();
-  drawingContext.restore();
-  pop();
-}
-
-function drawArchivePathShape() {
+  stroke(226, 226, 201, 30 + finalReveal * 68);
+  strokeWeight(0.55 + finalReveal * 0.35);
   beginShape();
 
   const first = getAnchorPoint(memories[0]);
@@ -732,8 +485,9 @@ function drawArchivePathShape() {
 
   const last = getAnchorPoint(memories[memories.length - 1]);
   curveVertex(last.x, last.y);
-  curveVertex(last.x, last.y);
   endShape();
+  drawingContext.restore();
+  pop();
 }
 
 function drawCompletedBodyMap() {
@@ -749,9 +503,9 @@ function drawCompletedBodyMap() {
   drawingContext.save();
   drawingContext.filter = "blur(28px)";
   noStroke();
-  fill(112, 150, 122, 7 * reveal);
+  fill(112, 150, 122, 20 * reveal);
   ellipse(0, 0, getArchiveRadius(0) * 1.55, getArchiveRadius(0) * 0.95);
-  fill(233, 221, 181, 4 * reveal);
+  fill(233, 221, 181, 12 * reveal);
   circle(0, 0, 105 * reveal);
   drawingContext.restore();
 
@@ -770,9 +524,9 @@ function drawCompletedBodyMap() {
       237,
       231,
       198,
-      (18 + memory.quality.steadiness * 38 + readPulse * 18) * reveal
+      (10 + memory.quality.steadiness * 28 + readPulse * 12) * reveal
     );
-    strokeWeight(0.48);
+    strokeWeight(0.4);
     circle(anchor.x, anchor.y, haloSize);
   }
 
@@ -793,40 +547,18 @@ function drawSessionFeedback() {
   }
 
   let instruction = `STRETCH ${min(sessionStep + 1, SESSION_LENGTH)} OF ${SESSION_LENGTH}`;
-  let progress = sessionStep / SESSION_LENGTH;
 
   if (cycle) {
-    if (!cycle.opened) {
-      const percent = floor(cycle.liveProgress * 100);
-      progress = cycle.liveProgress;
-
-      if (breath > OPEN_EXTENT_THRESHOLD - 0.07) {
-        instruction += ` · HOLD TO COMPLETE ${percent}%`;
-      } else {
-        instruction += ` · OPEN WIDER ${percent}%`;
-      }
-    } else if (breath > 0.65) {
-      instruction += " · CONTOUR COMPLETE — RETURN SLOWLY";
-    } else if (breath < 0.34) {
-      const closeProgress = constrain(
-        cycle.closeHoldFrames / CLOSE_HOLD_FRAMES,
-        0,
-        1
-      );
-      instruction += ` · HOLD HANDS TOGETHER ${floor(closeProgress * 100)}%`;
-      progress = closeProgress;
-    } else if (previousBreath > breath) {
-      instruction += " · RETURN SLOWLY";
-    } else {
-      instruction += " · BRING HANDS TOGETHER";
-    }
+    if (breath > 0.65) instruction += " · PAUSE, THEN RETURN";
+    else if (previousBreath > breath) instruction += " · RETURN SLOWLY";
+    else instruction += " · OPEN SLOWLY";
   } else if (savedFlash > 0) {
     instruction = `MEMORY ${sessionStep} RECORDED`;
   } else {
     instruction += " · BRING HANDS TOGETHER";
   }
 
-  drawStatus(instruction, progress);
+  drawStatus(instruction, sessionStep / SESSION_LENGTH);
 }
 
 function drawStatus(label, progress) {
@@ -886,11 +618,11 @@ function drawHeader() {
   textAlign(LEFT, TOP);
   fill(239, 236, 217, 220);
   textSize(14);
-  text("TRAJECTORY ARCHIVE", inset, 27);
+  text("SESSION ARCHIVE REFINED", inset, 27);
 
   fill(168, 187, 163, 130);
   textSize(10);
-  text("GESTURE STUDY 09.00 / TRAJECTORY-LED BODY MAP", inset, 47);
+  text("GESTURE STUDY 05.02 / DATA-DRIVEN BODY MAP", inset, 47);
 
   textAlign(RIGHT, TOP);
   fill(211, 216, 198, 128);
@@ -940,11 +672,11 @@ function drawHelpScreen() {
   textAlign(LEFT, TOP);
   fill(174, 191, 166, 180);
   textSize(11);
-  text("GESTURE STUDY 09.00", left, panel.y + (compact ? 24 : 36));
+  text("GESTURE STUDY 05.02", left, panel.y + (compact ? 24 : 36));
 
   fill(238, 235, 216, 240);
   textSize(compact ? 28 : 36);
-  text("Trajectory Archive", left, panel.y + (compact ? 46 : 65));
+  text("Session Archive Refined", left, panel.y + (compact ? 46 : 65));
 
   if (compact) {
     drawCompactHelp(panel, left, rightEdge - left);
@@ -981,7 +713,7 @@ function drawEditorialHelp(panel, left, rightEdge) {
   textSize(15);
   textLeading(22);
   text(
-    "Eight gentle stretches build a quiet field, while their anchors and chronological path remain visually central.",
+    "Eight gentle stretches record nested contours and connect them into one personal bodily star map.",
     left,
     panel.y + 118,
     dividerX - left - 46
@@ -990,7 +722,7 @@ function drawEditorialHelp(panel, left, rightEdge) {
   const stepsY = panel.y + 198;
   const gap = 58;
   drawHelpStep("01", "Select Begin, allow the camera, and bring hands together.", left, stepsY);
-  drawHelpStep("02", "Open until the contour closes, return, then hold hands together.", left, stepsY + gap);
+  drawHelpStep("02", "Open slowly, pause, then return to fix one contour and anchor.", left, stepsY + gap);
   drawHelpStep("03", "Complete eight stretches to reveal your connected body map.", left, stepsY + gap * 2);
 
   stroke(178, 193, 169, 35);
@@ -1007,7 +739,7 @@ function drawEditorialHelp(panel, left, rightEdge) {
   textSize(12);
   textLeading(18);
   text(
-    "At the end of each stretch, hold both hands together where you want the anchor to appear. The system samples the midpoint between the two index fingers and places the anchor in the same direction.",
+    "Each anchor turns one completed stretch into a small record of pace, pause, steadiness and duration.",
     right,
     panel.y + 146,
     rightWidth
@@ -1015,11 +747,10 @@ function drawEditorialHelp(panel, left, rightEdge) {
 
   const legendY = panel.y + 246;
   const legendGap = 40;
-  drawArchiveLegendRow("01", "DIRECTION", "final resting midpoint", right, legendY, rightWidth);
-  drawArchiveLegendRow("02", "DISTANCE", "movement slowness", right, legendY + legendGap, rightWidth);
-  drawArchiveLegendRow("03", "SIZE", "open-palm pause", right, legendY + legendGap * 2, rightWidth);
-  drawArchiveLegendRow("04", "LIGHT", "movement steadiness", right, legendY + legendGap * 3, rightWidth);
-  drawArchiveLegendRow("05", "STARS", "stretch duration", right, legendY + legendGap * 4, rightWidth);
+  drawArchiveLegendRow("01", "DISTANCE", "movement slowness", right, legendY, rightWidth);
+  drawArchiveLegendRow("02", "SIZE", "open-palm pause", right, legendY + legendGap, rightWidth);
+  drawArchiveLegendRow("03", "LIGHT", "movement steadiness", right, legendY + legendGap * 2, rightWidth);
+  drawArchiveLegendRow("04", "STARS", "stretch duration", right, legendY + legendGap * 3, rightWidth);
 
   textAlign(LEFT, TOP);
   fill(174, 191, 166, 125);
@@ -1033,7 +764,7 @@ function drawCompactHelp(panel, left, contentWidth) {
   textSize(12);
   textLeading(17);
   text(
-    "Eight stretches accumulate into one trajectory-led bodily star map.",
+    "Eight stretches accumulate into one personal bodily star map.",
     left,
     panel.y + 86,
     contentWidth
@@ -1042,15 +773,14 @@ function drawCompactHelp(panel, left, contentWidth) {
   const stepsY = panel.y + 126;
   const gap = 39;
   drawHelpStep("01", "Begin with both hands together.", left, stepsY);
-  drawHelpStep("02", "Open, return, then hold hands together.", left, stepsY + gap);
+  drawHelpStep("02", "Open, pause, then return.", left, stepsY + gap);
   drawHelpStep("03", "Repeat eight times.", left, stepsY + gap * 2);
 
   const keyY = stepsY + gap * 3 + 5;
   fill(174, 191, 166, 115);
   textSize(10);
-  text("DIRECTION / FINAL RESTING MIDPOINT", left, keyY);
-  text("DISTANCE / SLOWNESS     SIZE / PAUSE", left, keyY + 16);
-  text("LIGHT / STEADINESS      STARS / DURATION", left, keyY + 32);
+  text("DISTANCE / SLOWNESS     SIZE / PAUSE", left, keyY);
+  text("LIGHT / STEADINESS      STARS / DURATION", left, keyY + 18);
 
   fill(174, 191, 166, 120);
   textSize(9);

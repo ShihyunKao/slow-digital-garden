@@ -1,4 +1,4 @@
-# Both Hands V05: Breath Quality
+# Both Hands V04: Breath Quality
 
 ## Question
 
@@ -6,7 +6,7 @@ How can the quality of a slow two-hand stretching gesture influence the visual m
 
 ## Change from V03.00
 
-V03.00 refined the Cosmic Memory interaction and interface. V05 makes each memory ring different by measuring qualities within a complete opening-and-return cycle.
+V03.00 refined the Cosmic Memory interaction and interface. V04 makes each memory ring different by measuring qualities within a complete opening-and-return cycle.
 
 ## Interaction
 

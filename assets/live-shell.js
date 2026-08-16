@@ -20,11 +20,11 @@
     "both-hands/v03-cosmic-memory-refined/variants/v03.01": ["03", "BOTH HANDS", "03.01", "Cosmic Memory", "both-hands", "v03-cosmic-memory", "P HAND DISPLAY · R RESET · ? HELP", "../../../../"],
     "both-hands/v03-cosmic-memory-refined/variants/v03.02": ["03", "BOTH HANDS", "03.02", "Amber Orbit", "both-hands", "v03-amber-orbit", "P HAND DISPLAY · R RESET · ? HELP", "../../../../"],
     "both-hands/v03-cosmic-memory-refined/variants/v03.03": ["03", "BOTH HANDS", "03.03", "Frozen Constellation", "both-hands", "v03-frozen-constellation", "P HAND DISPLAY · R RESET · ? HELP", "../../../../"],
-    "both-hands/v05-breath-quality": ["03", "BOTH HANDS", "05.00", "Breath Quality", "both-hands", "v05", "P HAND DISPLAY · R RESET · ? HELP"],
-    "both-hands/v06-session-archive": ["03", "BOTH HANDS", "06.00", "Session Archive", "both-hands", "v06", "P HAND DISPLAY · R RESET · ? HELP"],
-    "both-hands/v07-session-archive-refined": ["03", "BOTH HANDS", "07.00", "Session Archive Refined", "both-hands", "v07", "P HAND DISPLAY · R RESET · ? HELP"],
-    "both-hands/v08-session-archive-spatial": ["03", "BOTH HANDS", "08.00", "Session Archive Spatial", "both-hands", "v08", "P HAND DISPLAY · R RESET · ? HELP"],
-    "both-hands/v09-trajectory-archive": ["03", "BOTH HANDS", "09.00", "Trajectory Archive", "both-hands", "v09", "P HAND DISPLAY · R RESET · ? HELP"]
+    "both-hands/v04-breath-quality": ["03", "BOTH HANDS", "04.00", "Breath Quality", "both-hands", "v04", "P HAND DISPLAY · R RESET · ? HELP"],
+    "both-hands/v05-session-archive-spatial": ["03", "BOTH HANDS", "05.00", "Session Archive Spatial", "both-hands", "v05", "P HAND DISPLAY · R RESET · ? HELP"],
+    "both-hands/v05-session-archive-spatial/variants/v05.01": ["03", "BOTH HANDS", "05.01", "Session Archive", "both-hands", "v05-session-archive", "P HAND DISPLAY · R RESET · ? HELP", "../../../../"],
+    "both-hands/v05-session-archive-spatial/variants/v05.02": ["03", "BOTH HANDS", "05.02", "Session Archive Refined", "both-hands", "v05-session-archive-refined", "P HAND DISPLAY · R RESET · ? HELP", "../../../../"],
+    "both-hands/v06-trajectory-archive": ["03", "BOTH HANDS", "06.00", "Trajectory Archive", "both-hands", "v06", "P HAND DISPLAY · R RESET · ? HELP"]
   };
 
   const parts = location.pathname.split("/").filter(Boolean);

@@ -1,12 +1,12 @@
-# Both Hands V07: Session Archive Refined
+# Both Hands V05.02: Session Archive Refined
 
 ## Question
 
 Can repeated two-hand stretches accumulate into a personal visual archive of one movement session?
 
-## Change from V06
+## Change from V05.01
 
-V06 uses a fixed golden-angle structure for its archive anchors. V07 makes the archive data-driven: each anchor's direction, distance, size and brightness are derived from the participant's movement qualities. The final path therefore records this particular session rather than following a predetermined composition.
+V05.01 uses a fixed golden-angle structure for its archive anchors. V05.02 makes the archive data-driven: each anchor's direction, distance, size and brightness are derived from the participant's movement qualities. The final path therefore records this particular session rather than following a predetermined composition.
 
 ## Interaction
 
@@ -27,7 +27,7 @@ Selecting **Begin** starts the camera in **Points** mode. `P` cycles hand visibi
 
 ## Design intention
 
-The final image is not a stack of eight independent results. It is one topographic and constellation-like record of repetition, pace, pauses and bodily variation across a short session. The live scanning arc, fixed contours and cross-layer signature distinguish the archive from V05's individual quality rings.
+The final image is not a stack of eight independent results. It is one topographic and constellation-like record of repetition, pace, pauses and bodily variation across a short session. The live scanning arc, fixed contours and cross-layer signature distinguish the archive from V04's individual quality rings.
 
 ## Technical experiment
 

@@ -13,7 +13,13 @@ let handDisplayMode = 1; // Default POINTS; P cycles POINTS → SKELETON → HID
 let breath = 0;
 let targetBreath = 0;
 let previousBreath = 0;
-let currentInput = { amount: 0, symmetry: 1, tilt: 0 };
+let currentInput = {
+  amount: 0,
+  symmetry: 1,
+  tilt: 0,
+  midpointX: 0.5,
+  midpointY: 0.5
+};
 let cycle = null;
 let readyForCycle = true;
 
@@ -81,7 +87,13 @@ function syncHelpOverlay() {
 
 function getBreathInput() {
   if (hands.length < 2) {
-    return { amount: max(0, breath - 0.04), symmetry: 1, tilt: 0 };
+    return {
+      amount: max(0, breath - 0.04),
+      symmetry: 1,
+      tilt: 0,
+      midpointX: 0.5,
+      midpointY: 0.5
+    };
   }
 
   const a = hands[0].keypoints[8];
@@ -92,7 +104,9 @@ function getBreathInput() {
   return {
     amount: constrain(map(dist(a.x, a.y, b.x, b.y), 48, maximumDistance, 0, 1), 0, 1),
     symmetry: 1 - abs(tilt),
-    tilt
+    tilt,
+    midpointX: constrain((a.x + b.x) / 2 / width, 0, 1),
+    midpointY: constrain((a.y + b.y) / 2 / height, 0, 1)
   };
 }
 
@@ -106,7 +120,10 @@ function createCycle() {
     deltaSquaredSum: 0,
     symmetrySum: 0,
     tiltSum: 0,
-    pauseFrames: 0
+    pauseFrames: 0,
+    wideMidXSum: 0,
+    wideMidYSum: 0,
+    wideFrames: 0
   };
 }
 
@@ -139,6 +156,12 @@ function updateSessionCycle() {
     cycle.pauseFrames++;
   }
 
+  if (breath > 0.55) {
+    cycle.wideMidXSum += currentInput.midpointX;
+    cycle.wideMidYSum += currentInput.midpointY;
+    cycle.wideFrames++;
+  }
+
   if (cycle.opened && breath < 0.3) {
     addSessionMemory(cycle);
     cycle = null;
@@ -163,6 +186,11 @@ function calculateQuality(record) {
   const tilt = constrain(record.tiltSum / sampleFrames, -1, 1);
   const pause = constrain(record.pauseFrames / 85, 0, 1);
   const duration = constrain(map(record.sampleFrames, 55, 280, 0, 1), 0, 1);
+  const wideFrames = max(record.wideFrames, 1);
+  const averageMidX = record.wideFrames > 0 ? record.wideMidXSum / wideFrames : 0.5;
+  const averageMidY = record.wideFrames > 0 ? record.wideMidYSum / wideFrames : 0.5;
+  const horizontalPosition = constrain(map(averageMidX, 0.36, 0.64, -1, 1), -1, 1);
+  const verticalPosition = constrain(map(averageMidY, 0.27, 0.73, -1, 1), -1, 1);
   const coherence = constrain(slowness * 0.56 + steadiness * 0.44, 0, 1);
 
   return {
@@ -172,6 +200,8 @@ function calculateQuality(record) {
     tilt,
     pause,
     duration,
+    horizontalPosition,
+    verticalPosition,
     coherence
   };
 }
@@ -180,14 +210,15 @@ function addSessionMemory(record) {
   const quality = calculateQuality(record);
   const progress = sessionStep / max(SESSION_LENGTH - 1, 1);
   const maximumRadius = min(width * 0.39, height * 0.58);
-  const qualityX =
-    (quality.slowness - 0.5) * 1.15 +
-    quality.tilt * 1.05;
-  const qualityY =
-    (quality.pause - 0.35) * 0.95 +
-    (quality.duration - 0.5) * 0.72 +
-    (quality.steadiness - 0.5) * 0.48;
-  const anchorAngle = atan2(qualityY, qualityX);
+  let directionX = quality.horizontalPosition;
+  let directionY = quality.verticalPosition;
+
+  if (abs(directionX) + abs(directionY) < 0.12) {
+    directionX = quality.tilt;
+    directionY = map(quality.pause, 0, 1, -0.72, 0.72);
+  }
+
+  const anchorAngle = atan2(directionY, directionX);
 
   const memory = {
     step: sessionStep,
@@ -618,11 +649,11 @@ function drawHeader() {
   textAlign(LEFT, TOP);
   fill(239, 236, 217, 220);
   textSize(14);
-  text("SESSION ARCHIVE REFINED", inset, 27);
+  text("SESSION ARCHIVE SPATIAL", inset, 27);
 
   fill(168, 187, 163, 130);
   textSize(10);
-  text("GESTURE STUDY 07.00 / DATA-DRIVEN BODY MAP", inset, 47);
+  text("GESTURE STUDY 05.00 / POSITION-DRIVEN BODY MAP", inset, 47);
 
   textAlign(RIGHT, TOP);
   fill(211, 216, 198, 128);
@@ -672,11 +703,11 @@ function drawHelpScreen() {
   textAlign(LEFT, TOP);
   fill(174, 191, 166, 180);
   textSize(11);
-  text("GESTURE STUDY 07.00", left, panel.y + (compact ? 24 : 36));
+  text("GESTURE STUDY 05.00", left, panel.y + (compact ? 24 : 36));
 
   fill(238, 235, 216, 240);
   textSize(compact ? 28 : 36);
-  text("Session Archive Refined", left, panel.y + (compact ? 46 : 65));
+  text("Session Archive Spatial", left, panel.y + (compact ? 46 : 65));
 
   if (compact) {
     drawCompactHelp(panel, left, rightEdge - left);
@@ -739,7 +770,7 @@ function drawEditorialHelp(panel, left, rightEdge) {
   textSize(12);
   textLeading(18);
   text(
-    "Each anchor turns one completed stretch into a small record of pace, pause, steadiness and duration.",
+    "While both hands are widely open, the system averages the midpoint between the two index fingers. Shift the whole stretch left, right, up or down; the anchor follows the same direction.",
     right,
     panel.y + 146,
     rightWidth
@@ -747,10 +778,11 @@ function drawEditorialHelp(panel, left, rightEdge) {
 
   const legendY = panel.y + 246;
   const legendGap = 40;
-  drawArchiveLegendRow("01", "DISTANCE", "movement slowness", right, legendY, rightWidth);
-  drawArchiveLegendRow("02", "SIZE", "open-palm pause", right, legendY + legendGap, rightWidth);
-  drawArchiveLegendRow("03", "LIGHT", "movement steadiness", right, legendY + legendGap * 2, rightWidth);
-  drawArchiveLegendRow("04", "STARS", "stretch duration", right, legendY + legendGap * 3, rightWidth);
+  drawArchiveLegendRow("01", "DIRECTION", "two-hand midpoint", right, legendY, rightWidth);
+  drawArchiveLegendRow("02", "DISTANCE", "movement slowness", right, legendY + legendGap, rightWidth);
+  drawArchiveLegendRow("03", "SIZE", "open-palm pause", right, legendY + legendGap * 2, rightWidth);
+  drawArchiveLegendRow("04", "LIGHT", "movement steadiness", right, legendY + legendGap * 3, rightWidth);
+  drawArchiveLegendRow("05", "STARS", "stretch duration", right, legendY + legendGap * 4, rightWidth);
 
   textAlign(LEFT, TOP);
   fill(174, 191, 166, 125);
@@ -779,8 +811,9 @@ function drawCompactHelp(panel, left, contentWidth) {
   const keyY = stepsY + gap * 3 + 5;
   fill(174, 191, 166, 115);
   textSize(10);
-  text("DISTANCE / SLOWNESS     SIZE / PAUSE", left, keyY);
-  text("LIGHT / STEADINESS      STARS / DURATION", left, keyY + 18);
+  text("DIRECTION / TWO-HAND MIDPOINT", left, keyY);
+  text("DISTANCE / SLOWNESS     SIZE / PAUSE", left, keyY + 16);
+  text("LIGHT / STEADINESS      STARS / DURATION", left, keyY + 32);
 
   fill(174, 191, 166, 120);
   textSize(9);

@@ -1,12 +1,12 @@
-# Both Hands V06: Session Archive
+# Both Hands V05.01: Session Archive
 
 ## Question
 
 Can repeated two-hand stretches accumulate into a personal visual archive of one movement session?
 
-## Change from V05
+## Change from V04
 
-V05 compares separate rings as feedback on movement quality. V06 removes the continuous cosmic field and treats the whole session as one drawing. Each stretch records a restrained contour and one quality anchor. The anchors gradually connect into a constellation-like signature across the archive.
+V04 compares separate rings as feedback on movement quality. V05.01 removes the continuous cosmic field and treats the whole session as one drawing. Each stretch records a restrained contour and one quality anchor. The anchors gradually connect into a constellation-like signature across the archive.
 
 ## Interaction
 
@@ -26,13 +26,13 @@ Selecting **Begin** starts the camera in **Points** mode. `P` cycles hand visibi
 
 ## Anchor placement
 
-V06 uses a fixed golden-angle sequence to place its eight anchors. Each completed stretch moves to the next position around the archive by approximately 137.5 degrees, distributing the anchors across the composition rather than mapping them directly to the hands’ screen position.
+V05.01 uses a fixed golden-angle sequence to place its eight anchors. Each completed stretch moves to the next position around the archive by approximately 137.5 degrees, distributing the anchors across the composition rather than mapping them directly to the hands’ screen position.
 
 A small correction based on the left–right tilt of the hands allows each movement to shift the anchor slightly. The anchor’s distance from the centre responds to slowness, while the nearby star cluster records the pause. The final image therefore combines a repeatable compositional structure with subtle bodily variation.
 
 ## Design intention
 
-The final image is not a stack of eight independent results. It is one topographic and constellation-like record of repetition, pace, pauses and bodily variation across a short session. The live scanning arc, fixed contours and cross-layer signature distinguish the archive from V05's individual quality rings.
+The final image is not a stack of eight independent results. It is one topographic and constellation-like record of repetition, pace, pauses and bodily variation across a short session. The live scanning arc, fixed contours and cross-layer signature distinguish the archive from V04's individual quality rings.
 
 ## Technical experiment
 

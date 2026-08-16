@@ -1,12 +1,12 @@
-# Both Hands V09: Trajectory Archive
+# Both Hands V06: Trajectory Archive
 
 ## Question
 
 Can reducing the visual presence of the circular scaffold make the participant's anchors, stars and chronological movement path more legible?
 
-## Change from V08
+## Change from V05
 
-V09 preserves V08's camera-space mapping and its eight-stretch session logic. Empty guide circles and completed contours become quieter, while anchor stars, duration clusters, new-memory feedback and the chronological trajectory become brighter and more distinct. The fixed scanning arc is replaced by a progressively revealed preview of the final stability contour.
+V06 preserves V05's camera-space mapping and its eight-stretch session logic. Empty guide circles and completed contours become quieter, while anchor stars, duration clusters, new-memory feedback and the chronological trajectory become brighter and more distinct. The fixed scanning arc is replaced by a progressively revealed preview of the final stability contour.
 
 ## Interaction
 
@@ -60,4 +60,4 @@ The final image is not a stack of eight independent rings. The circular scaffold
 
 ## Next development
 
-Compare V08 and V09 with participants to see whether the quieter scaffold improves legibility without losing the sense of an eight-stage session.
+Compare V05 and V06 with participants to see whether the quieter scaffold improves legibility without losing the sense of an eight-stage session.
