@@ -1,0 +1,108 @@
+:root {
+  --survey-paper: #e8e2cf;
+  --survey-paper-shadow: #d3cfbe;
+  --survey-green: #46564a;
+  --survey-green-light: #6f7d69;
+  --survey-red: #682e2b;
+  --survey-graphite: #373b36;
+}
+
+html,
+body.surveyors-map {
+  background: var(--survey-paper) !important;
+}
+
+body.surveyors-map::before,
+body.surveyors-map::after {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  content: "";
+}
+
+body.surveyors-map::before {
+  opacity: 0.72;
+  background:
+    linear-gradient(90deg, rgba(68, 80, 69, 0.035) 1px, transparent 1px),
+    linear-gradient(rgba(68, 80, 69, 0.035) 1px, transparent 1px),
+    radial-gradient(ellipse at 76% 26%, rgba(255, 250, 231, 0.3), transparent 38%);
+  background-size: 48px 48px, 48px 48px, auto;
+}
+
+body.surveyors-map::after {
+  opacity: 0.28;
+  background:
+    linear-gradient(103deg, transparent 0 48%, rgba(75, 70, 59, 0.06) 49%, transparent 50%),
+    radial-gradient(ellipse at 8% 92%, rgba(76, 65, 53, 0.12), transparent 26%);
+}
+
+canvas {
+  position: relative;
+  z-index: 1;
+  filter: contrast(1.02);
+}
+
+.live-shell {
+  --live-bone: #373b36;
+  --live-moss: #6a7668;
+  --live-teal: #46564a;
+  z-index: 1000;
+}
+
+.live-shell::before {
+  opacity: 0.045;
+  mix-blend-mode: multiply;
+}
+
+.live-input,
+.live-return {
+  color: var(--survey-green-light);
+  text-shadow: none;
+}
+
+.live-return:hover,
+.live-return:focus-visible {
+  color: var(--survey-red);
+}
+
+.live-help {
+  color: var(--survey-graphite);
+  background: rgba(54, 58, 52, 0.42);
+}
+
+.live-help__panel {
+  border-color: rgba(59, 69, 60, 0.36);
+  background: rgba(232, 226, 207, 0.98);
+  box-shadow: 0 20px 50px rgba(57, 52, 43, 0.22);
+}
+
+.live-help__panel::before {
+  background: rgba(104, 46, 43, 0.78);
+}
+
+.live-help__eyebrow,
+.live-help__number {
+  color: rgba(70, 86, 74, 0.86);
+}
+
+.live-help__title,
+.live-help__step h2,
+.live-help__return {
+  color: var(--survey-graphite);
+}
+
+.live-help__intro,
+.live-help__step p,
+.live-help__keys {
+  color: rgba(55, 59, 54, 0.7);
+}
+
+.live-help__steps,
+.live-help__return {
+  border-color: rgba(70, 86, 74, 0.25);
+}
+
+.live-help__step + .live-help__step::before {
+  background: rgba(70, 86, 74, 0.2);
+}

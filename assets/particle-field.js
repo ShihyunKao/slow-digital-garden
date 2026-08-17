@@ -310,16 +310,887 @@
     ctx.restore();
   }
 
+  function drawFibrousBleedStage(ctx, time, width, height, seed) {
+    const rand = mulberry32(seed * 109 + 41);
+    const motionTime = reduceMotion ? 7.2 : time;
+    const paper = "rgb(214,205,187)";
+    const ink = [45, 36, 31];
+
+    ctx.fillStyle = paper;
+    ctx.fillRect(0, 0, width, height);
+
+    // A static field of mostly horizontal fibres makes the material read as
+    // rough paper even when the animated trace is viewed without colour.
+    ctx.save();
+    ctx.lineCap = "round";
+    for (let fibre = 0; fibre < 620; fibre++) {
+      const x = rand() * width;
+      const y = rand() * height;
+      const length = 4 + rand() * 24;
+      ctx.strokeStyle = rand() > .68
+        ? `rgba(245,239,220,${.035 + rand() * .075})`
+        : `rgba(104,86,70,${.025 + rand() * .065})`;
+      ctx.lineWidth = .25 + rand() * .6;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + length, y + (rand() - .5) * 3.2);
+      ctx.stroke();
+    }
+
+    const pointAt = sampleTime => {
+      const phase = sampleTime * .3;
+      return [
+        width * (.5 + Math.sin(phase) * .4),
+        height * (.5 + Math.sin(phase * 1.73 + .65) * .23)
+      ];
+    };
+
+    ctx.globalCompositeOperation = "multiply";
+    for (let deposit = 0; deposit < 92; deposit++) {
+      const age = deposit / 91;
+      const [x, y] = pointAt(motionTime - age * 13.5);
+      const spread = 8 + age * 58 + rand() * 24;
+      const centreFade = .13 + (1 - age) * .13;
+
+      ctx.fillStyle = `rgba(${ink[0]},${ink[1]},${ink[2]},${centreFade * (.36 + rand() * .45)})`;
+      ctx.beginPath();
+      ctx.ellipse(
+        x + (rand() - .5) * 16,
+        y + (rand() - .5) * 9,
+        spread * (1.6 + rand() * 1.4),
+        spread * (.18 + rand() * .22),
+        (rand() - .5) * .08,
+        0,
+        TAU
+      );
+      ctx.fill();
+
+      const side = deposit % 2 ? -1 : 1;
+      ctx.strokeStyle = `rgba(${ink[0]},${ink[1]},${ink[2]},${.055 + rand() * .16})`;
+      ctx.lineWidth = .3 + rand() * .7;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.bezierCurveTo(
+        x + side * spread * .5,
+        y + (rand() - .5) * 12,
+        x + side * spread * 1.15,
+        y + (rand() - .5) * 18,
+        x + side * spread * (1.7 + rand() * .8),
+        y + (rand() - .5) * 25
+      );
+      ctx.stroke();
+    }
+
+    // The newest gesture remains a thin line before capillary spreading.
+    ctx.strokeStyle = "rgba(45,36,31,.62)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let sample = 0; sample <= 44; sample++) {
+      const [x, y] = pointAt(motionTime - (1 - sample / 44) * 4.2);
+      if (sample === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawSuspendedVaporStage(ctx, time, width, height, seed) {
+    const rand = mulberry32(seed * 137 + 29);
+    const motionTime = reduceMotion ? 9.4 : time;
+
+    ctx.fillStyle = "#05070e";
+    ctx.fillRect(0, 0, width, height);
+
+    const volume = ctx.createRadialGradient(
+      width * .5,
+      height * .58,
+      0,
+      width * .5,
+      height * .58,
+      Math.max(width, height) * .62
+    );
+    volume.addColorStop(0, "rgba(38,40,65,.24)");
+    volume.addColorStop(.58, "rgba(23,29,48,.09)");
+    volume.addColorStop(1, "rgba(5,7,14,0)");
+    ctx.fillStyle = volume;
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.save();
+    for (let mote = 0; mote < 180; mote++) {
+      const x = rand() * width;
+      const sourceY = rand() * height;
+      const y = (sourceY - motionTime * (1 + rand() * 3) + height) % height;
+      ctx.fillStyle = `rgba(165,169,190,${.025 + rand() * .09})`;
+      ctx.beginPath();
+      ctx.arc(x, y, .3 + rand() * .8, 0, TAU);
+      ctx.fill();
+    }
+
+    const trailPoint = sampleTime => {
+      const phase = sampleTime * .31;
+      return [
+        width * (.5 + Math.sin(phase) * .38),
+        height * (.58 + Math.sin(phase * 1.52 + .7) * .19)
+      ];
+    };
+
+    // Older samples have had more time to swell and rise, creating a strong
+    // vertical composition while the current gesture remains a fine trace.
+    for (let cloud = 0; cloud < 34; cloud++) {
+      const age = 1.1 + cloud * .36 + rand() * .28;
+      const [sourceX, sourceY] = trailPoint(motionTime - age);
+      const delayedAge = Math.max(0, age - .75);
+      const radius = Math.min(width, height) * (.018 + delayedAge * .014);
+      const x = sourceX + Math.sin(age * .7 + seed) * radius * .36;
+      const y = sourceY - delayedAge * height * .021;
+
+      ctx.save();
+      ctx.globalCompositeOperation = "screen";
+      ctx.translate(x, y);
+      ctx.scale(1 + rand() * .42, .68 + rand() * .34);
+      const mist = ctx.createRadialGradient(0, 0, radius * .08, 0, 0, radius);
+      mist.addColorStop(0, "rgba(23,29,48,0)");
+      mist.addColorStop(.5, "rgba(103,94,124,.035)");
+      mist.addColorStop(.78, "rgba(115,107,138,.13)");
+      mist.addColorStop(.92, "rgba(191,194,210,.17)");
+      mist.addColorStop(1, "rgba(191,194,210,0)");
+      ctx.fillStyle = mist;
+      ctx.beginPath();
+      ctx.arc(0, 0, radius, 0, TAU);
+      ctx.fill();
+      ctx.restore();
+
+      ctx.fillStyle = `rgba(16,18,31,${.035 + rand() * .045})`;
+      ctx.beginPath();
+      ctx.ellipse(x, y, radius * .52, radius * .3, 0, 0, TAU);
+      ctx.fill();
+    }
+
+    const newest = trailPoint(motionTime);
+    const previous = trailPoint(motionTime - 2.7);
+    ctx.strokeStyle = "rgba(196,198,211,.48)";
+    ctx.lineWidth = .8;
+    ctx.beginPath();
+    ctx.moveTo(previous[0], previous[1]);
+    ctx.lineTo(newest[0], newest[1]);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawSurveyorsMapStage(ctx, time, width, height, seed) {
+    const rand = mulberry32(seed * 157 + 17);
+    const paper = "#e8e2cf";
+    const green = [70, 86, 74];
+    const red = [104, 46, 43];
+    const graphite = [55, 59, 54];
+    const grid = Math.max(34, Math.min(54, width / 18));
+
+    ctx.fillStyle = paper;
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.save();
+    ctx.lineWidth = .45;
+    ctx.strokeStyle = "rgba(70,86,74,.09)";
+    for (let x = grid; x < width; x += grid) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, height);
+      ctx.stroke();
+    }
+    for (let y = grid; y < height; y += grid) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(width, y);
+      ctx.stroke();
+    }
+
+    const points = [];
+    const pointCount = 29;
+    const mapOffsetX = width * .08;
+    const mapOffsetY = height * .13;
+    for (let index = 0; index < pointCount; index++) {
+      const progress = index / (pointCount - 1);
+      const x = mapOffsetX + progress * width * .78;
+      const y = mapOffsetY + height * (
+        .23 + progress * .38 + Math.sin(progress * Math.PI * 3.2 + .5) * .115
+      );
+      points.push([x, y]);
+    }
+
+    ctx.strokeStyle = "rgba(70,86,74,.58)";
+    ctx.lineWidth = .75;
+    ctx.setLineDash([5, 3]);
+    ctx.beginPath();
+    points.forEach((point, index) => {
+      if (index === 0) ctx.moveTo(point[0], point[1]);
+      else ctx.lineTo(point[0], point[1]);
+    });
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    points.forEach((point, index) => {
+      const size = index % 6 === 0 ? 3.2 : 1.7;
+      ctx.strokeStyle = `rgba(${green[0]},${green[1]},${green[2]},.66)`;
+      ctx.lineWidth = .5;
+      ctx.beginPath();
+      ctx.moveTo(point[0] - size * 2, point[1]);
+      ctx.lineTo(point[0] + size * 2, point[1]);
+      ctx.moveTo(point[0], point[1] - size * 2);
+      ctx.lineTo(point[0], point[1] + size * 2);
+      ctx.stroke();
+      ctx.fillStyle = `rgba(${graphite[0]},${graphite[1]},${graphite[2]},.72)`;
+      ctx.beginPath();
+      ctx.arc(point[0], point[1], size * .55, 0, TAU);
+      ctx.fill();
+    });
+
+    [5, 15, 24].forEach((pointIndex, anchorIndex) => {
+      const anchor = points[pointIndex];
+      for (let contour = 0; contour < 5; contour++) {
+        const radius = 16 + contour * 9;
+        ctx.strokeStyle = `rgba(${green[0]},${green[1]},${green[2]},${.26 - contour * .025})`;
+        ctx.lineWidth = .5;
+        ctx.beginPath();
+        for (let sample = 0; sample <= 52; sample++) {
+          const angle = sample / 52 * TAU;
+          const uneven = .84 + rand() * .28;
+          const x = anchor[0] + Math.cos(angle) * radius * uneven;
+          const y = anchor[1] + Math.sin(angle) * radius * .7 * uneven;
+          if (sample === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.stroke();
+      }
+
+      ctx.strokeStyle = `rgba(${graphite[0]},${graphite[1]},${graphite[2]},.82)`;
+      ctx.lineWidth = .85;
+      ctx.beginPath();
+      ctx.arc(anchor[0], anchor[1], 11, 0, TAU);
+      ctx.stroke();
+      ctx.strokeStyle = `rgba(${red[0]},${red[1]},${red[2]},.9)`;
+      ctx.beginPath();
+      ctx.moveTo(anchor[0] + 7, anchor[1] - 7);
+      ctx.lineTo(anchor[0] + 14, anchor[1] - 14);
+      ctx.stroke();
+      ctx.fillStyle = `rgba(${red[0]},${red[1]},${red[2]},.92)`;
+      ctx.beginPath();
+      ctx.arc(anchor[0], anchor[1], 1.7, 0, TAU);
+      ctx.fill();
+      ctx.fillStyle = `rgba(${graphite[0]},${graphite[1]},${graphite[2]},.75)`;
+      ctx.font = "9px IBM Plex Mono, monospace";
+      ctx.fillText(`P-${String(anchorIndex + 1).padStart(2, "0")}`, anchor[0] + 16, anchor[1] - 16);
+    });
+
+    ctx.restore();
+  }
+
+  function drawPulseRelicsStage(ctx, time, width, height, seed) {
+    const rand = mulberry32(seed * 173 + 23);
+    const motionTime = reduceMotion ? 6.8 : time;
+    const amber = [220, 137, 61];
+    const hot = [244, 195, 117];
+    const red = [112, 31, 30];
+
+    ctx.fillStyle = "#030305";
+    ctx.fillRect(0, 0, width, height);
+    ctx.save();
+
+    for (let dust = 0; dust < 46; dust++) {
+      ctx.fillStyle = `rgba(102,92,88,${.015 + rand() * .05})`;
+      ctx.beginPath();
+      ctx.arc(rand() * width, rand() * height, .25 + rand() * .55, 0, TAU);
+      ctx.fill();
+    }
+
+    const points = [];
+    for (let index = 0; index < 24; index++) {
+      const progress = index / 23;
+      points.push([
+        width * (.12 + progress * .72),
+        height * (.32 + progress * .28 + Math.sin(progress * TAU * 1.4 + .8) * .12)
+      ]);
+    }
+
+    points.forEach((point, index) => {
+      const cycle = (motionTime * .08 + index / points.length) % 1;
+      const signalFade = Math.pow(1 - cycle, 1.7);
+      if (signalFade < .12 || index % 3 === 1) return;
+
+      const previous = points[Math.max(0, index - 1)];
+      const dx = previous[0] - point[0];
+      const dy = previous[1] - point[1];
+      const length = Math.hypot(dx, dy) || 1;
+      const remnant = Math.min(21, length * .3);
+
+      ctx.strokeStyle = `rgba(${red[0]},${red[1]},${red[2]},${.12 * signalFade})`;
+      ctx.lineWidth = .65;
+      ctx.beginPath();
+      ctx.moveTo(point[0], point[1]);
+      ctx.lineTo(point[0] + dx / length * remnant, point[1] + dy / length * remnant);
+      ctx.stroke();
+
+      ctx.fillStyle = `rgba(${amber[0]},${amber[1]},${amber[2]},${.34 * signalFade})`;
+      ctx.beginPath();
+      ctx.arc(point[0], point[1], 1 + signalFade * 1.25, 0, TAU);
+      ctx.fill();
+    });
+
+    [6, 16, 22].forEach((pointIndex, anchorIndex) => {
+      const anchor = points[pointIndex];
+      const period = 3.4 + anchorIndex * .6;
+      const pulse = (motionTime % period) / period;
+      const heartbeat = .5 + Math.sin(motionTime * TAU / period + anchorIndex) * .5;
+      const baseRadius = 10 + anchorIndex * 3;
+      const ringRadius = baseRadius + pulse * (32 + anchorIndex * 6);
+
+      ctx.strokeStyle = `rgba(${red[0]},${red[1]},${red[2]},${.38 * Math.pow(1 - pulse, 1.5)})`;
+      ctx.lineWidth = .75;
+      ctx.beginPath();
+      ctx.arc(anchor[0], anchor[1], ringRadius, 0, TAU);
+      ctx.stroke();
+
+      ctx.strokeStyle = `rgba(${amber[0]},${amber[1]},${amber[2]},${.28 + heartbeat * .38})`;
+      ctx.lineWidth = .9;
+      ctx.beginPath();
+      ctx.arc(anchor[0], anchor[1], baseRadius * (1 + heartbeat * .16), 0, TAU);
+      ctx.stroke();
+
+      const glow = ctx.createRadialGradient(anchor[0], anchor[1], 0, anchor[0], anchor[1], 12 + heartbeat * 8);
+      glow.addColorStop(0, `rgba(${hot[0]},${hot[1]},${hot[2]},${.72 + heartbeat * .2})`);
+      glow.addColorStop(.18, `rgba(${amber[0]},${amber[1]},${amber[2]},${.3 + heartbeat * .25})`);
+      glow.addColorStop(1, `rgba(${red[0]},${red[1]},${red[2]},0)`);
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(anchor[0], anchor[1], 12 + heartbeat * 8, 0, TAU);
+      ctx.fill();
+    });
+
+    ctx.restore();
+  }
+
+  function drawMineralOrbitStage(ctx, time, width, height, seed) {
+    const rand = mulberry32(seed * 191 + 31);
+    const motionTime = reduceMotion ? 7.2 : time;
+    const graphite = [55, 62, 58];
+    const graphiteDark = [20, 25, 23];
+    const mineral = [83, 112, 91];
+    const mineralLight = [128, 153, 131];
+    const metallic = [207, 211, 202];
+    const tilt = -.34;
+    const centreX = width * .57;
+    const centreY = height * .47;
+    const radiusX = Math.min(width * .31, height * .43);
+    const radiusY = radiusX * .46;
+    const crystallisation = .78 + Math.sin(motionTime * .34) * .08;
+
+    ctx.fillStyle = "#080b0a";
+    ctx.fillRect(0, 0, width, height);
+    ctx.save();
+
+    // Faint mineral seams keep the field dark while giving it a stone surface.
+    for (let seam = 0; seam < 24; seam++) {
+      const x = rand() * width;
+      const y = rand() * height;
+      const length = 28 + rand() * Math.min(width, height) * .24;
+      const angle = rand() * TAU;
+      ctx.strokeStyle = `rgba(${mineral[0]},${mineral[1]},${mineral[2]},${.018 + rand() * .035})`;
+      ctx.lineWidth = .45;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.quadraticCurveTo(
+        x + Math.cos(angle + .34) * length * .54,
+        y + Math.sin(angle + .34) * length * .54,
+        x + Math.cos(angle) * length,
+        y + Math.sin(angle) * length
+      );
+      ctx.stroke();
+    }
+
+    // A broken ellipse suggests the stable orbit without turning it into a
+    // luminous ring. The composition deliberately sits off-centre.
+    ctx.strokeStyle = `rgba(${mineral[0]},${mineral[1]},${mineral[2]},.14)`;
+    ctx.lineWidth = .55;
+    ctx.setLineDash([18, 11, 7, 15]);
+    ctx.beginPath();
+    ctx.ellipse(centreX, centreY, radiusX, radiusY, tilt, 0, TAU);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    const drawShard = (x, y, size, rotation, sides, depth, glint) => {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rotation);
+      ctx.fillStyle = `rgba(${graphiteDark[0] + depth * 30},${graphiteDark[1] + depth * 31},${graphiteDark[2] + depth * 30},.9)`;
+      ctx.strokeStyle = `rgba(${mineral[0]},${mineral[1]},${mineral[2]},${.34 + depth * .28})`;
+      ctx.lineWidth = .45;
+      ctx.beginPath();
+      for (let side = 0; side < sides; side++) {
+        const angle = side / sides * TAU;
+        const uneven = .7 + rand() * .54;
+        const px = Math.cos(angle) * size * uneven;
+        const py = Math.sin(angle) * size * uneven * .7;
+        if (side === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.strokeStyle = `rgba(${mineralLight[0]},${mineralLight[1]},${mineralLight[2]},.34)`;
+      ctx.lineWidth = .4;
+      ctx.beginPath();
+      ctx.moveTo(-size * .46, size * .12);
+      ctx.lineTo(size * .38, -size * .35);
+      ctx.stroke();
+
+      if (glint > .72) {
+        ctx.strokeStyle = `rgba(${metallic[0]},${metallic[1]},${metallic[2]},${(glint - .72) * 2.8})`;
+        ctx.lineWidth = .8;
+        ctx.beginPath();
+        ctx.moveTo(-size * .5, -size * .31);
+        ctx.lineTo(size * .16, -size * .44);
+        ctx.stroke();
+      }
+      ctx.restore();
+    };
+
+    for (let shard = 0; shard < 82; shard++) {
+      const progress = shard / 82;
+      const angle = progress * TAU * 1.08 + seed * .019;
+      const ellipseX = Math.cos(angle) * radiusX;
+      const ellipseY = Math.sin(angle) * radiusY;
+      const targetX = centreX + ellipseX * Math.cos(tilt) - ellipseY * Math.sin(tilt);
+      const targetY = centreY + ellipseX * Math.sin(tilt) + ellipseY * Math.cos(tilt);
+      const scatteredX = centreX + (rand() - .5) * radiusX * 2.35;
+      const scatteredY = centreY + (rand() - .5) * radiusY * 3.1;
+      const x = scatteredX + (targetX - scatteredX) * crystallisation;
+      const y = scatteredY + (targetY - scatteredY) * crystallisation;
+      const size = 2.2 + rand() * 4.8;
+      const rotation = angle + tilt + (rand() - .5) * (1 - crystallisation) * 2.2;
+      const glint = Math.max(0, Math.sin(motionTime * .7 + shard * 1.73));
+      drawShard(x, y, size, rotation, 3 + Math.floor(rand() * 3), rand(), glint);
+    }
+
+    // Newly fractured pieces remain irregular beyond the forming specimen.
+    for (let fragment = 0; fragment < 22; fragment++) {
+      const side = fragment % 2 ? -1 : 1;
+      const x = centreX + side * radiusX * (.86 + rand() * .72) + (rand() - .5) * 42;
+      const y = centreY + (rand() - .5) * radiusY * 2.5;
+      drawShard(x, y, 1.8 + rand() * 3.4, rand() * TAU, 3 + Math.floor(rand() * 3), rand() * .7, 0);
+    }
+
+    ctx.restore();
+  }
+
+  function drawMagneticDebrisStage(ctx, time, width, height, seed) {
+    const rand = mulberry32(seed * 211 + 47);
+    const motionTime = reduceMotion ? 5.8 : time;
+    const iron = [104, 111, 113];
+    const ironDark = [25, 29, 31];
+    const rust = [120, 48, 40];
+    const coldWhite = [215, 222, 222];
+    const tilt = -.27;
+    const centreX = width * .56;
+    const centreY = height * .46;
+    const radiusX = Math.min(width * .3, height * .45);
+    const radiusY = radiusX * .43;
+    const bandGap = Math.max(7, Math.min(17, radiusX * .1));
+    const magnetism = .72 + (Math.sin(motionTime * .38) * .5 + .5) * .2;
+    const overshoot = Math.sin(motionTime * .38 + .9) * .025;
+
+    ctx.fillStyle = "#060809";
+    ctx.fillRect(0, 0, width, height);
+    ctx.save();
+
+    // Sparse background filings establish a directional field without glow.
+    for (let filing = 0; filing < 86; filing++) {
+      const x = rand() * width;
+      const y = rand() * height;
+      const angle = tilt + (rand() - .5) * 1.6;
+      const length = .7 + rand() * 2.4;
+      ctx.strokeStyle = `rgba(${iron[0]},${iron[1]},${iron[2]},${.025 + rand() * .065})`;
+      ctx.lineWidth = .4;
+      ctx.beginPath();
+      ctx.moveTo(x - Math.cos(angle) * length, y - Math.sin(angle) * length);
+      ctx.lineTo(x + Math.cos(angle) * length, y + Math.sin(angle) * length);
+      ctx.stroke();
+    }
+
+    // Three incomplete field bands replace the single closed orbit.
+    for (let band = -1; band <= 1; band++) {
+      const rx = radiusX + band * bandGap;
+      const ry = radiusY + band * bandGap * .46;
+      ctx.strokeStyle = band === 0
+        ? `rgba(${rust[0]},${rust[1]},${rust[2]},.15)`
+        : `rgba(${iron[0]},${iron[1]},${iron[2]},.16)`;
+      ctx.lineWidth = .55;
+      for (let segment = 0; segment < 20; segment++) {
+        if ((segment + band + 8) % 4 === 1 || rand() < .18) continue;
+        const start = segment / 20 * TAU;
+        const end = start + TAU / 20 * (.48 + rand() * .18);
+        ctx.beginPath();
+        for (let angle = start; angle <= end + .01; angle += .04) {
+          const ex = Math.cos(angle) * rx;
+          const ey = Math.sin(angle) * ry;
+          const x = centreX + ex * Math.cos(tilt) - ey * Math.sin(tilt);
+          const y = centreY + ex * Math.sin(tilt) + ey * Math.cos(tilt);
+          if (angle === start) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+    }
+
+    const drawRod = (x, y, length, thickness, rotation, polarity, glint, alpha = 1) => {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rotation);
+      ctx.fillStyle = `rgba(${ironDark[0]},${ironDark[1]},${ironDark[2]},${.82 * alpha})`;
+      ctx.strokeStyle = polarity < 0
+        ? `rgba(${rust[0]},${rust[1]},${rust[2]},${.68 * alpha})`
+        : `rgba(${iron[0]},${iron[1]},${iron[2]},${.66 * alpha})`;
+      ctx.lineWidth = .5;
+      ctx.beginPath();
+      ctx.rect(-length * .5, -thickness * .5, length, thickness);
+      ctx.fill();
+      ctx.stroke();
+
+      if (glint > .82) {
+        ctx.strokeStyle = `rgba(${coldWhite[0]},${coldWhite[1]},${coldWhite[2]},${(glint - .82) * 5.2 * alpha})`;
+        ctx.lineWidth = .7;
+        ctx.beginPath();
+        ctx.moveTo(-length * .42, -thickness * .58);
+        ctx.lineTo(length * .2, -thickness * .58);
+        ctx.stroke();
+      }
+      ctx.restore();
+    };
+
+    for (let debris = 0; debris < 96; debris++) {
+      const band = debris % 3 - 1;
+      const progress = debris / 96;
+      const angle = progress * TAU * 1.09 + seed * .017;
+      const rx = (radiusX + band * bandGap) * (1 + overshoot);
+      const ry = (radiusY + band * bandGap * .46) * (1 + overshoot);
+      const ex = Math.cos(angle) * rx;
+      const ey = Math.sin(angle) * ry;
+      const targetX = centreX + ex * Math.cos(tilt) - ey * Math.sin(tilt);
+      const targetY = centreY + ex * Math.sin(tilt) + ey * Math.cos(tilt);
+      const scatteredX = centreX + (rand() - .5) * radiusX * 2.6;
+      const scatteredY = centreY + (rand() - .5) * radiusY * 3.3;
+      const x = scatteredX + (targetX - scatteredX) * magnetism;
+      const y = scatteredY + (targetY - scatteredY) * magnetism;
+      const tangent = Math.atan2(ry * Math.cos(angle), -rx * Math.sin(angle)) + tilt;
+      const randomRotation = rand() * TAU;
+      const rotation = randomRotation + Math.atan2(Math.sin(tangent - randomRotation), Math.cos(tangent - randomRotation)) * magnetism;
+      const glint = Math.max(0, Math.sin(motionTime * .74 + debris * 1.67));
+      drawRod(x, y, 4 + rand() * 9, .7 + rand() * 1.6, rotation, debris % 7 === 0 ? -1 : 1, glint);
+    }
+
+    // Fine filings keep orbiting after the larger debris appears locked.
+    for (let mote = 0; mote < 18; mote++) {
+      const angle = rand() * TAU + motionTime * (.06 + rand() * .08) * (mote % 2 ? -1 : 1);
+      const rx = radiusX + bandGap * (2.2 + rand() * .8);
+      const ry = radiusY + bandGap * (1 + rand() * .6);
+      const ex = Math.cos(angle) * rx;
+      const ey = Math.sin(angle) * ry;
+      const x = centreX + ex * Math.cos(tilt) - ey * Math.sin(tilt);
+      const y = centreY + ex * Math.sin(tilt) + ey * Math.cos(tilt);
+      const tangent = Math.atan2(ry * Math.cos(angle), -rx * Math.sin(angle)) + tilt;
+      drawRod(x, y, 2 + rand() * 3.4, .45 + rand() * .6, tangent, 1, 0, .55);
+    }
+
+    ctx.restore();
+  }
+
+  function drawInkSedimentStage(ctx, time, width, height, seed) {
+    const rand = mulberry32(seed * 229 + 61);
+    const motionTime = reduceMotion ? 7.6 : time;
+    const paper = [174, 176, 170];
+    const ink = [24, 31, 33];
+    const softInk = [53, 62, 63];
+
+    ctx.fillStyle = `rgb(${paper[0]},${paper[1]},${paper[2]})`;
+    ctx.fillRect(0, 0, width, height);
+    ctx.save();
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    const wash = ctx.createRadialGradient(
+      width * .68,
+      height * .62,
+      0,
+      width * .68,
+      height * .62,
+      Math.max(width, height) * .56
+    );
+    wash.addColorStop(0, "rgba(42,51,52,.09)");
+    wash.addColorStop(.55, "rgba(61,69,69,.035)");
+    wash.addColorStop(1, "rgba(174,176,170,0)");
+    ctx.fillStyle = wash;
+    ctx.fillRect(0, 0, width, height);
+
+    for (let fibre = 0; fibre < 180; fibre++) {
+      const x = rand() * width;
+      const y = rand() * height;
+      ctx.fillStyle = `rgba(${ink[0]},${ink[1]},${ink[2]},${.012 + rand() * .03})`;
+      ctx.fillRect(x, y, .35 + rand() * .8, .25 + rand() * .65);
+    }
+
+    const trailPoint = sampleTime => {
+      const phase = sampleTime * .31;
+      return [
+        width * (.5 + Math.sin(phase) * .39),
+        height * (.46 + Math.sin(phase * 1.63 + .62) * .22 + Math.sin(phase * 3.1) * .025)
+      ];
+    };
+
+    // Older water blooms widen, drift downward and retain irregular dark rims.
+    for (let bloom = 0; bloom < 14; bloom++) {
+      const age = ((motionTime * .035 + bloom / 14) % 1);
+      const sampleAge = 2.5 + bloom * .82;
+      const source = trailPoint(motionTime - sampleAge);
+      const radius = Math.min(width, height) * (.022 + age * .15) * (.65 + rand() * .55);
+      const aspect = .56 + rand() * .4;
+      const rotation = rand() * Math.PI;
+      const x = source[0] + (rand() - .5) * radius * .55;
+      const y = source[1] + age * height * .085;
+      const fade = Math.pow(1 - age, .68);
+
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rotation);
+      ctx.fillStyle = `rgba(${softInk[0]},${softInk[1]},${softInk[2]},${.042 * fade})`;
+      ctx.beginPath();
+      for (let point = 0; point <= 44; point++) {
+        const angle = point / 44 * TAU;
+        const irregularity = .82 + Math.sin(angle * (5 + bloom % 4) + bloom * 1.7) * .1 + Math.sin(angle * 13 + seed) * .05;
+        const px = Math.cos(angle) * radius * irregularity;
+        const py = Math.sin(angle) * radius * aspect * irregularity;
+        if (point === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fill();
+
+      if (bloom % 3 !== 1) {
+        ctx.fillStyle = `rgba(${paper[0] + 8},${paper[1] + 7},${paper[2] + 3},${.05 * fade})`;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, radius * .36, radius * aspect * .31, 0, 0, TAU);
+        ctx.fill();
+      }
+
+      for (let ring = 0; ring < 3; ring++) {
+        ctx.strokeStyle = `rgba(${ink[0]},${ink[1]},${ink[2]},${(.11 - ring * .021) * fade})`;
+        ctx.lineWidth = .45 + ring * .38;
+        ctx.beginPath();
+        for (let point = 0; point <= 48; point++) {
+          const angle = point / 48 * TAU;
+          const ringScale = .7 + ring * .14;
+          const irregularity = .88 + Math.sin(angle * (7 + ring) + bloom) * .075;
+          const px = Math.cos(angle) * radius * ringScale * irregularity;
+          const py = Math.sin(angle) * radius * aspect * ringScale * irregularity;
+          if (point === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // Fine fresh paths remain visible before the water opens them into blooms.
+    for (let strand = 0; strand < 25; strand++) {
+      const laneX = (rand() - .5) * width * .012;
+      const laneY = (rand() - .5) * height * .045;
+      ctx.strokeStyle = `rgba(${ink[0]},${ink[1]},${ink[2]},${.055 + rand() * .1})`;
+      ctx.lineWidth = strand % 8 === 0 ? 2.2 : .4 + rand() * .85;
+      ctx.beginPath();
+      for (let sample = 0; sample <= 54; sample++) {
+        const progress = sample / 54;
+        const point = trailPoint(motionTime - (1 - progress) * 8.4);
+        const x = point[0] + laneX;
+        const y = point[1] + laneY;
+        if (sample === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+
+    // Dense specks fall out of the path as sediment rather than light.
+    for (let speck = 0; speck < 92; speck++) {
+      const age = rand() * 11;
+      const point = trailPoint(motionTime - age);
+      const fall = ((motionTime * (2 + rand() * 3) + speck * 7.3) % (height * .18));
+      ctx.fillStyle = `rgba(${ink[0]},${ink[1]},${ink[2]},${.06 + rand() * .22})`;
+      ctx.beginPath();
+      ctx.ellipse(
+        point[0] + (rand() - .5) * width * .08,
+        point[1] + fall,
+        .4 + rand() * 1.5,
+        .6 + rand() * 2.5,
+        0,
+        0,
+        TAU
+      );
+      ctx.fill();
+    }
+
+    ctx.restore();
+  }
+
+  function drawElectricDriftStage(ctx, time, width, height, seed) {
+    const rand = mulberry32(seed * 241 + 71);
+    const motionTime = reduceMotion ? 8.2 : time;
+    const blue = [57, 163, 255];
+    const ice = [223, 248, 255];
+    const cyan = [145, 226, 255];
+
+    ctx.fillStyle = "#020814";
+    ctx.fillRect(0, 0, width, height);
+    const field = ctx.createRadialGradient(
+      width * .45,
+      height * .5,
+      0,
+      width * .45,
+      height * .5,
+      Math.max(width, height) * .58
+    );
+    field.addColorStop(0, "rgba(31,116,219,.12)");
+    field.addColorStop(.52, "rgba(35,92,159,.035)");
+    field.addColorStop(1, "rgba(2,8,20,0)");
+    ctx.fillStyle = field;
+    ctx.fillRect(0, 0, width, height);
+
+    const trailPoint = sampleTime => {
+      const phase = sampleTime * .36;
+      const x = width * (.5 + Math.sin(phase) * .41);
+      const y = height * (.49 + Math.sin(phase * 1.49 + .86) * .24 + Math.sin(phase * 3.6) * .03);
+      const dx = width * .41 * .36 * Math.cos(phase);
+      const dy = height * (
+        .24 * 1.49 * .36 * Math.cos(phase * 1.49 + .86)
+        + .03 * 3.6 * .36 * Math.cos(phase * 3.6)
+      );
+      return [x, y, dx, dy];
+    };
+
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.lineCap = "round";
+
+    // Long filament afterimages follow the unchanged path at different ages.
+    for (let filament = 0; filament < 34; filament++) {
+      const lane = (rand() - .5) * height * .11;
+      const history = 5.4 + rand() * 5.8;
+      let previous = trailPoint(motionTime - history);
+      ctx.beginPath();
+      for (let sample = 1; sample <= 48; sample++) {
+        const progress = sample / 48;
+        const current = trailPoint(motionTime - history * (1 - progress));
+        const x = current[0];
+        const y = current[1] + lane * Math.sin(progress * Math.PI);
+        if (sample === 1) ctx.moveTo(previous[0], previous[1]);
+        ctx.lineTo(x, y);
+        previous = [x, y];
+      }
+      ctx.strokeStyle = `rgba(${blue[0]},${blue[1]},${blue[2]},${.035 + rand() * .105})`;
+      ctx.lineWidth = filament % 9 === 0 ? 1.25 : .26 + rand() * .55;
+      ctx.stroke();
+    }
+
+    // Residual particles flicker locally instead of forming one soft glow.
+    for (let residue = 0; residue < 230; residue++) {
+      const age = rand() * 11.2;
+      const point = trailPoint(motionTime - age);
+      const pulse = Math.sin(residue * 19.43 + motionTime * (1.8 + rand() * 3.2)) * .5 + .5;
+      if (pulse < .35) continue;
+      const spread = (1 - age / 11.2) * 8 + age * 1.8;
+      const x = point[0] + (rand() - .5) * spread;
+      const y = point[1] + (rand() - .5) * spread;
+      const tone = pulse > .84 ? ice : residue % 3 === 0 ? cyan : blue;
+      ctx.fillStyle = `rgba(${tone[0]},${tone[1]},${tone[2]},${.08 + pulse * .48})`;
+      ctx.beginPath();
+      ctx.arc(x, y, .25 + rand() * (pulse > .86 ? 1.05 : .62), 0, TAU);
+      ctx.fill();
+    }
+
+    // The active front is a cluster of short directional afterimages.
+    const head = trailPoint(motionTime);
+    const velocity = Math.hypot(head[2], head[3]) || 1;
+    const tx = head[2] / velocity;
+    const ty = head[3] / velocity;
+    const nx = -ty;
+    const ny = tx;
+    for (let spark = 0; spark < 64; spark++) {
+      const behind = rand() * Math.min(width, height) * .13;
+      const side = (rand() - .5) * Math.min(width, height) * .075;
+      const length = 3 + rand() * 18;
+      const x = head[0] - tx * behind + nx * side;
+      const y = head[1] - ty * behind + ny * side;
+      const flicker = Math.sin(motionTime * 4.7 + spark * 2.16) * .5 + .5;
+      ctx.strokeStyle = `rgba(${flicker > .82 ? ice.join(",") : cyan.join(",")},${.12 + flicker * .62})`;
+      ctx.lineWidth = .35 + rand() * .72;
+      ctx.beginPath();
+      ctx.moveTo(x - tx * length, y - ty * length);
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    }
+
+    ctx.restore();
+  }
+
   function drawTrailStageField(ctx, time, width, height, seed, canvas) {
     const rand = mulberry32(seed * 71 + 53);
     const motionTime = reduceMotion ? 8.5 : time;
     const historyLength = 11.5;
     const inkSediment = canvas.dataset.variant === "ink-sediment";
     const electricDrift = canvas.dataset.variant === "electric-drift";
+    const fibrousBleed = canvas.dataset.variant === "fibrous-bleed";
+    const suspendedVapor = canvas.dataset.variant === "suspended-vapor";
+    const surveyorsMap = canvas.dataset.variant === "surveyors-map";
+    const pulseRelics = canvas.dataset.variant === "pulse-relics";
+    const mineralOrbit = canvas.dataset.variant === "mineral-orbit";
+    const magneticDebris = canvas.dataset.variant === "magnetic-debris";
 
     if (inkSediment) {
-      ctx.fillStyle = "#aeb0aa";
-      ctx.fillRect(0, 0, width, height);
+      drawInkSedimentStage(ctx, time, width, height, seed);
+      return;
+    }
+
+    if (electricDrift) {
+      drawElectricDriftStage(ctx, time, width, height, seed);
+      return;
+    }
+
+    if (fibrousBleed) {
+      drawFibrousBleedStage(ctx, time, width, height, seed);
+      return;
+    }
+
+    if (suspendedVapor) {
+      drawSuspendedVaporStage(ctx, time, width, height, seed);
+      return;
+    }
+
+    if (surveyorsMap) {
+      drawSurveyorsMapStage(ctx, time, width, height, seed);
+      return;
+    }
+
+    if (pulseRelics) {
+      drawPulseRelicsStage(ctx, time, width, height, seed);
+      return;
+    }
+
+    if (mineralOrbit) {
+      drawMineralOrbitStage(ctx, time, width, height, seed);
+      return;
+    }
+
+    if (magneticDebris) {
+      drawMagneticDebrisStage(ctx, time, width, height, seed);
+      return;
     }
 
     const trailPoint = (sampleTime, lane = 0) => {

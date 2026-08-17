@@ -178,19 +178,67 @@
           code: "v02", displayCode: "v02.00", path: "v02-ink-ribbon", title: "Soft Ink Wash",
           statement: "A slow movement releases a pale wash that continues to diffuse after the hand has passed.",
           instructions: [["Begin", "Select Begin to activate the camera."], ["Move", "Move one index finger slowly through the space."], ["Pause", "Pause and let the soft wash expand."]],
-          meaning: ["trace / one finger", "wash / pale diffusion", "pause / continued expansion"]
+          meaning: ["trace / one finger", "wash / pale diffusion", "pause / continued expansion"],
+          variants: [
+            {
+              code: "v02-fibrous-bleed", displayCode: "v02.01", path: "v02-ink-ribbon/variants/v02.01", title: "Fibrous Bleed",
+              variantStyle: "fibrous-bleed",
+              statement: "The same soft fingertip trace enters a rough paper field, branching laterally through fibres while its centre slowly loses density.",
+              instructions: [["Begin", "Select Begin to activate the camera."], ["Move", "Move one index finger slowly to leave a fine ink line."], ["Bleed", "Pause and let the ink continue spreading across the paper fibres."]],
+              meaning: ["trace / one finger", "material / paper fibre", "diffusion / lateral bleed"]
+            },
+            {
+              code: "v02-suspended-vapor", displayCode: "v02.02", path: "v02-ink-ribbon/variants/v02.02", title: "Suspended Vapor",
+              variantStyle: "suspended-vapor",
+              statement: "The same fingertip trace waits in darkness before swelling into backlit vapour that continues to rise and gather after movement stops.",
+              instructions: [["Begin", "Select Begin to activate the camera."], ["Move", "Move one index finger slowly to suspend a fine trace in space."], ["Rise", "Pause and let the delayed vapour swell, overlap and drift upward."]],
+              meaning: ["trace / one finger", "material / volumetric vapour", "motion / delayed ascent"]
+            }
+          ]
         },
         {
           code: "v03", displayCode: "v03.00", path: "v03-path-constellation", title: "Path Constellation",
           statement: "Slow movement deposits a constellation-like record of the path your hand takes through space.",
           instructions: [["Begin", "Select Begin to activate the camera."], ["Move", "Move one index finger slowly through the space."], ["Anchor", "Pause briefly to leave a larger anchor point."]],
-          meaning: ["trace / one finger", "points / deposited path", "pause / anchor point"]
+          meaning: ["trace / one finger", "points / deposited path", "pause / anchor point"],
+          variants: [
+            {
+              code: "v03-surveyors-map", displayCode: "v03.01", path: "v03-path-constellation/variants/v03.01", title: "Surveyor’s Map",
+              variantStyle: "surveyors-map",
+              statement: "The same bodily path becomes a printed survey record: measured points connect into an off-centre map while each pause registers a numbered local terrain reading.",
+              instructions: [["Begin", "Select Begin to activate the camera."], ["Survey", "Move one index finger to deposit measured points before fine links appear."], ["Record", "Pause to register a numbered marker and its local contour field."]],
+              meaning: ["trace / measured point", "connection / survey line", "pause / position record"]
+            },
+            {
+              code: "v03-pulse-relics", displayCode: "v03.02", path: "v03-path-constellation/variants/v03.02", title: "Pulse Relics",
+              variantStyle: "pulse-relics",
+              statement: "The same dotted bodily path becomes a sparse field of fading signals, while each pause leaves a periodic pulse that grows with continued stillness.",
+              instructions: [["Begin", "Select Begin to activate the camera."], ["Signal", "Move one index finger to release brief points and short afterimages."], ["Pulse", "Pause to create a blinking anchor; remain still to enlarge only its visual pulse."]],
+              meaning: ["trace / fading signal", "memory / short afterimage", "pause / pulsing relic"]
+            }
+          ]
         },
         {
           code: "v04", displayCode: "v04.00", path: "v04-slow-orbit-drawing", title: "Slow Orbit Drawing",
           statement: "A movement begins as scattered points. Sustained slowness allows those points to settle into a coherent orbit.",
           instructions: [["Move", "Move one finger slowly through the space."], ["Steady", "Keep a steady pace until the path becomes stable."], ["Preserve", "Pause to preserve the orbit; speed scatters it."]],
-          meaning: ["trace / one finger", "pace / sustained slowness", "orbit / coherent path", "pause / preservation"]
+          meaning: ["trace / one finger", "pace / sustained slowness", "orbit / coherent path", "pause / preservation"],
+          variants: [
+            {
+              code: "v04-mineral-orbit", displayCode: "v04.01", path: "v04-slow-orbit-drawing/variants/v04.01", title: "Mineral Orbit",
+              variantStyle: "mineral-orbit",
+              statement: "The same speed-sensitive path gathers graphite fragments into an off-centre crystalline orbit, then preserves the stable ellipse as a mineral specimen.",
+              instructions: [["Move", "Move one finger; speed keeps the mineral fragments irregular and dispersed."], ["Crystallise", "Sustain a slow pace while fragments align along a tilted orbit."], ["Preserve", "Pause to freeze the stable mineral specimen; move quickly to fracture it again."]],
+              meaning: ["trace / mineral fragment", "pace / crystallisation", "orbit / tilted specimen", "speed / renewed fracture"]
+            },
+            {
+              code: "v04-magnetic-debris", displayCode: "v04.02", path: "v04-slow-orbit-drawing/variants/v04.02", title: "Magnetic Debris",
+              variantStyle: "magnetic-debris",
+              statement: "The same speed-sensitive path agitates directional metal fragments, then draws them through a slight overshoot into several broken magnetic bands.",
+              instructions: [["Agitate", "Move quickly to keep the debris scattered and unstable."], ["Align", "Sustain a slow pace while fragments rotate and settle along the magnetic field."], ["Lock", "Pause to preserve the aligned bands while fine particles continue to orbit outside them."]],
+              meaning: ["trace / metal debris", "pace / magnetic alignment", "orbit / broken field bands", "pause / partial lock"]
+            }
+          ]
         }
       ],
       materials: [

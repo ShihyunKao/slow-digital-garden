@@ -1,0 +1,104 @@
+:root {
+  --pulse-void: #030305;
+  --pulse-amber: #dc893d;
+  --pulse-amber-hot: #f4c375;
+  --pulse-red: #701f1e;
+  --pulse-ash: #665c58;
+}
+
+html,
+body.pulse-relics {
+  background: var(--pulse-void) !important;
+}
+
+body.pulse-relics::before,
+body.pulse-relics::after {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  content: "";
+}
+
+body.pulse-relics::before {
+  opacity: 0.8;
+  background:
+    radial-gradient(ellipse at 46% 54%, rgba(68, 25, 19, 0.09), transparent 34%),
+    radial-gradient(ellipse at 82% 26%, rgba(98, 51, 30, 0.045), transparent 24%),
+    #030305;
+}
+
+body.pulse-relics::after {
+  opacity: 0.32;
+  background:
+    radial-gradient(circle at 18% 66%, rgba(218, 137, 61, 0.055) 0 0.7px, transparent 1.2px),
+    radial-gradient(circle at 74% 34%, rgba(136, 49, 34, 0.05) 0 0.6px, transparent 1.1px);
+  background-size: 151px 151px, 217px 217px;
+}
+
+canvas {
+  position: relative;
+  z-index: 1;
+}
+
+.live-shell {
+  --live-bone: #c8bdb3;
+  --live-moss: #665c58;
+  --live-teal: #a0472f;
+  z-index: 1000;
+}
+
+.live-shell::before {
+  opacity: 0.035;
+}
+
+.live-input,
+.live-return {
+  color: var(--pulse-ash);
+}
+
+.live-return:hover,
+.live-return:focus-visible {
+  color: var(--pulse-amber);
+}
+
+.live-help {
+  color: #c8bdb3;
+  background: rgba(0, 0, 2, 0.76);
+}
+
+.live-help__panel {
+  border-color: rgba(137, 60, 37, 0.28);
+  background: rgba(8, 7, 9, 0.98);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+}
+
+.live-help__panel::before {
+  background: rgba(160, 63, 38, 0.74);
+}
+
+.live-help__eyebrow,
+.live-help__number {
+  color: rgba(196, 102, 52, 0.82);
+}
+
+.live-help__title,
+.live-help__step h2,
+.live-help__return {
+  color: #d0c5bb;
+}
+
+.live-help__intro,
+.live-help__step p,
+.live-help__keys {
+  color: rgba(156, 143, 136, 0.68);
+}
+
+.live-help__steps,
+.live-help__return {
+  border-color: rgba(139, 80, 54, 0.22);
+}
+
+.live-help__step + .live-help__step::before {
+  background: rgba(139, 80, 54, 0.18);
+}

@@ -19,7 +19,7 @@ let backgroundPoints = [];
 
 const MAX_NODES = 120;
 const NODE_SPACING = 29;
-const DWELL_FRAMES = 12;
+const DWELL_FRAMES = 7;
 const STILL_SPEED = 2.1;
 const ANCHOR_COOLDOWN = 60;
 

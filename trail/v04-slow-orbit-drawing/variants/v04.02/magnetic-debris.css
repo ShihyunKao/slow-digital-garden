@@ -1,0 +1,101 @@
+:root {
+  --magnetic-field: #060809;
+  --magnetic-iron: #686f71;
+  --magnetic-rust: #783028;
+  --magnetic-white: #d7dede;
+}
+
+html,
+body.magnetic-debris {
+  background: var(--magnetic-field) !important;
+}
+
+body.magnetic-debris::before,
+body.magnetic-debris::after {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  content: "";
+}
+
+body.magnetic-debris::before {
+  opacity: 0.72;
+  background:
+    radial-gradient(ellipse at 62% 46%, rgba(102, 111, 113, 0.07), transparent 38%),
+    linear-gradient(142deg, #090c0d, #050607 64%, #090a0b);
+}
+
+body.magnetic-debris::after {
+  opacity: 0.25;
+  background:
+    repeating-linear-gradient(164deg, transparent 0 66px, rgba(108, 47, 40, 0.035) 67px, transparent 68px 113px);
+}
+
+canvas {
+  position: relative;
+  z-index: 1;
+  filter: contrast(1.08);
+}
+
+.live-shell {
+  --live-bone: #c7cccc;
+  --live-moss: #73797a;
+  --live-teal: #a0a8a9;
+  z-index: 1000;
+}
+
+.live-shell::before {
+  opacity: 0.045;
+}
+
+.live-input,
+.live-return {
+  color: #777e7f;
+}
+
+.live-return:hover,
+.live-return:focus-visible {
+  color: var(--magnetic-white);
+}
+
+.live-help {
+  color: #c7cccc;
+  background: rgba(2, 3, 4, 0.76);
+}
+
+.live-help__panel {
+  border-color: rgba(119, 128, 130, 0.3);
+  background: rgba(10, 12, 13, 0.98);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.56);
+}
+
+.live-help__panel::before {
+  background: rgba(120, 48, 40, 0.76);
+}
+
+.live-help__eyebrow,
+.live-help__number {
+  color: rgba(174, 183, 184, 0.86);
+}
+
+.live-help__title,
+.live-help__step h2,
+.live-help__return {
+  color: #c7cccc;
+}
+
+.live-help__intro,
+.live-help__step p,
+.live-help__keys {
+  color: rgba(157, 165, 166, 0.68);
+}
+
+.live-help__steps,
+.live-help__return {
+  border-color: rgba(116, 126, 128, 0.24);
+}
+
+.live-help__step + .live-help__step::before {
+  background: rgba(120, 48, 40, 0.2);
+}
