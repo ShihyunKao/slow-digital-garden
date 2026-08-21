@@ -50,7 +50,9 @@
     "both-hands/v05-session-archive-spatial/variants/v05.02": ["03", "BOTH HANDS", "05.02", "Session Archive Refined", "both-hands", "v05-session-archive-refined", "P HAND DISPLAY · R RESET · ? HELP", "../../../../"],
     "both-hands/v05-session-archive-spatial/variants/v05.03": ["03", "BOTH HANDS", "05.03", "Pressed Herbarium", "both-hands", "v05-pressed-herbarium", "P HAND DISPLAY · R RESET · ? HELP", "../../../../"],
     "both-hands/v05-session-archive-spatial/variants/v05.04": ["03", "BOTH HANDS", "05.04", "Kinetic Mobile", "both-hands", "v05-kinetic-mobile", "P HAND DISPLAY · R RESET · ? HELP", "../../../../"],
-    "both-hands/v06-trajectory-archive": ["03", "BOTH HANDS", "06.00", "Trajectory Archive", "both-hands", "v06", "P HAND DISPLAY · R RESET · ? HELP"]
+    "both-hands/v06-trajectory-archive": ["03", "BOTH HANDS", "06.00", "Trajectory Archive", "both-hands", "v06", "P HAND DISPLAY · R RESET · ? HELP"],
+    "both-hands/v06-trajectory-archive/variants/v06.01": ["03", "BOTH HANDS", "06.01", "Ceramic Faultline", "both-hands", "v06-ceramic-faultline", "P HAND DISPLAY · R RESET · ? HELP", "../../../../"],
+    "both-hands/v06-trajectory-archive/variants/v06.02": ["03", "BOTH HANDS", "06.02", "Afterimage Corridor", "both-hands", "v06-afterimage-corridor", "P HAND DISPLAY · R RESET · ? HELP", "../../../../"]
   };
 
   const parts = location.pathname.split("/").filter(Boolean);

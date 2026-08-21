@@ -422,7 +422,25 @@
           statement: "Eight gentle stretches build a quiet field, while their anchors and chronological path remain visually central.",
           archiveReading: "At the end of each stretch, hold both hands together where you want the anchor to appear. The system samples the midpoint between the two index fingers and places the anchor in the same direction.",
           instructions: [["Begin", "Allow the camera and bring hands together."], ["Open + return", "Open until the contour closes, then return."], ["Complete", "Hold hands together to place each of eight anchors."]],
-          meaning: ["direction / final resting midpoint", "distance / movement slowness", "size / open-palm pause", "light / steadiness", "stars / stretch duration"]
+          meaning: ["direction / final resting midpoint", "distance / movement slowness", "size / open-palm pause", "light / steadiness", "stars / stretch duration"],
+          variants: [
+            {
+              code: "v06-ceramic-faultline", displayCode: "v06.01", path: "v06-trajectory-archive/variants/v06.01", title: "Ceramic Faultline",
+              variantStyle: "ceramic-faultline",
+              statement: "Eight chronological anchors fracture one matte ceramic surface, leaving a dark faultline filled with deep peacock-green glaze.",
+              archiveReading: "The eight-part order remains intact, but the circular scaffold is removed. The final joined-hand midpoint maps directly across the ceramic plate. Every new anchor starts a slow fracture from the previous position; steadiness controls whether the main fault stays smooth or becomes visibly jagged, while the open-palm pause determines the size of the glazed node.",
+              instructions: [["Begin", "Allow the camera and bring both hands together."], ["Fire", "Open until the contour completes, return, then hold at the next anchor."], ["Fracture", "Repeat eight times as the faultline grows across the ceramic surface."]],
+              meaning: ["sequence / fracture growth order", "edge / movement steadiness", "glaze pool / open-palm pause", "position / direct plate coordinate"]
+            },
+            {
+              code: "v06-afterimage-corridor", displayCode: "v06.02", path: "v06-trajectory-archive/variants/v06.02", title: "Afterimage Corridor",
+              variantStyle: "afterimage-corridor",
+              statement: "Ten chronological anchors become smoked-glass layers whose original trajectory recedes through a backlit spatial corridor.",
+              archiveReading: "The final joined-hand midpoint still supplies each anchor, while this corridor expands the session to ten records. Every glass layer keeps the same full positioning field, allowing later anchors to reach the lower and outer edges. Each new record occupies the front pane and slowly pushes all earlier panes towards the distant light. After the tenth record settles, a brighter line recalls the archive from anchor 01 to anchor 10. Pause controls glass brightness, while steadiness determines whether each afterimage stays compact or spreads into a soft smoke-violet trail.",
+              instructions: [["Begin", "Allow the camera and bring both hands together."], ["Place", "Open until the front pane completes, return, then hold at the anchor."], ["Recede", "Repeat ten times as older glass layers retreat into depth."]],
+              meaning: ["depth / chronological order", "position / full-pane joined-hand coordinate", "glass light / open-palm pause", "afterimage / movement steadiness"]
+            }
+          ]
         }
       ],
       materials: [

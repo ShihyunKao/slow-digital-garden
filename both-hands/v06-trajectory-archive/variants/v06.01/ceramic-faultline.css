@@ -1,0 +1,69 @@
+:root {
+  --clay: #b7a48d;
+  --mud: #766554;
+  --crack: #362e29;
+  --glaze: #2d6762;
+  --glaze-light: #a8c3b8;
+  --kiln: #914b35;
+  --bone: #e4d1b4;
+}
+
+html body.ceramic-page {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #4d4237 !important;
+  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace !important;
+}
+
+.ceramic-page canvas { display: block; }
+.ceramic-page .live-shell {
+  color: rgba(228, 209, 180, 0.96);
+  text-shadow: 0 1px 2px rgba(54, 46, 41, 0.72);
+}
+.ceramic-page .live-shell::before { opacity: 0.045; }
+.ceramic-page .live-top { color: rgba(228, 209, 180, 0.92); }
+.ceramic-page .live-title { color: var(--bone); }
+.ceramic-page .live-input { color: rgba(228, 209, 180, 0.78); }
+.ceramic-page .live-return { color: rgba(228, 209, 180, 0.9); }
+.ceramic-page .live-return:hover,
+.ceramic-page .live-return:focus-visible { color: var(--glaze-light); }
+
+.ceramic-help { color: var(--bone); background: rgba(47, 39, 32, 0.76); }
+.ceramic-help .live-help__panel {
+  border-color: rgba(228, 209, 180, 0.24);
+  color: var(--bone);
+  background: rgba(74, 61, 50, 0.985);
+  box-shadow: 0 28px 90px rgba(39, 30, 24, 0.5);
+}
+.ceramic-help .live-help__panel::before { background: var(--kiln); }
+.ceramic-help .live-help__eyebrow,
+.ceramic-help .live-help__reading h2,
+.ceramic-help .live-help__number,
+.ceramic-help .live-help__parameter strong { color: var(--glaze-light); }
+.ceramic-help .live-help__title,
+.ceramic-help .live-help__step h2,
+.ceramic-help .live-help__parameter span,
+.ceramic-help .live-help__return { color: var(--bone); }
+.ceramic-help .live-help__intro,
+.ceramic-help .live-help__reading p,
+.ceramic-help .live-help__step p { color: rgba(228, 209, 180, 0.7); }
+.ceramic-help .live-help__archive-grid,
+.ceramic-help .live-help__reading,
+.ceramic-help .live-help__steps,
+.ceramic-help .live-help__return { border-color: rgba(228, 209, 180, 0.2); }
+.ceramic-help .live-help__step + .live-help__step::before,
+.ceramic-help .live-help__parameters::before { background: rgba(228, 209, 180, 0.15); }
+.ceramic-help .live-help__keys { color: rgba(228, 209, 180, 0.5); }
+.ceramic-help .live-help__return:hover,
+.ceramic-help .live-help__return:focus-visible { border-color: var(--glaze-light); color: var(--glaze-light); }
+
+@media (max-width: 720px) {
+  .ceramic-page .live-top { color: rgba(228, 209, 180, 0.94); }
+  .ceramic-page .live-title { font-size: clamp(20px, 7vw, 34px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ceramic-page canvas { animation: none; }
+}

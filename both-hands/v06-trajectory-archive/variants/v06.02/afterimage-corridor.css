@@ -1,0 +1,68 @@
+:root {
+  --space-black: #030509;
+  --far-glass: #34485b;
+  --mid-glass: #647f98;
+  --cold-bone: #e3e3dc;
+  --ice: #9fc5c7;
+  --smoke-violet: #67556f;
+  --far-light: #c4d5d4;
+}
+
+html body.corridor-page {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--space-black) !important;
+  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace !important;
+}
+
+.corridor-page canvas { display: block; }
+.corridor-page .live-shell {
+  color: rgba(227, 227, 220, 0.92);
+  text-shadow: 0 1px 5px rgba(3, 5, 9, 0.9);
+}
+.corridor-page .live-shell::before { opacity: 0.025; }
+.corridor-page .live-top { color: rgba(196, 213, 212, 0.72); }
+.corridor-page .live-title { color: var(--cold-bone); }
+.corridor-page .live-input { color: rgba(159, 197, 199, 0.65); }
+.corridor-page .live-return { color: rgba(196, 213, 212, 0.74); }
+.corridor-page .live-return:hover,
+.corridor-page .live-return:focus-visible { color: var(--ice); }
+
+.corridor-help { color: var(--cold-bone); background: rgba(1, 2, 5, 0.8); }
+.corridor-help .live-help__panel {
+  border-color: rgba(159, 197, 199, 0.26);
+  color: var(--cold-bone);
+  background: rgba(8, 13, 21, 0.985);
+  box-shadow: 0 30px 100px rgba(0, 0, 0, 0.72);
+}
+.corridor-help .live-help__panel::before { background: var(--smoke-violet); }
+.corridor-help .live-help__eyebrow,
+.corridor-help .live-help__reading h2,
+.corridor-help .live-help__number,
+.corridor-help .live-help__parameter strong { color: var(--ice); }
+.corridor-help .live-help__title,
+.corridor-help .live-help__step h2,
+.corridor-help .live-help__parameter span,
+.corridor-help .live-help__return { color: var(--cold-bone); }
+.corridor-help .live-help__intro,
+.corridor-help .live-help__reading p,
+.corridor-help .live-help__step p { color: rgba(196, 213, 212, 0.68); }
+.corridor-help .live-help__archive-grid,
+.corridor-help .live-help__reading,
+.corridor-help .live-help__steps,
+.corridor-help .live-help__return { border-color: rgba(159, 197, 199, 0.19); }
+.corridor-help .live-help__step + .live-help__step::before,
+.corridor-help .live-help__parameters::before { background: rgba(159, 197, 199, 0.14); }
+.corridor-help .live-help__keys { color: rgba(159, 197, 199, 0.48); }
+.corridor-help .live-help__return:hover,
+.corridor-help .live-help__return:focus-visible { border-color: var(--ice); color: var(--ice); }
+
+@media (max-width: 720px) {
+  .corridor-page .live-title { font-size: clamp(20px, 7vw, 34px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .corridor-page canvas { animation: none; }
+}
