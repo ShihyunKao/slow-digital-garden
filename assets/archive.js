@@ -461,7 +461,7 @@
       <div class="archive-nav technical-label">
         <span class="breadcrumb">SLOW DIGITAL GARDEN / ${project.number} / ${project.breadcrumb}</span>
       </div>
-      <h1 class="display-title project-title${key === "both" ? " long" : ""}">${project.title}</h1>
+      <h1 class="display-title project-title${key === "both" ? " long" : ""}"><a class="project-title-link" href="../" aria-label="Return to archive index">${project.title}</a></h1>
       <p class="project-subtitle">${project.subtitle}</p>
       <div class="version-list" role="listbox" aria-label="${project.breadcrumb} versions">
         ${project.versions.map(version => `
