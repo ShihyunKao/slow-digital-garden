@@ -1,0 +1,61 @@
+:root {
+  --kinetic-black: #100f0d;
+  --kinetic-brass: #a99a79;
+  --kinetic-verdigris: #547b76;
+  --kinetic-copper: #9a573d;
+  --kinetic-smoke: #657b85;
+  --kinetic-ivory: #e9dcc0;
+  --kinetic-shadow: #29211c;
+}
+
+html body.kinetic-page {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--kinetic-black) !important;
+  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace !important;
+}
+
+.kinetic-page canvas { display: block; }
+.kinetic-page .live-shell { color: rgba(233, 220, 192, 0.82); }
+.kinetic-page .live-shell::before { opacity: 0.026; }
+.kinetic-page .live-top { color: var(--kinetic-brass); }
+.kinetic-page .live-title { color: var(--kinetic-ivory); }
+.kinetic-page .live-input { color: rgba(169, 154, 121, 0.62); }
+.kinetic-page .live-return { color: rgba(233, 220, 192, 0.76); }
+.kinetic-page .live-return:hover,
+.kinetic-page .live-return:focus-visible { color: var(--kinetic-verdigris); }
+
+.kinetic-help { color: var(--kinetic-ivory); background: rgba(6, 5, 4, 0.68); }
+.kinetic-help .live-help__panel {
+  border-color: rgba(169, 154, 121, 0.3);
+  color: var(--kinetic-ivory);
+  background: rgba(20, 18, 15, 0.985);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.46);
+}
+.kinetic-help .live-help__panel::before { background: var(--kinetic-copper); }
+.kinetic-help .live-help__eyebrow,
+.kinetic-help .live-help__reading h2,
+.kinetic-help .live-help__number,
+.kinetic-help .live-help__parameter strong { color: var(--kinetic-brass); }
+.kinetic-help .live-help__title,
+.kinetic-help .live-help__step h2,
+.kinetic-help .live-help__parameter span,
+.kinetic-help .live-help__return { color: var(--kinetic-ivory); }
+.kinetic-help .live-help__intro,
+.kinetic-help .live-help__reading p,
+.kinetic-help .live-help__step p { color: rgba(233, 220, 192, 0.67); }
+.kinetic-help .live-help__archive-grid,
+.kinetic-help .live-help__reading,
+.kinetic-help .live-help__steps,
+.kinetic-help .live-help__return { border-color: rgba(169, 154, 121, 0.24); }
+.kinetic-help .live-help__step + .live-help__step::before,
+.kinetic-help .live-help__parameters::before { background: rgba(169, 154, 121, 0.18); }
+.kinetic-help .live-help__keys { color: rgba(169, 154, 121, 0.54); }
+.kinetic-help .live-help__return:hover,
+.kinetic-help .live-help__return:focus-visible { border-color: var(--kinetic-verdigris); color: var(--kinetic-verdigris); }
+
+@media (prefers-reduced-motion: reduce) {
+  .kinetic-page canvas { animation: none; }
+}

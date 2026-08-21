@@ -1,0 +1,97 @@
+:root {
+  --seismo-paper: #d5d0c3;
+  --seismo-graphite: #292a27;
+  --seismo-lead: #686a63;
+  --seismo-red: #873b34;
+  --seismo-grid: #718080;
+  --seismo-old: #a59c8b;
+}
+
+html,
+body.seismograph-skin {
+  background: var(--seismo-paper) !important;
+}
+
+.seismograph-skin::before {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  content: "";
+  opacity: .28;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.10'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+}
+
+.seismograph-skin canvas { position: relative; z-index: 1; filter: contrast(1.02) saturate(.78); }
+
+.seismograph-skin .live-shell {
+  --live-bone: var(--seismo-graphite);
+  --live-moss: var(--seismo-lead);
+  --live-teal: var(--seismo-red);
+  z-index: 1000;
+}
+
+.seismograph-skin .live-shell::before {
+  opacity: .12;
+  background: linear-gradient(180deg, rgba(213, 208, 195, .08), transparent 24%, rgba(41, 42, 39, .035));
+}
+
+.seismograph-skin .live-kicker,
+.seismograph-skin .live-study { color: var(--seismo-red); }
+
+.seismograph-skin .live-title { color: var(--seismo-graphite); text-shadow: none; }
+.seismograph-skin .live-input { color: var(--seismo-lead); }
+.seismograph-skin .live-return { color: var(--seismo-graphite); }
+.seismograph-skin .live-return:hover,
+.seismograph-skin .live-return:focus-visible { color: var(--seismo-red); text-shadow: none; }
+
+.seismograph-skin .live-help {
+  color: var(--seismo-graphite);
+  background: rgba(104, 106, 99, .25);
+  backdrop-filter: blur(2px);
+}
+
+.seismograph-skin .live-help__panel {
+  border-color: rgba(41, 42, 39, .34);
+  background:
+    repeating-linear-gradient(0deg, transparent 0 23px, rgba(113, 128, 128, .075) 24px, transparent 25px),
+    repeating-linear-gradient(90deg, transparent 0 47px, rgba(113, 128, 128, .055) 48px, transparent 49px),
+    rgba(213, 208, 195, .985);
+  box-shadow: 0 24px 70px rgba(41, 42, 39, .2);
+}
+
+.seismograph-skin .live-help__panel::before { background: var(--seismo-red); box-shadow: none; }
+.seismograph-skin .live-help__eyebrow,
+.seismograph-skin .live-help__number,
+.seismograph-skin .live-help__reading h2 { color: var(--seismo-red); }
+.seismograph-skin .live-help__title,
+.seismograph-skin .live-help__step h2,
+.seismograph-skin .live-help__return { color: var(--seismo-graphite); }
+.seismograph-skin .live-help__intro,
+.seismograph-skin .live-help__step p,
+.seismograph-skin .live-help__reading p,
+.seismograph-skin .live-help__keys,
+.seismograph-skin .live-help__parameter span { color: rgba(41, 42, 39, .72); }
+.seismograph-skin .live-help__parameter strong { color: var(--seismo-lead); }
+.seismograph-skin .live-help__steps,
+.seismograph-skin .live-help__archive-grid,
+.seismograph-skin .live-help__reading,
+.seismograph-skin .live-help__return { border-color: rgba(113, 128, 128, .36); }
+.seismograph-skin .live-help__step + .live-help__step::before,
+.seismograph-skin .live-help__parameters::before { background: rgba(113, 128, 128, .3); }
+
+@media (max-height: 820px) and (min-width: 761px) {
+  .seismograph-skin .live-help { padding-top: 82px; padding-bottom: 86px; }
+  .seismograph-skin .live-help--archive .live-help__panel { height: min(552px, 100%); padding: 26px 36px 58px; }
+  .seismograph-skin .live-help__archive-summary { gap: 36px; }
+  .seismograph-skin .live-help__title { font-size: 44px; }
+  .seismograph-skin .live-help__intro,
+  .seismograph-skin .live-help__reading p { font-size: 10px; line-height: 1.5; }
+  .seismograph-skin .live-help__archive-grid { margin-top: 18px; }
+  .seismograph-skin .live-help__step { min-height: 138px; padding-top: 25px; padding-bottom: 22px; }
+  .seismograph-skin .live-help__number { top: 21px; }
+  .seismograph-skin .live-help__parameters { padding: 18px 0 15px 24px; }
+  .seismograph-skin .live-help__parameter { margin-bottom: 8px; line-height: 1.35; }
+  .seismograph-skin .live-help__footer { right: 36px; bottom: 22px; left: 36px; }
+}

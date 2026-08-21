@@ -1,0 +1,117 @@
+html,
+body.cloud-chamber {
+  background: #0d0c09 !important;
+}
+
+body.cloud-chamber::before {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  content: "";
+  background:
+    radial-gradient(ellipse at 54% 50%, rgba(113, 132, 122, 0.07), transparent 41%),
+    linear-gradient(155deg, #0d0c09 0%, #14130f 52%, #090806 100%);
+}
+
+body.cloud-chamber canvas {
+  position: relative;
+  z-index: 1;
+}
+
+body.cloud-chamber .live-shell {
+  --live-bone: #d8d5c8;
+  --live-moss: #a19d91;
+  --live-teal: #d5be8e;
+  color: #d8d5c8;
+}
+
+body.cloud-chamber .live-shell::before {
+  opacity: 0.14;
+  background:
+    linear-gradient(156deg, transparent 39%, rgba(213, 190, 142, 0.035) 48%, transparent 57%),
+    radial-gradient(ellipse at 54% 51%, rgba(161, 157, 145, 0.04), transparent 43%);
+}
+
+body.cloud-chamber .live-top,
+body.cloud-chamber .live-input,
+body.cloud-chamber .live-return {
+  color: rgba(161, 157, 145, 0.82);
+}
+
+body.cloud-chamber .live-title {
+  color: #d8d5c8;
+}
+
+body.cloud-chamber .live-return:hover,
+body.cloud-chamber .live-return:focus-visible {
+  color: #d5be8e;
+  text-shadow: 0 0 11px rgba(213, 190, 142, 0.15);
+}
+
+body.cloud-chamber .live-help {
+  color: #d8d5c8;
+  background: rgba(7, 7, 5, 0.78);
+}
+
+body.cloud-chamber .live-help__panel {
+  border-color: rgba(113, 132, 122, 0.24);
+  background:
+    linear-gradient(154deg, transparent 43%, rgba(213, 190, 142, 0.018) 49%, transparent 56%),
+    radial-gradient(ellipse at 52% 76%, rgba(58, 51, 43, 0.13), transparent 52%),
+    rgba(16, 16, 12, 0.99);
+  box-shadow: 0 20px 64px rgba(0, 0, 0, 0.46);
+}
+
+body.cloud-chamber .live-help__panel::before {
+  background: rgba(213, 190, 142, 0.52);
+  box-shadow: none;
+}
+
+body.cloud-chamber .live-help__eyebrow,
+body.cloud-chamber .live-help__number,
+body.cloud-chamber .live-help__reading h2 {
+  color: rgba(213, 190, 142, 0.82);
+}
+
+body.cloud-chamber .live-help__title,
+body.cloud-chamber .live-help__return {
+  color: #d8d5c8;
+}
+
+body.cloud-chamber .live-help__step h2,
+body.cloud-chamber .live-help__parameter span {
+  color: rgba(216, 213, 200, 0.86);
+}
+
+body.cloud-chamber .live-help__intro {
+  color: rgba(161, 157, 145, 0.8);
+}
+
+body.cloud-chamber .live-help__step p,
+body.cloud-chamber .live-help__reading p,
+body.cloud-chamber .live-help__keys {
+  color: rgba(161, 157, 145, 0.72);
+}
+
+body.cloud-chamber .live-help__parameter strong {
+  color: rgba(161, 157, 145, 0.82);
+}
+
+body.cloud-chamber .live-help__steps,
+body.cloud-chamber .live-help__archive-grid,
+body.cloud-chamber .live-help__reading,
+body.cloud-chamber .live-help__return {
+  border-color: rgba(113, 132, 122, 0.34);
+}
+
+body.cloud-chamber .live-help__step + .live-help__step::before,
+body.cloud-chamber .live-help__parameters::before {
+  background: rgba(113, 132, 122, 0.28);
+}
+
+body.cloud-chamber .live-help__return:hover,
+body.cloud-chamber .live-help__return:focus-visible {
+  border-color: rgba(213, 190, 142, 0.56);
+  color: #d5be8e;
+}

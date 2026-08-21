@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seismograph Skin — Breath Quality</title>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.11.3/lib/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ml5@1.0.1/dist/ml5.min.js"></script>
+    <script src="variant.js"></script>
+    <script src="../../../../assets/live-shell.js" defer></script>
+    <link rel="stylesheet" href="../../../../assets/live-help.css" />
+    <link rel="stylesheet" href="seismograph-skin.css" />
+    <style>html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; } canvas { display: block; width: 100vw; height: 100vh; }</style>
+  </head>
+  <body class="seismograph-skin">
+    <section id="live-help" class="live-help live-help--archive" aria-hidden="true" aria-label="Seismograph Skin field guide" hidden>
+      <div class="live-help__panel">
+        <div class="live-help__archive-summary">
+          <div><p class="live-help__eyebrow">GESTURE STUDY 04.01&nbsp; / &nbsp;FIELD GUIDE</p><h1 class="live-help__title">Seismograph Skin</h1><p class="live-help__intro">A complete opening and return writes one graphite record.<br />The centre marks the fully open midpoint—not the end.</p></div>
+          <aside class="live-help__reading"><h2>READING THE ARCHIVE</h2><p>Read each band from left to right as one complete gesture. Opening writes the first half from the left edge to the centre. Fully open is the midpoint. Returning writes the second half from centre to right; only when the hands complete that return is the band stored. Slow motion becomes dense and continuous, instability fragments the trace, tilt changes its slope, and a held pause leaves a dark terminal deposit.</p></aside>
+        </div>
+        <div class="live-help__archive-grid">
+          <div class="live-help__steps">
+            <article class="live-help__step"><span class="live-help__number">01</span><h2>BEGIN / LEFT</h2><p>Allow the camera and bring both hands together. The record begins at its left edge.</p></article>
+            <article class="live-help__step"><span class="live-help__number">02</span><h2>OPEN / CENTRE</h2><p>Open slowly as the trace travels toward the centre. Fully open completes only the first half.</p></article>
+            <article class="live-help__step"><span class="live-help__number">03</span><h2>RETURN / RIGHT</h2><p>Pause if desired, then return the hands together. The trace reaches the right edge and only then is stored.</p></article>
+          </div>
+          <aside class="live-help__parameters" aria-label="Archive parameters"><p class="live-help__parameter"><span>speed /</span><strong>line density</strong></p><p class="live-help__parameter"><span>stability /</span><strong>jitter amplitude</strong></p><p class="live-help__parameter"><span>tilt /</span><strong>record-band slope</strong></p><p class="live-help__parameter"><span>pause /</span><strong>terminal deposit</strong></p></aside>
+        </div>
+        <div class="live-help__footer"><span class="live-help__keys">P&nbsp; HAND DISPLAY&nbsp;&nbsp;&nbsp;&nbsp; R&nbsp; RESET&nbsp;&nbsp;&nbsp;&nbsp; ?&nbsp; CLOSE</span><button id="live-help-return" class="live-help__return" type="button">RETURN TO LIVE FIELD&nbsp; →</button></div>
+      </div>
+    </section>
+    <script src="../../sketch.js"></script>
+  </body>
+</html>

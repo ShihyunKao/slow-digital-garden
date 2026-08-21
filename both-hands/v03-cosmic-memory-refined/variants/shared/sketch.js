@@ -90,7 +90,17 @@ const BOTH_V03_DEFAULT_STYLE = {
   crystalResponsiveScale: false,
   crystalGrowthFrames: 110,
   crystalLineAlpha: 24,
-  crystalLineWeight: 0.65
+  crystalLineWeight: 0.65,
+  lacquerSurface: false,
+  lacquerArtworkScale: 1,
+  lacquerCureFrames: 120,
+  lacquerHighlightSpeed: 0.0018,
+  lacquerLayerOffsetScale: 1,
+  paperSurface: false,
+  paperArtworkScale: 1,
+  paperEmbossFrames: 38,
+  paperRevealDelay: 0.095,
+  paperLayerOffsetScale: 1
 };
 
 const BOTH_V03_VARIANT_STYLE = window.BOTH_V03_VARIANT || {};
@@ -134,6 +144,7 @@ function setup() {
   if (BOTH_V03_STYLE.particleSystem) {
     seedAmberParticleField(BOTH_V03_STYLE.particleSeedCount);
   }
+
   beginExperience();
 }
 
@@ -157,6 +168,14 @@ function draw() {
     drawScaledArtwork(BOTH_V03_STYLE.particleArtworkScale, () => {
       drawAmberParticleField(breath);
     });
+  } else if (BOTH_V03_STYLE.lacquerSurface) {
+    drawScaledArtwork(BOTH_V03_STYLE.lacquerArtworkScale, () => {
+      drawLacquerField(breath);
+    });
+  } else if (BOTH_V03_STYLE.paperSurface) {
+    drawScaledArtwork(BOTH_V03_STYLE.paperArtworkScale, () => {
+      drawPaperField(breath);
+    });
   } else {
     drawCosmicField(breath);
   }
@@ -166,6 +185,10 @@ function draw() {
   } else {
     if (BOTH_V03_STYLE.particleSystem) {
       drawScaledArtwork(BOTH_V03_STYLE.particleArtworkScale, drawMemoryRings);
+    } else if (BOTH_V03_STYLE.lacquerSurface) {
+      drawScaledArtwork(BOTH_V03_STYLE.lacquerArtworkScale, drawLacquerMemories);
+    } else if (BOTH_V03_STYLE.paperSurface) {
+      drawScaledArtwork(BOTH_V03_STYLE.paperArtworkScale, drawPaperMemories);
     } else {
       drawMemoryRings();
     }
@@ -254,6 +277,212 @@ function drawCosmicField(amount) {
   drawOrbitLines(cx, cy, radius, aspect, eased);
   drawStarCurrent(cx, cy, radius, aspect, eased, fieldScale);
   drawReturnLines(cx, cy, radius, aspect, eased);
+}
+
+function drawLacquerField(amount) {
+  if (hands.length < 2 && amount < 0.025) return;
+
+  const cx = width / 2 + width * 0.015;
+  const cy = height / 2 + 12;
+  const eased = easeInOutCubic(amount);
+  const responsiveScale = min(width * 0.43, height * 0.66) / 278;
+  const radius = lerp(78, 282, eased) * responsiveScale;
+  const halfHeight = radius * lerp(0.17, 0.29, eased);
+  const flowTime = frameCount * 0.00042;
+
+  push();
+  translate(cx, cy);
+
+  drawingContext.save();
+  drawingContext.filter = "blur(34px)";
+  noStroke();
+  fill(...BOTH_V03_STYLE.palette.glowOuter, 10 + eased * 20);
+  drawLacquerSlice(radius * 1.04, halfHeight * 1.1, 331, flowTime, 0.09);
+  drawingContext.restore();
+
+  drawingContext.save();
+  drawingContext.shadowBlur = 18;
+  drawingContext.shadowColor = `rgba(${BOTH_V03_STYLE.palette.glowOuter.join(",")},0.2)`;
+  noStroke();
+  fill(...BOTH_V03_STYLE.palette.bodyFrom, 218);
+  drawLacquerSlice(radius, halfHeight, 401, flowTime, 0.072);
+
+  push();
+  translate(radius * 0.035, halfHeight * 0.12);
+  fill(...BOTH_V03_STYLE.palette.bodyTo, 116 + eased * 16);
+  drawLacquerSlice(radius * 0.92, halfHeight * 0.74, 457, flowTime + 0.017, 0.085);
+  pop();
+
+  push();
+  translate(-radius * 0.045, -halfHeight * 0.18);
+  fill(...BOTH_V03_STYLE.palette.memory, 46 + eased * 28);
+  drawLacquerRibbon(radius * 0.91, halfHeight * 0.16, 509, flowTime + 0.031, 0.11);
+  pop();
+  drawingContext.restore();
+
+  noFill();
+  stroke(...BOTH_V03_STYLE.palette.returnLine, 46 + eased * 42);
+  strokeWeight(1.05 + eased * 0.55);
+  drawLacquerRibbonEdge(radius * 0.98, halfHeight * 0.88, 401, flowTime, 0.072);
+
+  drawLacquerRibbonHighlight(
+    radius * 0.94,
+    halfHeight * 0.86,
+    401,
+    flowTime,
+    frameCount * BOTH_V03_STYLE.lacquerHighlightSpeed,
+    108 + eased * 48,
+    2.2
+  );
+  pop();
+}
+
+function drawLacquerSlice(radius, halfHeight, seed, timeValue, irregularity) {
+  const samples = 84;
+  beginShape();
+  for (let index = 0; index <= samples; index++) {
+    const progress = index / samples;
+    const x = lerp(-radius, radius, progress);
+    const envelope = pow(sin(progress * PI), 0.46);
+    const grain = map(noise(seed + progress * 2.8, timeValue), 0, 1, -1, 1);
+    const drift = sin(progress * TWO_PI * 1.35 + seed * 0.013 + timeValue * 19) * 0.24;
+    const y = -halfHeight * envelope * (1 + (grain + drift) * irregularity);
+    curveVertex(x, y);
+  }
+  for (let index = samples; index >= 0; index--) {
+    const progress = index / samples;
+    const x = lerp(-radius, radius, progress);
+    const envelope = pow(sin(progress * PI), 0.5);
+    const grain = map(noise(seed + 9.3 + progress * 2.5, timeValue), 0, 1, -1, 1);
+    const drift = sin(progress * TWO_PI * 1.1 + seed * 0.009 - timeValue * 17) * 0.2;
+    const y = halfHeight * envelope * (0.92 + (grain + drift) * irregularity);
+    curveVertex(x, y);
+  }
+  endShape(CLOSE);
+}
+
+function drawLacquerRibbon(radius, halfHeight, seed, timeValue, irregularity) {
+  const samples = 72;
+  beginShape();
+  for (let index = 0; index <= samples; index++) {
+    const progress = index / samples;
+    const x = lerp(-radius, radius, progress);
+    const envelope = pow(sin(progress * PI), 0.42);
+    const centre = sin(progress * TWO_PI * 1.15 + seed * 0.01) * halfHeight * 0.7
+      + map(noise(seed + progress * 2.2, timeValue), 0, 1, -1, 1) * halfHeight * 0.46;
+    const thickness = halfHeight * envelope * (0.72 + noise(seed + 4.1 + progress * 3.1, timeValue) * irregularity * 2.3);
+    curveVertex(x, centre - thickness);
+  }
+  for (let index = samples; index >= 0; index--) {
+    const progress = index / samples;
+    const x = lerp(-radius, radius, progress);
+    const envelope = pow(sin(progress * PI), 0.42);
+    const centre = sin(progress * TWO_PI * 1.15 + seed * 0.01) * halfHeight * 0.7
+      + map(noise(seed + progress * 2.2, timeValue), 0, 1, -1, 1) * halfHeight * 0.46;
+    const thickness = halfHeight * envelope * (0.72 + noise(seed + 4.1 + progress * 3.1, timeValue) * irregularity * 2.3);
+    curveVertex(x, centre + thickness);
+  }
+  endShape(CLOSE);
+}
+
+function drawLacquerRibbonEdge(radius, halfHeight, seed, timeValue, irregularity) {
+  const samples = 74;
+  beginShape();
+  for (let index = 2; index <= samples - 2; index++) {
+    const progress = index / samples;
+    const x = lerp(-radius, radius, progress);
+    const envelope = pow(sin(progress * PI), 0.46);
+    const grain = map(noise(seed + progress * 2.8, timeValue), 0, 1, -1, 1);
+    const drift = sin(progress * TWO_PI * 1.35 + seed * 0.013 + timeValue * 19) * 0.24;
+    curveVertex(x, -halfHeight * envelope * (1 + (grain + drift) * irregularity));
+  }
+  endShape();
+}
+
+function drawLacquerRibbonHighlight(radius, halfHeight, seed, timeValue, phase, alpha, weight) {
+  const centre = 0.5 + sin(phase + seed * 0.017) * 0.27;
+  const span = 0.11;
+  drawingContext.save();
+  drawingContext.shadowBlur = 10;
+  drawingContext.shadowColor = `rgba(${BOTH_V03_STYLE.palette.memoryDust.join(",")},0.34)`;
+  noFill();
+  stroke(...BOTH_V03_STYLE.palette.memoryDust, alpha);
+  strokeWeight(weight);
+  beginShape();
+  const samples = 24;
+  for (let index = 0; index <= samples; index++) {
+    const local = index / samples;
+    const progress = constrain(centre + lerp(-span / 2, span / 2, local), 0.035, 0.965);
+    const x = lerp(-radius, radius, progress);
+    const envelope = pow(sin(progress * PI), 0.46);
+    const grain = map(noise(seed + progress * 2.8, timeValue), 0, 1, -1, 1);
+    const taper = sin(local * PI);
+    const y = -halfHeight * envelope * (1 + grain * 0.055) - taper * weight * 0.35;
+    curveVertex(x, y);
+  }
+  endShape();
+  drawingContext.restore();
+}
+
+function drawLacquerBlob(radius, aspect, seed, timeValue, wobbleAmount) {
+  beginShape();
+  const samples = 150;
+  for (let index = 0; index <= samples + 2; index++) {
+    const angle = (index % samples) / samples * TWO_PI;
+    const noiseValue = noise(
+      seed + cos(angle) * 1.65,
+      seed + sin(angle) * 1.65,
+      timeValue
+    );
+    const ripple = sin(angle * 3 + timeValue * 24 + seed * 0.01) * wobbleAmount * 0.24;
+    const shape = 1 + map(noiseValue, 0, 1, -wobbleAmount, wobbleAmount) + ripple;
+    curveVertex(cos(angle) * radius * shape, sin(angle) * radius * aspect * shape);
+  }
+  endShape(CLOSE);
+}
+
+function drawLacquerContour(radius, aspect, seed, timeValue, wobbleAmount) {
+  beginShape();
+  const samples = 150;
+  for (let index = 0; index <= samples + 2; index++) {
+    const angle = (index % samples) / samples * TWO_PI;
+    const noiseValue = noise(
+      seed + cos(angle) * 1.65,
+      seed + sin(angle) * 1.65,
+      timeValue
+    );
+    const shape = 1 + map(noiseValue, 0, 1, -wobbleAmount, wobbleAmount);
+    curveVertex(cos(angle) * radius * shape, sin(angle) * radius * aspect * shape);
+  }
+  endShape(CLOSE);
+}
+
+function drawLacquerHighlight(radius, aspect, centreAngle, arcLength, alpha, weight) {
+  drawingContext.save();
+  drawingContext.shadowBlur = 9;
+  drawingContext.shadowColor = `rgba(${BOTH_V03_STYLE.palette.memoryDust.join(",")},0.38)`;
+  noFill();
+  stroke(...BOTH_V03_STYLE.palette.memoryDust, alpha);
+  strokeWeight(weight);
+  beginShape();
+  const samples = 28;
+  for (let index = 0; index <= samples; index++) {
+    const progress = index / samples;
+    const angle = centreAngle + lerp(-arcLength / 2, arcLength / 2, progress);
+    const taper = sin(progress * PI);
+    const localRadius = radius * (1 + taper * 0.004);
+    curveVertex(cos(angle) * localRadius, sin(angle) * localRadius * aspect);
+  }
+  endShape();
+  drawingContext.restore();
+}
+
+function lerpPalette(from, to, amount) {
+  return [
+    lerp(from[0], to[0], amount),
+    lerp(from[1], to[1], amount),
+    lerp(from[2], to[2], amount)
+  ];
 }
 
 function seedAmberParticleField(count) {
@@ -811,6 +1040,316 @@ function drawMemoryRings() {
     }
 
     pop();
+  }
+}
+
+function drawLacquerMemories() {
+  const cx = width / 2 + width * 0.015;
+  const cy = height / 2 + 12;
+  const horizontalOffsets = [0, 0.034, -0.028, 0.022, -0.034, 0.03, -0.018, 0.012];
+  const verticalOrder = [0, -1, 1, -2, 2, -3, 3, -4];
+  const fieldUnit = min(width * 0.42, height * 0.64);
+  const layerSpacing = fieldUnit * 0.074;
+
+  const activeMemories = [];
+  for (let index = memories.length - 1; index >= 0; index--) {
+    const memory = memories[index];
+    memory.age++;
+    memory.flash *= 0.968;
+    if (memory.age > memory.life) {
+      memories.splice(index, 1);
+      continue;
+    }
+    activeMemories.push(memory);
+  }
+
+  activeMemories.sort((a, b) => b.radius - a.radius);
+
+  for (const memory of activeMemories) {
+    const cureProgress = easeInOutCubic(constrain(
+      memory.age / BOTH_V03_STYLE.lacquerCureFrames,
+      0,
+      1
+    ));
+    const displayRadius = memory.radius * getMemoryDisplayScale();
+    const stepIndex = ((memory.step % 8) + 8) % 8;
+    const offsetScale = BOTH_V03_STYLE.lacquerLayerOffsetScale;
+    const offsetX = fieldUnit * horizontalOffsets[stepIndex] * offsetScale;
+    const offsetY = verticalOrder[stepIndex] * layerSpacing * offsetScale;
+    const frozenFlowTime = min(memory.age, BOTH_V03_STYLE.lacquerCureFrames) * 0.0021;
+    const settleScale = lerp(1.055, 1, cureProgress);
+    const layerColour = stepIndex % 2 === 0
+      ? BOTH_V03_STYLE.palette.memory
+      : BOTH_V03_STYLE.palette.bodyTo;
+    const ribbonHalfHeight = max(12, displayRadius * lerp(0.055, 0.085, stepIndex / 7));
+
+    push();
+    translate(cx + offsetX, cy + offsetY);
+    rotate(memory.rotation * 0.18 + sin(memory.seed * 0.013) * 0.009);
+    scale(settleScale);
+
+    drawingContext.save();
+    drawingContext.shadowBlur = 16 + memory.flash * 12;
+    drawingContext.shadowColor = `rgba(${layerColour.join(",")},0.24)`;
+    noStroke();
+    fill(...BOTH_V03_STYLE.palette.bodyFrom, (218 * cureProgress) + memory.flash * 22);
+    drawLacquerRibbon(
+      displayRadius * 1.015,
+      ribbonHalfHeight * 1.18,
+      memory.seed + 3,
+      frozenFlowTime,
+      lerp(0.13, 0.045, cureProgress)
+    );
+
+    fill(...layerColour, (176 * cureProgress) + memory.flash * 36);
+    drawLacquerRibbon(
+      displayRadius,
+      ribbonHalfHeight,
+      memory.seed + 19,
+      frozenFlowTime + 0.013,
+      lerp(0.12, 0.04, cureProgress)
+    );
+
+    push();
+    translate(displayRadius * 0.018, ribbonHalfHeight * 0.2);
+    fill(...BOTH_V03_STYLE.palette.bodyTo, 72 * cureProgress);
+    drawLacquerRibbon(
+      displayRadius * 0.93,
+      ribbonHalfHeight * 0.45,
+      memory.seed + 41,
+      frozenFlowTime + 0.026,
+      0.055
+    );
+    pop();
+    drawingContext.restore();
+
+    noFill();
+    stroke(...BOTH_V03_STYLE.palette.returnLine, 38 * cureProgress + memory.flash * 42);
+    strokeWeight(0.8 + memory.flash * 0.45);
+    drawLacquerRibbonEdge(
+      displayRadius * 0.985,
+      ribbonHalfHeight * 0.9,
+      memory.seed + 19,
+      frozenFlowTime,
+      lerp(0.11, 0.04, cureProgress)
+    );
+
+    drawLacquerRibbonHighlight(
+      displayRadius * 0.965,
+      ribbonHalfHeight * 0.88,
+      memory.seed + 19,
+      frozenFlowTime,
+      frameCount * BOTH_V03_STYLE.lacquerHighlightSpeed + memory.seed * 0.001,
+      (86 + memory.flash * 86) * cureProgress,
+      1.15 + memory.flash * 0.65
+    );
+
+    if (memory.flash > 0.04) {
+      noStroke();
+      fill(...BOTH_V03_STYLE.palette.returnLine, memory.flash * 62);
+      drawLacquerRibbon(
+        displayRadius * 0.96,
+        ribbonHalfHeight * 0.62,
+        memory.seed + 71,
+        frozenFlowTime,
+        0.04
+      );
+    }
+
+    pop();
+  }
+}
+
+function drawPaperField(amount) {
+  if (amount < 0.022) return;
+
+  const cx = width / 2;
+  const cy = height / 2 + 8;
+  const eased = easeInOutCubic(amount);
+  const fieldUnit = min(width * 0.44, height * 0.7);
+  const revealDelay = BOTH_V03_STYLE.paperRevealDelay;
+  const layerCount = 5;
+
+  push();
+  translate(cx, cy);
+
+  for (let layer = layerCount - 1; layer >= 0; layer--) {
+    const delay = layer * revealDelay;
+    const reveal = easeOutCubic(constrain((eased - delay) / max(0.001, 1 - delay), 0, 1));
+    if (reveal <= 0.002) continue;
+
+    const spread = (layer - (layerCount - 1) / 2) * fieldUnit * 0.028;
+    const lift = abs(layer - 2) * fieldUnit * 0.014;
+    const press = 0.94 + reveal * 0.06;
+    const radius = fieldUnit * lerp(0.14, 0.34, reveal) * (1 - layer * 0.018);
+    const aspect = 0.62 + layer * 0.025;
+    const seed = 803 + layer * 47;
+    const colour = layer % 2 === 0
+      ? BOTH_V03_STYLE.palette.bodyFrom
+      : BOTH_V03_STYLE.palette.bodyTo;
+
+    push();
+    translate(spread * BOTH_V03_STYLE.paperLayerOffsetScale, -lift);
+    rotate(-0.075 + layer * 0.031);
+    scale(press, press);
+    drawPaperDisc(radius, aspect, seed, colour, 126 + reveal * 112, 0.28 + reveal * 0.34, layer);
+    pop();
+  }
+
+  pop();
+}
+
+function drawPaperMemories() {
+  const cx = width / 2;
+  const cy = height / 2 + 8;
+  const fieldUnit = min(width * 0.44, height * 0.7);
+  const activeMemories = [];
+
+  for (let index = memories.length - 1; index >= 0; index--) {
+    const memory = memories[index];
+    memory.age++;
+    memory.flash *= 0.94;
+
+    if (memory.age > memory.life) {
+      memories.splice(index, 1);
+      continue;
+    }
+
+    activeMemories.push(memory);
+  }
+
+  activeMemories.sort((a, b) => a.step - b.step);
+
+  for (const memory of activeMemories) {
+    const stepIndex = ((memory.step % 8) + 8) % 8;
+    const sequence = stepIndex - 3.5;
+    const offsetScale = BOTH_V03_STYLE.paperLayerOffsetScale;
+    const offsetX = sequence * fieldUnit * 0.105 * offsetScale;
+    const offsetY = sequence * -fieldUnit * 0.052 * offsetScale;
+    const radius = fieldUnit * (0.278 + ((stepIndex % 3) - 1) * 0.008);
+    const aspect = 0.66 + ((stepIndex + 1) % 3) * 0.025;
+    const reveal = easeOutCubic(constrain(memory.age / 18, 0, 1));
+    const pressProgress = constrain(memory.age / BOTH_V03_STYLE.paperEmbossFrames, 0, 1);
+    const press = sin(pressProgress * PI) * (pressProgress < 1 ? 1 : 0);
+    const paperColour = stepIndex % 2 === 0
+      ? BOTH_V03_STYLE.palette.memory
+      : BOTH_V03_STYLE.palette.bodyTo;
+
+    push();
+    translate(cx + offsetX, cy + offsetY + press * 4.5);
+    rotate(-0.12 + stepIndex * 0.031 + memory.rotation * 0.25);
+    scale(lerp(0.86, 1, reveal) * (1 - press * 0.055));
+    drawPaperDisc(
+      radius,
+      aspect,
+      memory.seed + stepIndex * 31,
+      paperColour,
+      232 * reveal,
+      0.54 + press * 0.46 + memory.flash * 0.2,
+      stepIndex
+    );
+    pop();
+  }
+}
+
+function drawPaperDisc(radius, aspect, seed, paperColour, alpha, embossStrength, detailIndex) {
+  const edgeColour = BOTH_V03_STYLE.palette.orbit;
+  const shadowColour = BOTH_V03_STYLE.palette.returnLine;
+  const detailColour = BOTH_V03_STYLE.palette.dust;
+
+  push();
+  translate(10, 12);
+  noStroke();
+  fill(...shadowColour, alpha * 0.34);
+  drawPaperContour(radius * 1.012, aspect, seed, 68);
+  pop();
+
+  noStroke();
+  fill(...edgeColour, alpha * 0.9);
+  drawPaperContour(radius * 1.025, aspect * 1.018, seed, 68);
+
+  fill(...paperColour, alpha);
+  drawPaperContour(radius, aspect, seed, 68);
+
+  push();
+  translate(-radius * 0.018, -radius * 0.018);
+  fill(...BOTH_V03_STYLE.palette.bodyFrom, alpha * 0.16);
+  drawPaperContour(radius * 0.962, aspect * 0.975, seed + 11, 68);
+  pop();
+
+  drawPaperEmboss(radius, aspect, seed, embossStrength, detailIndex);
+  drawPaperFibres(radius, aspect, seed, alpha, detailColour);
+}
+
+function drawPaperContour(radius, aspect, seed, pointCount) {
+  beginShape();
+  for (let point = 0; point <= pointCount; point++) {
+    const angle = (point / pointCount) * TWO_PI;
+    const largeWarp = sin(angle * 3 + seed * 0.071) * 0.018;
+    const fibreWarp = map(noise(seed * 0.017, point * 0.12), 0, 1, -0.026, 0.026);
+    const localRadius = radius * (1 + largeWarp + fibreWarp);
+    vertex(cos(angle) * localRadius, sin(angle) * localRadius * aspect);
+  }
+  endShape(CLOSE);
+}
+
+function drawPaperEmboss(radius, aspect, seed, strength, detailIndex) {
+  const shadowColour = BOTH_V03_STYLE.palette.returnLine;
+  const highlightColour = BOTH_V03_STYLE.palette.bodyFrom;
+  const detailColour = BOTH_V03_STYLE.palette.dust;
+  const lineCount = 3;
+
+  noFill();
+  strokeCap(ROUND);
+
+  for (let lineIndex = 0; lineIndex < lineCount; lineIndex++) {
+    const y = radius * aspect * (-0.26 + lineIndex * 0.25);
+    const span = radius * (0.33 + lineIndex * 0.075);
+    const drift = sin(seed * 0.023 + lineIndex * 1.9) * radius * 0.09;
+    const bend = radius * (0.045 + lineIndex * 0.012) * (lineIndex % 2 === 0 ? 1 : -1);
+
+    stroke(...shadowColour, 52 + strength * 58);
+    strokeWeight(1.4 + strength * 0.8);
+    bezier(
+      -span + drift + 2.5, y + 3.5,
+      -span * 0.35 + drift, y + bend + 4,
+      span * 0.3 + drift, y - bend + 4,
+      span + drift + 2.5, y + 3.5
+    );
+
+    stroke(...highlightColour, 38 + strength * 48);
+    strokeWeight(0.72 + strength * 0.35);
+    bezier(
+      -span + drift - 1.5, y - 2,
+      -span * 0.35 + drift, y + bend - 2,
+      span * 0.3 + drift, y - bend - 2,
+      span + drift - 1.5, y - 2
+    );
+  }
+
+  const markX = radius * 0.54;
+  const markY = radius * aspect * 0.31;
+  stroke(...detailColour, 105 + strength * 45);
+  strokeWeight(0.9);
+  line(markX - radius * 0.035, markY, markX + radius * 0.035, markY);
+  noStroke();
+  fill(...detailColour, 116 + strength * 52);
+  circle(markX + radius * 0.055, markY, max(2.2, radius * 0.012));
+}
+
+function drawPaperFibres(radius, aspect, seed, alpha, detailColour) {
+  strokeCap(ROUND);
+  for (let fibre = 0; fibre < 42; fibre++) {
+    const angle = randomSeeded(seed + fibre * 13.17, 0, TWO_PI);
+    const length = randomSeeded(seed + fibre * 19.31, 2.2, 8.5);
+    const warp = 1 + sin(angle * 3 + seed * 0.071) * 0.018;
+    const x = cos(angle) * radius * warp;
+    const y = sin(angle) * radius * aspect * warp;
+    const nx = cos(angle);
+    const ny = sin(angle) * aspect;
+    stroke(...detailColour, alpha * randomSeeded(seed + fibre * 7.71, 0.12, 0.34));
+    strokeWeight(randomSeeded(seed + fibre * 5.13, 0.35, 0.85));
+    line(x, y, x + nx * length, y + ny * length);
   }
 }
 

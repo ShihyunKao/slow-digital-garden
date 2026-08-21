@@ -1,0 +1,116 @@
+html,
+body.parted-veil {
+  background: #040811 !important;
+}
+
+body.parted-veil::before {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(90deg, rgba(102, 120, 140, 0.07), transparent 38% 62%, rgba(64, 75, 104, 0.08)),
+    radial-gradient(ellipse at 50% 52%, rgba(1, 3, 8, 0.88), transparent 34%);
+}
+
+body.parted-veil canvas {
+  position: relative;
+  z-index: 1;
+}
+
+body.parted-veil .live-shell {
+  --live-bone: #cbe4ea;
+  --live-moss: #66788c;
+  --live-teal: #cbe4ea;
+  color: #cbe4ea;
+}
+
+body.parted-veil .live-shell::before {
+  opacity: 0.17;
+  background:
+    linear-gradient(90deg, rgba(102, 120, 140, 0.08), transparent 43% 57%, rgba(64, 75, 104, 0.1)),
+    radial-gradient(ellipse at 50% 52%, rgba(1, 3, 8, 0.72), transparent 38%);
+}
+
+body.parted-veil .live-top,
+body.parted-veil .live-input,
+body.parted-veil .live-return {
+  color: rgba(203, 228, 234, 0.68);
+}
+
+body.parted-veil .live-title {
+  color: #cbe4ea;
+}
+
+body.parted-veil .live-return:hover,
+body.parted-veil .live-return:focus-visible {
+  color: #cbe4ea;
+  text-shadow: 0 0 10px rgba(203, 228, 234, 0.22);
+}
+
+body.parted-veil .live-help {
+  color: #cbe4ea;
+  background: rgba(1, 3, 8, 0.79);
+}
+
+body.parted-veil .live-help__panel {
+  border-color: rgba(102, 120, 140, 0.3);
+  background:
+    linear-gradient(90deg, rgba(102, 120, 140, 0.035), transparent 42% 58%, rgba(64, 75, 104, 0.045)),
+    rgba(6, 11, 21, 0.985);
+  box-shadow: 0 20px 62px rgba(0, 0, 0, 0.46);
+}
+
+body.parted-veil .live-help__panel::before {
+  background: rgba(203, 228, 234, 0.7);
+  box-shadow: none;
+}
+
+body.parted-veil .live-help__eyebrow,
+body.parted-veil .live-help__number,
+body.parted-veil .live-help__reading h2 {
+  color: rgba(203, 228, 234, 0.74);
+}
+
+body.parted-veil .live-help__title,
+body.parted-veil .live-help__step h2,
+body.parted-veil .live-help__return {
+  color: #cbe4ea;
+}
+
+body.parted-veil .live-help__intro {
+  color: rgba(203, 228, 234, 0.7);
+}
+
+body.parted-veil .live-help__step p,
+body.parted-veil .live-help__reading p,
+body.parted-veil .live-help__keys {
+  color: rgba(102, 120, 140, 0.78);
+}
+
+body.parted-veil .live-help__parameter span {
+  color: rgba(203, 228, 234, 0.68);
+}
+
+body.parted-veil .live-help__parameter strong {
+  color: rgba(102, 120, 140, 0.9);
+}
+
+body.parted-veil .live-help__steps,
+body.parted-veil .live-help__archive-grid,
+body.parted-veil .live-help__reading,
+body.parted-veil .live-help__return {
+  border-color: rgba(85, 75, 100, 0.34);
+}
+
+body.parted-veil .live-help__step + .live-help__step::before,
+body.parted-veil .live-help__parameters::before {
+  background: rgba(85, 75, 100, 0.3);
+}
+
+body.parted-veil .live-help__return:hover,
+body.parted-veil .live-help__return:focus-visible {
+  border-color: rgba(203, 228, 234, 0.64);
+  color: #cbe4ea;
+}

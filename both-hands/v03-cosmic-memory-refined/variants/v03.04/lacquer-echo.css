@@ -1,0 +1,175 @@
+:root {
+  --lacquer-bg: #080404;
+  --lacquer-body: #170a0b;
+  --lacquer-memory: #68191e;
+  --lacquer-secondary: #3b1114;
+  --lacquer-specular: #e8c5a2;
+  --lacquer-copper: #a95737;
+  --lacquer-copy: #b89579;
+  --lacquer-muted: #76594e;
+  --lacquer-line: rgba(169, 87, 55, 0.24);
+}
+
+html,
+body.lacquer-echo {
+  background: var(--lacquer-bg) !important;
+}
+
+body::before,
+body::after {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  content: "";
+}
+
+body::before {
+  background:
+    linear-gradient(116deg, rgba(104, 25, 30, 0.035), transparent 34% 66%, rgba(59, 17, 20, 0.03)),
+    linear-gradient(145deg, #050202 0%, #0c0506 47%, #070303 100%);
+}
+
+body::after {
+  opacity: 0.3;
+  background: linear-gradient(104deg, transparent 0 45%, rgba(169, 87, 55, 0.022) 50%, transparent 56%);
+  mix-blend-mode: screen;
+}
+
+canvas {
+  position: relative;
+  z-index: 1;
+  filter: contrast(1.08) saturate(0.92);
+}
+
+.live-shell {
+  --live-bone: var(--lacquer-specular);
+  --live-moss: var(--lacquer-copy);
+  --live-teal: var(--lacquer-copper);
+  z-index: 1000;
+}
+
+.live-shell::before {
+  opacity: 0.18;
+  background: linear-gradient(180deg, transparent 0 70%, rgba(104, 25, 30, 0.06) 100%);
+}
+
+.live-input,
+.live-return {
+  color: var(--lacquer-copy);
+}
+
+.live-return:hover,
+.live-return:focus-visible {
+  color: var(--lacquer-specular);
+  text-shadow: 0 0 12px rgba(169, 87, 55, 0.36);
+}
+
+.live-help {
+  color: var(--lacquer-specular);
+  background: rgba(5, 2, 2, 0.84);
+}
+
+.live-help__panel {
+  border-color: rgba(169, 87, 55, 0.3);
+  background:
+    radial-gradient(ellipse at 42% 44%, rgba(104, 25, 30, 0.13), transparent 54%),
+    rgba(13, 5, 6, 0.98);
+  box-shadow: 0 0 72px rgba(59, 17, 20, 0.28);
+}
+
+.live-help__panel::before {
+  background: var(--lacquer-copper);
+  box-shadow: 0 0 12px rgba(169, 87, 55, 0.22);
+}
+
+.live-help__eyebrow,
+.live-help__number,
+.live-help__reading h2 {
+  color: var(--lacquer-copper);
+}
+
+.live-help__title,
+.live-help__step h2,
+.live-help__return {
+  color: var(--lacquer-specular);
+}
+
+.live-help__intro,
+.live-help__step p,
+.live-help__reading p,
+.live-help__keys,
+.live-help__parameter span {
+  color: rgba(184, 149, 121, 0.7);
+}
+
+.live-help__parameter strong {
+  color: rgba(232, 197, 162, 0.78);
+}
+
+.live-help__steps,
+.live-help__archive-grid,
+.live-help__reading,
+.live-help__return {
+  border-color: var(--lacquer-line);
+}
+
+.live-help__step + .live-help__step::before,
+.live-help__parameters::before {
+  background: rgba(169, 87, 55, 0.2);
+}
+
+@media (max-height: 820px) and (min-width: 761px) {
+  .lacquer-echo .live-help {
+    padding-top: 82px;
+    padding-bottom: 86px;
+  }
+
+  .lacquer-echo .live-help--archive .live-help__panel {
+    height: min(552px, 100%);
+    padding: 26px 36px 58px;
+  }
+
+  .lacquer-echo .live-help__archive-summary {
+    gap: 36px;
+  }
+
+  .lacquer-echo .live-help__title {
+    font-size: 44px;
+  }
+
+  .lacquer-echo .live-help__intro,
+  .lacquer-echo .live-help__reading p {
+    font-size: 10px;
+    line-height: 1.5;
+  }
+
+  .lacquer-echo .live-help__archive-grid {
+    margin-top: 18px;
+  }
+
+  .lacquer-echo .live-help__step {
+    min-height: 138px;
+    padding-top: 25px;
+    padding-bottom: 22px;
+  }
+
+  .lacquer-echo .live-help__number {
+    top: 21px;
+  }
+
+  .lacquer-echo .live-help__parameters {
+    padding: 18px 0 15px 24px;
+  }
+
+  .lacquer-echo .live-help__parameter {
+    margin-bottom: 8px;
+    line-height: 1.35;
+  }
+
+  .lacquer-echo .live-help__footer {
+    right: 36px;
+    bottom: 22px;
+    left: 36px;
+  }
+}

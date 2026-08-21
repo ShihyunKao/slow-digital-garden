@@ -1,0 +1,116 @@
+:root {
+  --herbarium-paper: #d2c9b3;
+  --herbarium-olive: #586348;
+  --herbarium-vein: #2f3b2e;
+  --herbarium-edge: #84674a;
+  --herbarium-faded: #8c9780;
+  --herbarium-stamp: #88483d;
+}
+
+html body.herbarium-page {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--herbarium-paper) !important;
+  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace !important;
+}
+
+.herbarium-page canvas {
+  display: block;
+}
+
+.herbarium-page .live-shell {
+  color: #2f3b2e;
+}
+
+.herbarium-page .live-shell::before {
+  opacity: 0.055;
+  mix-blend-mode: multiply;
+}
+
+.herbarium-page .live-top {
+  color: #88483d;
+}
+
+.herbarium-page .live-title,
+.herbarium-page .live-return {
+  color: #2f3b2e;
+}
+
+.herbarium-page .live-input {
+  color: rgba(47, 59, 46, 0.62);
+}
+
+.herbarium-page .live-return:hover,
+.herbarium-page .live-return:focus-visible {
+  color: #88483d;
+}
+
+.herbarium-help {
+  color: #2f3b2e;
+  background: rgba(91, 83, 65, 0.38);
+}
+
+.herbarium-help .live-help__panel {
+  border-color: rgba(47, 59, 46, 0.3);
+  color: #2f3b2e;
+  background: rgba(221, 213, 194, 0.98);
+  box-shadow: 0 18px 48px rgba(61, 50, 34, 0.18);
+}
+
+.herbarium-help .live-help__panel::before {
+  background: #88483d;
+}
+
+.herbarium-help .live-help__eyebrow,
+.herbarium-help .live-help__reading h2,
+.herbarium-help .live-help__number,
+.herbarium-help .live-help__parameter strong {
+  color: #88483d;
+}
+
+.herbarium-help .live-help__title,
+.herbarium-help .live-help__step h2,
+.herbarium-help .live-help__parameter span,
+.herbarium-help .live-help__return {
+  color: #2f3b2e;
+}
+
+.herbarium-help .live-help__intro,
+.herbarium-help .live-help__reading p,
+.herbarium-help .live-help__step p {
+  color: rgba(47, 59, 46, 0.72);
+}
+
+.herbarium-help .live-help__archive-grid,
+.herbarium-help .live-help__reading,
+.herbarium-help .live-help__steps,
+.herbarium-help .live-help__return {
+  border-color: rgba(47, 59, 46, 0.25);
+}
+
+.herbarium-help .live-help__step + .live-help__step::before,
+.herbarium-help .live-help__parameters::before {
+  background: rgba(47, 59, 46, 0.2);
+}
+
+.herbarium-help .live-help__keys {
+  color: rgba(47, 59, 46, 0.58);
+}
+
+.herbarium-help .live-help__parameters {
+  padding-top: 18px;
+  padding-bottom: 14px;
+}
+
+.herbarium-help .live-help__parameter {
+  margin-bottom: 6px;
+  line-height: 1.2;
+}
+
+.herbarium-help .live-help__return:hover,
+.herbarium-help .live-help__return:focus-visible {
+  border-color: #88483d;
+  color: #88483d;
+}

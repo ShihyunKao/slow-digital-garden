@@ -17,18 +17,90 @@
         width: 100%;
         height: 100%;
         overflow: hidden;
-        background: #091311;
+        background: #110a0b;
         font-family: Arial, Helvetica, sans-serif;
       }
 
       canvas {
         display: block;
       }
+
+      html body.warm-archive-page {
+        background: #110a0b !important;
+      }
+
+      .warm-archive-page .live-shell,
+      .warm-archive-page .live-top,
+      .warm-archive-page .live-title,
+      .warm-archive-page .live-input,
+      .warm-archive-page .live-return {
+        color: #cdb9a7;
+      }
+
+      .warm-archive-page .live-return:hover,
+      .warm-archive-page .live-return:focus-visible {
+        color: #d99568;
+      }
+
+      .warm-archive-help {
+        color: #cdb9a7;
+        background: rgba(17, 10, 11, 0.86);
+      }
+
+      .warm-archive-help .live-help__panel {
+        border-color: rgba(62, 35, 39, 0.9);
+        color: #cdb9a7;
+        background: rgba(23, 12, 14, 0.98);
+        box-shadow: 0 24px 72px rgba(17, 10, 11, 0.68);
+      }
+
+      .warm-archive-help .live-help__panel::before {
+        background: #8f3d46;
+      }
+
+      .warm-archive-help .live-help__eyebrow,
+      .warm-archive-help .live-help__reading h2,
+      .warm-archive-help .live-help__number,
+      .warm-archive-help .live-help__parameter strong {
+        color: #d99568;
+      }
+
+      .warm-archive-help .live-help__title,
+      .warm-archive-help .live-help__step h2,
+      .warm-archive-help .live-help__parameter span,
+      .warm-archive-help .live-help__return {
+        color: #f2d6b3;
+      }
+
+      .warm-archive-help .live-help__intro,
+      .warm-archive-help .live-help__reading p,
+      .warm-archive-help .live-help__step p,
+      .warm-archive-help .live-help__keys {
+        color: rgba(205, 185, 167, 0.72);
+      }
+
+      .warm-archive-help .live-help__archive-grid,
+      .warm-archive-help .live-help__reading,
+      .warm-archive-help .live-help__steps,
+      .warm-archive-help .live-help__return {
+        border-color: rgba(143, 61, 70, 0.42);
+      }
+
+      .warm-archive-help .live-help__step + .live-help__step::before,
+      .warm-archive-help .live-help__parameters::before {
+        background: rgba(143, 61, 70, 0.35);
+      }
+
+      .warm-archive-help .live-help__return:hover,
+      .warm-archive-help .live-help__return:focus-visible {
+        border-color: #d99568;
+        color: #d99568;
+      }
     </style>
   </head>
 
-  <body>
-    <section id="live-help" class="live-help live-help--archive" aria-hidden="true" aria-label="Session Archive field guide" hidden>
+  <body class="warm-archive-page">
+    <section id="live-help" class="live-help live-help--archive warm-archive-help" aria-hidden="true" aria-label="Session Archive field guide" hidden>
       <div class="live-help__panel">
         <div class="live-help__archive-summary">
           <div><p class="live-help__eyebrow">GESTURE STUDY 05.01&nbsp; / &nbsp;FIELD GUIDE</p><h1 class="live-help__title">Session Archive</h1><p class="live-help__intro">Eight gentle stretches record nested contours and connect them<br />into one personal bodily star map.</p></div>

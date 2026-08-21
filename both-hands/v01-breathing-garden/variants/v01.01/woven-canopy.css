@@ -1,0 +1,128 @@
+html,
+body.woven-canopy {
+  background: #0b100d !important;
+}
+
+body.woven-canopy::before {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  content: "";
+  background:
+    radial-gradient(ellipse at 50% 53%, rgba(230, 216, 184, 0.035), transparent 41%),
+    linear-gradient(108deg, rgba(128, 110, 80, 0.025), transparent 32%, rgba(104, 122, 104, 0.028));
+}
+
+body.woven-canopy canvas {
+  position: relative;
+  z-index: 1;
+}
+
+body.woven-canopy .live-shell {
+  --live-bone: #e6d8b8;
+  --live-moss: #687a68;
+  --live-teal: #b7aa8a;
+  color: #e6d8b8;
+}
+
+body.woven-canopy .live-shell::before {
+  opacity: 0.18;
+  background:
+    radial-gradient(ellipse at 50% 54%, rgba(230, 216, 184, 0.05), transparent 48%),
+    repeating-linear-gradient(5deg, rgba(183, 170, 138, 0.025) 0 1px, transparent 1px 7px);
+}
+
+body.woven-canopy .live-top {
+  color: #b7aa8a;
+}
+
+body.woven-canopy .live-title {
+  color: #e6d8b8;
+}
+
+body.woven-canopy .live-input {
+  color: rgba(183, 170, 138, 0.9);
+}
+
+body.woven-canopy .live-return {
+  color: rgba(183, 170, 138, 0.9);
+}
+
+body.woven-canopy .live-return:hover,
+body.woven-canopy .live-return:focus-visible {
+  color: #e6d8b8;
+  text-shadow: 0 0 12px rgba(230, 216, 184, 0.18);
+}
+
+body.woven-canopy .live-help {
+  color: #e6d8b8;
+  background: rgba(5, 9, 7, 0.74);
+}
+
+body.woven-canopy .live-help__panel {
+  border-color: rgba(183, 170, 138, 0.24);
+  background:
+    radial-gradient(ellipse at 50% 70%, rgba(230, 216, 184, 0.025), transparent 52%),
+    rgba(12, 18, 14, 0.985);
+  box-shadow: 0 18px 58px rgba(0, 0, 0, 0.38);
+}
+
+body.woven-canopy .live-help__panel::before {
+  background: rgba(183, 170, 138, 0.72);
+  box-shadow: none;
+}
+
+body.woven-canopy .live-help__eyebrow,
+body.woven-canopy .live-help__number {
+  color: #b7aa8a;
+}
+
+body.woven-canopy .live-help__reading h2 {
+  color: rgba(183, 170, 138, 0.78);
+}
+
+body.woven-canopy .live-help__title,
+body.woven-canopy .live-help__step h2,
+body.woven-canopy .live-help__return {
+  color: #e6d8b8;
+}
+
+body.woven-canopy .live-help__intro {
+  color: rgba(230, 216, 184, 0.7);
+}
+
+body.woven-canopy .live-help__step p,
+body.woven-canopy .live-help__reading p {
+  color: rgba(183, 170, 138, 0.66);
+}
+
+body.woven-canopy .live-help__keys {
+  color: rgba(183, 170, 138, 0.54);
+}
+
+body.woven-canopy .live-help__parameter span {
+  color: rgba(230, 216, 184, 0.72);
+}
+
+body.woven-canopy .live-help__parameter strong {
+  color: rgba(183, 170, 138, 0.72);
+}
+
+body.woven-canopy .live-help__steps,
+body.woven-canopy .live-help__archive-grid,
+body.woven-canopy .live-help__reading,
+body.woven-canopy .live-help__return {
+  border-color: rgba(104, 122, 104, 0.26);
+}
+
+body.woven-canopy .live-help__step + .live-help__step::before,
+body.woven-canopy .live-help__parameters::before {
+  background: rgba(104, 122, 104, 0.23);
+}
+
+body.woven-canopy .live-help__return:hover,
+body.woven-canopy .live-help__return:focus-visible {
+  border-color: rgba(183, 170, 138, 0.72);
+  color: #e6d8b8;
+}

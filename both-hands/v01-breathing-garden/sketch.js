@@ -6,6 +6,9 @@ let breath = 0;
 let targetBreath = 0;
 const MIN_HAND_DISTANCE = 28;
 const MAX_HAND_DISTANCE = 440;
+const breathingVariant = window.BOTH_V01_VARIANT || null;
+let veilOpening = 0;
+let veilVelocity = 0;
 
 let modelReady = false;
 let videoReady = false;
@@ -71,10 +74,23 @@ function draw() {
 }
 
 function drawBackground() {
+  if (breathingVariant) {
+    background(...breathingVariant.palette.background);
+    return;
+  }
   clear();
 }
 
 function drawContourGarden() {
+  if (breathingVariant?.renderMode === "woven-canopy") {
+    drawWovenCanopy();
+    return;
+  }
+  if (breathingVariant?.renderMode === "parted-veil") {
+    drawPartedVeil();
+    return;
+  }
+
   const centerX = width / 2;
   const centerY = height * 0.56;
   const easedBreath = easeInOutCubic(breath);
@@ -134,6 +150,205 @@ function drawContourGarden() {
   }
 }
 
+function drawWovenCanopy() {
+  const palette = breathingVariant.palette;
+  const centerX = width / 2;
+  const centerY = height * 0.52;
+  const easedBreath = easeInOutCubic(breath);
+  const opening = targetBreath >= breath;
+  const time = frameCount * 0.0034;
+  const bandCount = 55;
+  const maxSpread = height * 0.205;
+  const maxWidth = width * 0.46;
+
+  drawCanopyBacklight(centerX, centerY, maxWidth, maxSpread, easedBreath, palette);
+  noFill();
+
+  for (let i = 0; i < bandCount; i++) {
+    const band = map(i, 0, bandCount - 1, -1, 1);
+    const edge = abs(band);
+    const delay = pow(edge, 0.78) * 0.5;
+    const layerBreath = opening
+      ? smoothstep(delay, 1, easedBreath)
+      : smoothstep(0, max(0.14, 1 - delay * 0.78), easedBreath);
+
+    if (layerBreath < 0.012) continue;
+
+    const verticalPosition = centerY + band * maxSpread * layerBreath;
+    const curveWidth = lerp(12, maxWidth * (0.64 + 0.36 * (1 - edge)), layerBreath);
+    const sag = (14 + (1 - edge) * 35) * layerBreath;
+    const primary = i % 13 === 0 ? palette.aged : palette.linen;
+    const secondary = i % 4 === 0 ? palette.moss : primary;
+
+    for (let fibre = 0; fibre < 3; fibre++) {
+      const fibreOffset = (fibre - 1) * (0.85 + edge * 0.9);
+      const colour = fibre === 1 ? primary : secondary;
+      const alpha = (fibre === 1 ? 82 : 42) * layerBreath;
+
+      stroke(...colour, alpha);
+      strokeWeight(fibre === 1 ? 0.72 : 0.34);
+      beginShape();
+
+      for (let step = 0; step <= 96; step++) {
+        const u = map(step, 0, 96, -1, 1);
+        const canopyEdge = 1 - u * u;
+        const irregularity =
+          sin(u * 9 + i * 0.27 + time * 6 + fibre * 1.7) * (0.7 + edge * 1.2) +
+          (noise(step * 0.09, i * 0.16, time + fibre * 3) - 0.5) * 3.4;
+        const x = centerX + u * curveWidth;
+        const y =
+          verticalPosition +
+          sag * canopyEdge +
+          irregularity * canopyEdge +
+          fibreOffset;
+        curveVertex(x, y);
+      }
+
+      endShape();
+    }
+  }
+
+  // Sparse, irregular cross threads keep the material woven rather than striped.
+  for (let thread = 0; thread < 15; thread++) {
+    const u = map(thread, 0, 14, -0.88, 0.88);
+    const edge = abs(u);
+    const delay = pow(edge, 0.76) * 0.5;
+    const threadBreath = opening
+      ? smoothstep(delay, 1, easedBreath)
+      : smoothstep(0, max(0.14, 1 - delay * 0.78), easedBreath);
+
+    if (threadBreath < 0.035) continue;
+
+    const x = centerX + u * maxWidth * (0.66 + 0.3 * (1 - edge)) * threadBreath;
+    const top = centerY - maxSpread * 0.84 * threadBreath;
+    const bottom = centerY + maxSpread * 0.84 * threadBreath;
+
+    stroke(...palette.forest, 14 * threadBreath);
+    strokeWeight(0.38);
+    beginShape();
+    for (let step = 0; step <= 24; step++) {
+      const progress = step / 24;
+      const y = lerp(top, bottom, progress) +
+        sin(progress * 12 + thread * 0.91 + time * 4) * 2.2;
+      curveVertex(x + sin(progress * 8 + thread) * 1.4, y);
+    }
+    endShape();
+  }
+}
+
+function drawPartedVeil() {
+  const palette = breathingVariant.palette;
+  const centerX = width / 2;
+  const target = easeInOutCubic(breath);
+  const spring = (target - veilOpening) * 0.032;
+  veilVelocity = (veilVelocity + spring) * 0.855;
+  veilOpening = constrain(veilOpening + veilVelocity, -0.025, 1.035);
+
+  const opening = constrain(veilOpening, 0, 1);
+  const gap = lerp(width * 0.012, width * 0.265, opening);
+  const time = frameCount * 0.0032;
+
+  drawVeilNegativeSpace(centerX, gap, palette);
+  drawVeilHalf(-1, centerX - gap, opening, time, palette);
+  drawVeilHalf(1, centerX + gap, opening, time, palette);
+  drawVeilEdge(-1, centerX - gap, opening, time, palette);
+  drawVeilEdge(1, centerX + gap, opening, time, palette);
+}
+
+function drawVeilNegativeSpace(centerX, gap, palette) {
+  const context = drawingContext;
+  const gradient = context.createLinearGradient(centerX - gap * 1.25, 0, centerX + gap * 1.25, 0);
+  gradient.addColorStop(0, `rgba(${palette.negative.join(",")},0)`);
+  gradient.addColorStop(0.18, `rgba(${palette.negative.join(",")},0.78)`);
+  gradient.addColorStop(0.5, `rgba(${palette.negative.join(",")},0.96)`);
+  gradient.addColorStop(0.82, `rgba(${palette.negative.join(",")},0.78)`);
+  gradient.addColorStop(1, `rgba(${palette.negative.join(",")},0)`);
+  context.save();
+  context.fillStyle = gradient;
+  context.fillRect(centerX - gap * 1.25, 0, gap * 2.5, height);
+  context.restore();
+}
+
+function drawVeilHalf(side, innerEdge, opening, time, palette) {
+  const layerCount = 23;
+  const baseColour = side < 0 ? palette.left : palette.right;
+  noStroke();
+
+  for (let layer = layerCount - 1; layer >= 0; layer--) {
+    const depth = layer / (layerCount - 1);
+    const edgeOffset = side * depth * width * 0.072;
+    const flutter = (1 - opening) * 3.5 + 1.4;
+    const alpha = 3.2 + (1 - depth) * 4.8;
+    const colour = layer % 5 === 0 ? palette.shadow : baseColour;
+
+    fill(...colour, alpha);
+    beginShape();
+    vertex(side < 0 ? -32 : width + 32, -32);
+    vertex(innerEdge + edgeOffset, -32);
+
+    for (let step = 0; step <= 58; step++) {
+      const v = step / 58;
+      const y = v * (height + 64) - 32;
+      const fold =
+        sin(v * 10.5 + layer * 0.31 + time * 7) * (7 + depth * 16) * flutter * 0.34 +
+        sin(v * 24 + layer * 0.17 - time * 3) * (1.5 + depth * 4.2);
+      curveVertex(innerEdge + edgeOffset + side * fold, y);
+    }
+
+    vertex(side < 0 ? -32 : width + 32, height + 32);
+    endShape(CLOSE);
+  }
+
+  // Long, dim folds remain inside each curtain rather than glowing across it.
+  noFill();
+  for (let fold = 0; fold < 11; fold++) {
+    const depth = (fold + 1) / 12;
+    const x = innerEdge + side * depth * width * 0.31;
+    stroke(...palette.shadow, 10 + depth * 7);
+    strokeWeight(0.45 + (fold % 4 === 0 ? 0.35 : 0));
+    beginShape();
+    for (let step = 0; step <= 40; step++) {
+      const v = step / 40;
+      const y = v * height;
+      const wave = sin(v * 9 + fold * 0.7 + time * 5) * (5 + depth * 14);
+      curveVertex(x + side * wave, y);
+    }
+    endShape();
+  }
+}
+
+function drawVeilEdge(side, innerEdge, opening, time, palette) {
+  noFill();
+  for (let echo = 0; echo < 3; echo++) {
+    stroke(...palette.edge, (echo === 0 ? 105 : 27) * (0.65 + opening * 0.35));
+    strokeWeight(echo === 0 ? 0.9 : 0.42);
+    beginShape();
+    for (let step = 0; step <= 64; step++) {
+      const v = step / 64;
+      const y = v * height;
+      const wave =
+        sin(v * 10.2 + time * 7 + echo * 0.8) * (4.5 + (1 - opening) * 4) +
+        sin(v * 25 - time * 2.3) * 1.5;
+      curveVertex(innerEdge + side * (wave + echo * 3.2), y);
+    }
+    endShape();
+  }
+}
+
+function drawCanopyBacklight(centerX, centerY, radiusX, radiusY, amount, palette) {
+  const context = drawingContext;
+  const radius = max(radiusX, radiusY * 2.2);
+  const glow = context.createRadialGradient(centerX, centerY + 16, 0, centerX, centerY + 16, radius);
+  glow.addColorStop(0, `rgba(${palette.bone.join(",")}, ${0.055 * amount})`);
+  glow.addColorStop(0.46, `rgba(${palette.linen.join(",")}, ${0.025 * amount})`);
+  glow.addColorStop(1, "rgba(11,16,13,0)");
+
+  context.save();
+  context.fillStyle = glow;
+  context.fillRect(0, 0, width, height);
+  context.restore();
+}
+
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
   if (video) video.size(width, height);
@@ -146,7 +361,8 @@ function drawHandDisplay() {
     const points = hand.keypoints;
 
     if (handDisplayMode === 2) {
-      stroke(230, 226, 204, 58);
+      if (breathingVariant) stroke(...breathingVariant.palette.handLine, 72);
+      else stroke(230, 226, 204, 58);
       strokeWeight(0.75);
       noFill();
 
@@ -156,7 +372,8 @@ function drawHandDisplay() {
     }
 
     noStroke();
-    fill(246, 238, 198, 92);
+    if (breathingVariant) fill(...breathingVariant.palette.handPoint, 112);
+    else fill(246, 238, 198, 92);
     const visible = handDisplayMode === 1 ? [8] : points.map((_, index) => index);
 
     for (const index of visible) {
@@ -418,6 +635,8 @@ function beginExperience() {
 function resetBreathingField() {
   breath = 0;
   targetBreath = 0;
+  veilOpening = 0;
+  veilVelocity = 0;
 }
 
 function startHandMode() {

@@ -286,13 +286,13 @@ function drawArchiveScaffold(amount) {
     const current = i === sessionStep && !sessionComplete;
 
     noFill();
-    stroke(187, 205, 180, recorded ? 8 : current ? 22 : 6);
+    stroke(62, 35, 39, recorded ? 22 : current ? 74 : 14);
     strokeWeight(current ? 0.65 : 0.35);
     ellipse(cx, cy, rr * 2, rr * 2 * guideAspect);
 
     const markerAngle = -HALF_PI;
     noStroke();
-    fill(213, 220, 199, recorded ? 38 : current ? 95 : 18);
+    fill(62, 35, 39, recorded ? 72 : current ? 150 : 38);
     circle(
       cx + cos(markerAngle) * rr,
       cy + sin(markerAngle) * rr * guideAspect,
@@ -308,13 +308,13 @@ function drawArchiveScaffold(amount) {
 
   drawingContext.save();
   drawingContext.shadowBlur = 18 + eased * 16;
-  drawingContext.shadowColor = "rgba(228, 226, 193, 0.38)";
+  drawingContext.shadowColor = "rgba(217, 149, 104, 0.38)";
   noFill();
-  stroke(239, 233, 201, 32 + eased * 105);
+  stroke(217, 149, 104, 32 + eased * 105);
   strokeWeight(0.85 + eased * 0.45);
   arc(cx, cy, rr * 2, rr * 2 * guideAspect, -HALF_PI, sweepEnd);
   noStroke();
-  fill(250, 241, 201, 80 + eased * 165);
+  fill(242, 214, 179, 80 + eased * 165);
   circle(
     cx + cos(sweepEnd) * rr,
     cy + sin(sweepEnd) * rr * guideAspect,
@@ -325,7 +325,7 @@ function drawArchiveScaffold(amount) {
   drawingContext.save();
   drawingContext.filter = "blur(22px)";
   noStroke();
-  fill(117, 153, 124, 5 + eased * 13);
+  fill(143, 61, 70, 5 + eased * 13);
   ellipse(cx, cy, rr * 2.12, rr * 2.12 * guideAspect);
   drawingContext.restore();
 }
@@ -364,9 +364,9 @@ function drawArchiveRings() {
 function drawArchiveContour(memory, opacity) {
   noFill();
   stroke(
-    235,
-    232,
-    207,
+    143,
+    61,
+    70,
     (22 + memory.brightness * 66 + memory.flash * 34) * opacity
   );
   strokeWeight(0.42 + memory.brightness * 0.48 + memory.flash * 0.18);
@@ -383,7 +383,7 @@ function drawArchiveStars(memory, opacity) {
 
   for (const star of memory.stars) {
     const pulse = sin(frameCount * 0.024 + star.phase) * 0.5 + 0.5;
-    fill(245, 237, 198, (28 + memory.brightness * 62 + pulse * 22) * opacity);
+    fill(210, 123, 98, (28 + memory.brightness * 62 + pulse * 22) * opacity);
     circle(star.x, star.y, star.size + pulse * 0.6);
   }
 }
@@ -407,9 +407,9 @@ function drawAnchorStar(memory, opacity) {
 
   drawingContext.save();
   drawingContext.shadowBlur = 12 + memory.flash * 14;
-  drawingContext.shadowColor = "rgba(246, 236, 194, 0.58)";
+  drawingContext.shadowColor = "rgba(242, 214, 179, 0.58)";
   noStroke();
-  fill(251, 241, 199, (115 + pulse * 80 + memory.flash * 70) * opacity);
+  fill(242, 214, 179, (115 + pulse * 80 + memory.flash * 70) * opacity);
   circle(anchor.x, anchor.y, 3.5 + pulse * 1.8 + memory.flash * 2.5);
   drawingContext.restore();
 }
@@ -421,9 +421,9 @@ function drawNewArchiveReveal(memory) {
 
   drawingContext.save();
   drawingContext.shadowBlur = 22;
-  drawingContext.shadowColor = "rgba(246, 236, 194, 0.6)";
+  drawingContext.shadowColor = "rgba(217, 149, 104, 0.6)";
   noStroke();
-  fill(252, 242, 201, 210 * fade);
+  fill(217, 149, 104, 210 * fade);
   circle(anchor.x, anchor.y, 7 + memory.flash * 3);
   drawingContext.restore();
 }
@@ -442,9 +442,9 @@ function drawArchivePath() {
 
   drawingContext.save();
   drawingContext.shadowBlur = 10 + finalReveal * 12;
-  drawingContext.shadowColor = "rgba(236, 228, 191, 0.34)";
+  drawingContext.shadowColor = "rgba(182, 92, 85, 0.34)";
   noFill();
-  stroke(226, 226, 201, 30 + finalReveal * 68);
+  stroke(182, 92, 85, 30 + finalReveal * 68);
   strokeWeight(0.55 + finalReveal * 0.35);
   beginShape();
 
@@ -477,9 +477,9 @@ function drawCompletedBodyMap() {
   drawingContext.save();
   drawingContext.filter = "blur(28px)";
   noStroke();
-  fill(112, 150, 122, 20 * reveal);
+  fill(143, 61, 70, 20 * reveal);
   ellipse(0, 0, getArchiveRadius(0) * 1.55, getArchiveRadius(0) * 0.95);
-  fill(233, 221, 181, 12 * reveal);
+  fill(217, 149, 104, 12 * reveal);
   circle(0, 0, 105 * reveal);
   drawingContext.restore();
 
@@ -487,20 +487,20 @@ function drawCompletedBodyMap() {
     const current = getAnchorPoint(memories[i]);
     const next = getAnchorPoint(memories[(i + 2) % memories.length]);
 
-    stroke(218, 225, 200, (12 + memories[i].quality.coherence * 17) * reveal);
+    stroke(182, 92, 85, (12 + memories[i].quality.coherence * 17) * reveal);
     strokeWeight(0.35);
     line(current.x, current.y, next.x, next.y);
 
     const innerPull = map(i, 0, memories.length - 1, 0.18, 0.68);
-    stroke(232, 227, 198, 15 * reveal);
+    stroke(143, 61, 70, 15 * reveal);
     line(current.x, current.y, current.x * innerPull, current.y * innerPull);
   }
 
   drawingContext.save();
   drawingContext.shadowBlur = 22 * reveal;
-  drawingContext.shadowColor = "rgba(248, 238, 196, 0.55)";
+  drawingContext.shadowColor = "rgba(217, 149, 104, 0.55)";
   noStroke();
-  fill(250, 240, 198, 190 * reveal);
+  fill(242, 214, 179, 190 * reveal);
   circle(0, 0, 4 + reveal * 4);
   drawingContext.restore();
   pop();
@@ -533,15 +533,15 @@ function drawStatus(label, progress) {
 
   textAlign(CENTER, CENTER);
   noStroke();
-  fill(232, 229, 208, 175);
+  fill(205, 185, 167, 175);
   textSize(10);
   text(label, width / 2, y - 16);
 
-  stroke(184, 201, 178, 32);
+  stroke(62, 35, 39, 90);
   strokeWeight(1);
   line(width / 2 - barWidth / 2, y, width / 2 + barWidth / 2, y);
 
-  stroke(237, 227, 191, 175);
+  stroke(182, 92, 85, 175);
   strokeWeight(1.4);
   line(
     width / 2 - barWidth / 2,
@@ -562,7 +562,7 @@ function drawHandDisplay() {
     const points = hand.keypoints;
 
     if (handDisplayMode === 2) {
-      stroke(230, 226, 204, 58);
+      stroke(205, 185, 167, 58);
       strokeWeight(0.75);
       for (const [a, b] of HAND_CONNECTIONS) {
         line(points[a].x, points[a].y, points[b].x, points[b].y);
@@ -571,7 +571,7 @@ function drawHandDisplay() {
 
     const visible = handDisplayMode === 1 ? [8] : points.map((_, index) => index);
     noStroke();
-    fill(246, 238, 198, 92);
+    fill(242, 214, 179, 92);
     for (const index of visible) circle(points[index].x, points[index].y, handDisplayMode === 1 ? 7 : 3.5);
   }
 }

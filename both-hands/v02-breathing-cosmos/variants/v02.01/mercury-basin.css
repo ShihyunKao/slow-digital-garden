@@ -1,0 +1,116 @@
+html,
+body.mercury-basin {
+  background: #050808 !important;
+}
+
+body.mercury-basin::before {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  content: "";
+  background:
+    radial-gradient(ellipse at 50% 57%, rgba(79, 88, 89, 0.08), transparent 36%),
+    linear-gradient(180deg, #050808 0%, #071012 58%, #030506 100%);
+}
+
+body.mercury-basin canvas {
+  position: relative;
+  z-index: 1;
+}
+
+body.mercury-basin .live-shell {
+  --live-bone: #dde7e4;
+  --live-moss: #829b98;
+  --live-teal: #dde7e4;
+  color: #dde7e4;
+}
+
+body.mercury-basin .live-shell::before {
+  opacity: 0.12;
+  background:
+    radial-gradient(ellipse at 50% 58%, rgba(130, 155, 152, 0.07), transparent 42%),
+    linear-gradient(100deg, transparent 42%, rgba(221, 231, 228, 0.018) 49%, transparent 56%);
+}
+
+body.mercury-basin .live-top,
+body.mercury-basin .live-input,
+body.mercury-basin .live-return {
+  color: rgba(130, 155, 152, 0.84);
+}
+
+body.mercury-basin .live-title {
+  color: #dde7e4;
+}
+
+body.mercury-basin .live-return:hover,
+body.mercury-basin .live-return:focus-visible {
+  color: #dde7e4;
+  text-shadow: 0 0 10px rgba(221, 231, 228, 0.16);
+}
+
+body.mercury-basin .live-help {
+  color: #dde7e4;
+  background: rgba(3, 6, 7, 0.78);
+}
+
+body.mercury-basin .live-help__panel {
+  border-color: rgba(130, 155, 152, 0.24);
+  background:
+    radial-gradient(ellipse at 50% 74%, rgba(79, 88, 89, 0.095), transparent 50%),
+    linear-gradient(145deg, rgba(11, 17, 18, 0.99), rgba(5, 9, 10, 0.99));
+  box-shadow: 0 20px 64px rgba(0, 0, 0, 0.44);
+}
+
+body.mercury-basin .live-help__panel::before {
+  background: rgba(185, 168, 121, 0.42);
+  box-shadow: none;
+}
+
+body.mercury-basin .live-help__eyebrow,
+body.mercury-basin .live-help__number,
+body.mercury-basin .live-help__reading h2 {
+  color: rgba(130, 155, 152, 0.9);
+}
+
+body.mercury-basin .live-help__title,
+body.mercury-basin .live-help__return {
+  color: #dde7e4;
+}
+
+body.mercury-basin .live-help__step h2,
+body.mercury-basin .live-help__parameter span {
+  color: rgba(190, 204, 201, 0.86);
+}
+
+body.mercury-basin .live-help__intro {
+  color: rgba(190, 204, 201, 0.74);
+}
+
+body.mercury-basin .live-help__step p,
+body.mercury-basin .live-help__reading p,
+body.mercury-basin .live-help__keys {
+  color: rgba(130, 155, 152, 0.72);
+}
+
+body.mercury-basin .live-help__parameter strong {
+  color: rgba(221, 231, 228, 0.8);
+}
+
+body.mercury-basin .live-help__steps,
+body.mercury-basin .live-help__archive-grid,
+body.mercury-basin .live-help__reading,
+body.mercury-basin .live-help__return {
+  border-color: rgba(79, 88, 89, 0.38);
+}
+
+body.mercury-basin .live-help__step + .live-help__step::before,
+body.mercury-basin .live-help__parameters::before {
+  background: rgba(79, 88, 89, 0.32);
+}
+
+body.mercury-basin .live-help__return:hover,
+body.mercury-basin .live-help__return:focus-visible {
+  border-color: rgba(221, 231, 228, 0.56);
+  color: #dde7e4;
+}

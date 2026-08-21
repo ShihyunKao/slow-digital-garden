@@ -1,0 +1,177 @@
+:root {
+  --paper-bg: #171510;
+  --paper-main: #d8d0bb;
+  --paper-secondary: #a69c89;
+  --paper-shadow: #514a3f;
+  --paper-edge: #2a2925;
+  --paper-detail: #9b9062;
+  --paper-copy: #b7ae9b;
+  --paper-muted: #827a6c;
+  --paper-line: rgba(155, 144, 98, 0.24);
+}
+
+html,
+body.paper-eclipse {
+  background: var(--paper-bg) !important;
+}
+
+.paper-eclipse::before,
+.paper-eclipse::after {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  content: "";
+}
+
+.paper-eclipse::before {
+  background:
+    repeating-linear-gradient(9deg, transparent 0 5px, rgba(216, 208, 187, 0.009) 6px, transparent 7px),
+    linear-gradient(132deg, #12110d 0%, #1b1812 48%, #13120e 100%);
+}
+
+.paper-eclipse::after {
+  opacity: 0.36;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.11'/%3E%3C/svg%3E");
+  mix-blend-mode: soft-light;
+}
+
+.paper-eclipse canvas {
+  position: relative;
+  z-index: 1;
+  filter: contrast(1.045) saturate(0.84);
+}
+
+.paper-eclipse .live-shell {
+  --live-bone: var(--paper-main);
+  --live-moss: var(--paper-copy);
+  --live-teal: var(--paper-detail);
+  z-index: 1000;
+}
+
+.paper-eclipse .live-shell::before {
+  opacity: 0.14;
+  background: linear-gradient(180deg, transparent 0 68%, rgba(81, 74, 63, 0.07) 100%);
+}
+
+.paper-eclipse .live-input,
+.paper-eclipse .live-return,
+.paper-eclipse .live-kicker,
+.paper-eclipse .live-study {
+  color: var(--paper-detail);
+}
+
+.paper-eclipse .live-return:hover,
+.paper-eclipse .live-return:focus-visible {
+  color: var(--paper-main);
+  text-shadow: 0 0 10px rgba(216, 208, 187, 0.16);
+}
+
+.paper-eclipse .live-help {
+  color: var(--paper-main);
+  background: rgba(18, 17, 13, 0.86);
+}
+
+.paper-eclipse .live-help__panel {
+  border-color: rgba(155, 144, 98, 0.34);
+  background:
+    linear-gradient(111deg, rgba(216, 208, 187, 0.025), transparent 32%),
+    rgba(27, 25, 20, 0.985);
+  box-shadow: 0 24px 72px rgba(7, 6, 4, 0.48);
+}
+
+.paper-eclipse .live-help__panel::before {
+  background: var(--paper-detail);
+  box-shadow: none;
+}
+
+.paper-eclipse .live-help__eyebrow,
+.paper-eclipse .live-help__number,
+.paper-eclipse .live-help__reading h2 {
+  color: var(--paper-detail);
+}
+
+.paper-eclipse .live-help__title,
+.paper-eclipse .live-help__step h2,
+.paper-eclipse .live-help__return {
+  color: var(--paper-main);
+}
+
+.paper-eclipse .live-help__intro,
+.paper-eclipse .live-help__step p,
+.paper-eclipse .live-help__reading p,
+.paper-eclipse .live-help__keys,
+.paper-eclipse .live-help__parameter span {
+  color: rgba(183, 174, 155, 0.78);
+}
+
+.paper-eclipse .live-help__parameter strong {
+  color: rgba(216, 208, 187, 0.84);
+}
+
+.paper-eclipse .live-help__steps,
+.paper-eclipse .live-help__archive-grid,
+.paper-eclipse .live-help__reading,
+.paper-eclipse .live-help__return {
+  border-color: var(--paper-line);
+}
+
+.paper-eclipse .live-help__step + .live-help__step::before,
+.paper-eclipse .live-help__parameters::before {
+  background: rgba(155, 144, 98, 0.22);
+}
+
+@media (max-height: 820px) and (min-width: 761px) {
+  .paper-eclipse .live-help {
+    padding-top: 82px;
+    padding-bottom: 86px;
+  }
+
+  .paper-eclipse .live-help--archive .live-help__panel {
+    height: min(552px, 100%);
+    padding: 26px 36px 58px;
+  }
+
+  .paper-eclipse .live-help__archive-summary {
+    gap: 36px;
+  }
+
+  .paper-eclipse .live-help__title {
+    font-size: 44px;
+  }
+
+  .paper-eclipse .live-help__intro,
+  .paper-eclipse .live-help__reading p {
+    font-size: 10px;
+    line-height: 1.5;
+  }
+
+  .paper-eclipse .live-help__archive-grid {
+    margin-top: 18px;
+  }
+
+  .paper-eclipse .live-help__step {
+    min-height: 138px;
+    padding-top: 25px;
+    padding-bottom: 22px;
+  }
+
+  .paper-eclipse .live-help__number {
+    top: 21px;
+  }
+
+  .paper-eclipse .live-help__parameters {
+    padding: 18px 0 15px 24px;
+  }
+
+  .paper-eclipse .live-help__parameter {
+    margin-bottom: 8px;
+    line-height: 1.35;
+  }
+
+  .paper-eclipse .live-help__footer {
+    right: 36px;
+    bottom: 22px;
+    left: 36px;
+  }
+}

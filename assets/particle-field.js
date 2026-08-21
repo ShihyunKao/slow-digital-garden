@@ -75,8 +75,23 @@
   }
 
   function drawBothStageField(ctx, time, width, height, seed, canvas) {
+    if (canvas.dataset.variant === "seismograph-skin") {
+      drawSeismographStage(ctx, time, width, height, seed);
+      return;
+    }
+    if (canvas.dataset.variant === "glass-strain") {
+      drawGlassStrainStage(ctx, time, width, height, seed);
+      return;
+    }
+
     const rand = mulberry32(seed * 83 + 29);
+    const mercuryBasin = canvas.dataset.variant === "mercury-basin";
+    const cloudChamber = canvas.dataset.variant === "cloud-chamber";
+    const wovenCanopy = canvas.dataset.variant === "woven-canopy";
+    const partedVeil = canvas.dataset.variant === "parted-veil";
     const amberOrbit = canvas.dataset.variant === "amber-orbit";
+    const warmSessionArchive = canvas.dataset.variant === "session-archive-warm";
+    const coolSessionArchive = canvas.dataset.variant === "session-archive-refined-cool";
     const frozenConstellation = canvas.dataset.variant === "frozen-constellation";
     const rawBreath = reduceMotion ? .62 : (Math.sin(time * .42 - .7) + 1) * .5;
     const breath = rawBreath * rawBreath * (3 - 2 * rawBreath);
@@ -112,12 +127,48 @@
       const centreLight = 1 - Math.abs(lane);
       const lineAlpha = .025 + centreLight * .075 + rand() * .035;
       const contourGradient = ctx.createLinearGradient(leftX, centreY, rightX, centreY);
-      if (amberOrbit) {
+      if (cloudChamber) {
+        contourGradient.addColorStop(0, `rgba(58,51,43,${lineAlpha * .4})`);
+        contourGradient.addColorStop(.18, `rgba(113,132,122,${lineAlpha * .68})`);
+        contourGradient.addColorStop(.5, `rgba(213,190,142,${lineAlpha * .9})`);
+        contourGradient.addColorStop(.82, `rgba(161,157,145,${lineAlpha * .66})`);
+        contourGradient.addColorStop(1, `rgba(58,51,43,${lineAlpha * .4})`);
+      } else if (mercuryBasin) {
+        contourGradient.addColorStop(0, `rgba(24,34,37,${lineAlpha * .44})`);
+        contourGradient.addColorStop(.18, `rgba(79,88,89,${lineAlpha * .66})`);
+        contourGradient.addColorStop(.5, `rgba(221,231,228,${lineAlpha * .84})`);
+        contourGradient.addColorStop(.82, `rgba(130,155,152,${lineAlpha * .6})`);
+        contourGradient.addColorStop(1, `rgba(24,34,37,${lineAlpha * .44})`);
+      } else if (partedVeil) {
+        contourGradient.addColorStop(0, `rgba(64,75,104,${lineAlpha * .36})`);
+        contourGradient.addColorStop(.18, `rgba(85,75,100,${lineAlpha * .58})`);
+        contourGradient.addColorStop(.5, `rgba(203,228,234,${lineAlpha * .96})`);
+        contourGradient.addColorStop(.82, `rgba(102,120,140,${lineAlpha * .58})`);
+        contourGradient.addColorStop(1, `rgba(64,75,104,${lineAlpha * .36})`);
+      } else if (wovenCanopy) {
+        contourGradient.addColorStop(0, `rgba(41,51,45,${lineAlpha * .48})`);
+        contourGradient.addColorStop(.18, `rgba(104,122,104,${lineAlpha * .75})`);
+        contourGradient.addColorStop(.5, `rgba(183,170,138,${lineAlpha * 1.24})`);
+        contourGradient.addColorStop(.82, `rgba(104,122,104,${lineAlpha * .75})`);
+        contourGradient.addColorStop(1, `rgba(41,51,45,${lineAlpha * .48})`);
+      } else if (amberOrbit) {
         contourGradient.addColorStop(0, `rgba(104,25,30,${lineAlpha * .68})`);
         contourGradient.addColorStop(.18, `rgba(168,66,35,${lineAlpha * .88})`);
         contourGradient.addColorStop(.5, `rgba(240,169,61,${lineAlpha * 1.3})`);
         contourGradient.addColorStop(.82, `rgba(168,66,35,${lineAlpha * .88})`);
         contourGradient.addColorStop(1, `rgba(104,25,30,${lineAlpha * .68})`);
+      } else if (warmSessionArchive) {
+        contourGradient.addColorStop(0, `rgba(62,35,39,${lineAlpha * .58})`);
+        contourGradient.addColorStop(.18, `rgba(143,61,70,${lineAlpha * .85})`);
+        contourGradient.addColorStop(.5, `rgba(182,92,85,${lineAlpha * 1.2})`);
+        contourGradient.addColorStop(.82, `rgba(217,149,104,${lineAlpha * .82})`);
+        contourGradient.addColorStop(1, `rgba(62,35,39,${lineAlpha * .58})`);
+      } else if (coolSessionArchive) {
+        contourGradient.addColorStop(0, `rgba(32,41,67,${lineAlpha * .56})`);
+        contourGradient.addColorStop(.18, `rgba(73,103,141,${lineAlpha * .85})`);
+        contourGradient.addColorStop(.5, `rgba(119,115,181,${lineAlpha * 1.15})`);
+        contourGradient.addColorStop(.82, `rgba(120,183,202,${lineAlpha * .85})`);
+        contourGradient.addColorStop(1, `rgba(32,41,67,${lineAlpha * .56})`);
       } else if (frozenConstellation) {
         contourGradient.addColorStop(0, `rgba(105,96,121,${lineAlpha * .28})`);
         contourGradient.addColorStop(.18, `rgba(142,130,160,${lineAlpha * .46})`);
@@ -153,8 +204,20 @@
         if (sample === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       }
-      ctx.strokeStyle = amberOrbit
+      ctx.strokeStyle = cloudChamber
+        ? `rgba(58,51,43,${.02 + gatherStrength * .045})`
+        : mercuryBasin
+        ? `rgba(79,88,89,${.022 + gatherStrength * .05})`
+        : partedVeil
+        ? `rgba(85,75,100,${.018 + gatherStrength * .045})`
+        : wovenCanopy
+        ? `rgba(128,110,80,${.025 + gatherStrength * .06})`
+        : amberOrbit
         ? `rgba(139,45,32,${.035 + gatherStrength * .07})`
+        : warmSessionArchive
+        ? `rgba(143,61,70,${.028 + gatherStrength * .065})`
+        : coolSessionArchive
+        ? `rgba(73,103,141,${.028 + gatherStrength * .065})`
         : frozenConstellation
           ? `rgba(158,145,177,${.018 + gatherStrength * .032})`
           : `rgba(101,215,196,${.025 + gatherStrength * .055})`;
@@ -184,8 +247,20 @@
       const [previousX, previousY] = particlePoint(previousTravel);
       const centrePresence = .42 + Math.sin(travel * Math.PI) * .58;
       const bright = (.13 + rand() * .45) * centrePresence;
-      ctx.strokeStyle = amberOrbit
+      ctx.strokeStyle = cloudChamber
+        ? `rgba(58,51,43,${bright * .09})`
+        : mercuryBasin
+        ? `rgba(79,88,89,${bright * .1})`
+        : partedVeil
+        ? `rgba(64,75,104,${bright * .085})`
+        : wovenCanopy
+        ? `rgba(104,122,104,${bright * .13})`
+        : amberOrbit
         ? `rgba(215,109,38,${bright * .15})`
+        : warmSessionArchive
+        ? `rgba(143,61,70,${bright * .14})`
+        : coolSessionArchive
+        ? `rgba(73,103,141,${bright * .14})`
         : frozenConstellation
           ? `rgba(168,155,186,${bright * .07})`
           : `rgba(101,215,196,${bright * .12})`;
@@ -194,8 +269,20 @@
       ctx.moveTo(previousX, previousY);
       ctx.lineTo(x, y);
       ctx.stroke();
-      ctx.strokeStyle = amberOrbit
+      ctx.strokeStyle = cloudChamber
+        ? `rgba(161,157,145,${bright * .72})`
+        : mercuryBasin
+        ? `rgba(130,155,152,${bright * .68})`
+        : partedVeil
+        ? `rgba(102,120,140,${bright * .62})`
+        : wovenCanopy
+        ? `rgba(183,170,138,${bright * .86})`
+        : amberOrbit
         ? `rgba(244,178,68,${bright})`
+        : warmSessionArchive
+        ? `rgba(210,123,98,${bright * .92})`
+        : coolSessionArchive
+        ? `rgba(120,183,202,${bright * .92})`
         : frozenConstellation
           ? `rgba(194,184,207,${bright * .58})`
           : `rgba(101,215,196,${bright})`;
@@ -205,8 +292,20 @@
       ctx.lineTo(x, y);
       ctx.stroke();
       if (particle % 11 === 0) {
-        ctx.fillStyle = amberOrbit
+        ctx.fillStyle = cloudChamber
+          ? `rgba(216,213,200,${.2 + rand() * .36})`
+          : mercuryBasin
+          ? `rgba(221,231,228,${.18 + rand() * .38})`
+          : partedVeil
+          ? `rgba(203,228,234,${.18 + rand() * .34})`
+          : wovenCanopy
+          ? `rgba(230,216,184,${.25 + rand() * .42})`
+          : amberOrbit
           ? `rgba(255,218,125,${.32 + rand() * .5})`
+          : warmSessionArchive
+          ? `rgba(242,214,179,${.28 + rand() * .45})`
+          : coolSessionArchive
+          ? `rgba(227,236,243,${.28 + rand() * .45})`
           : frozenConstellation
             ? `rgba(216,207,225,${.17 + rand() * .28})`
             : `rgba(232,225,216,${.28 + rand() * .45})`;
@@ -295,19 +394,307 @@
     [leftX, rightX].forEach((x, index) => {
       const pulse = 5 + breath * 9 + index * 1.5;
       const glow = ctx.createRadialGradient(x, centreY, 0, x, centreY, pulse * 3.4);
-      glow.addColorStop(0, amberOrbit ? "rgba(255,223,140,.62)" : frozenConstellation ? "rgba(220,212,228,.34)" : "rgba(232,225,216,.55)");
-      glow.addColorStop(.16, amberOrbit ? "rgba(225,123,38,.34)" : frozenConstellation ? "rgba(151,139,171,.14)" : "rgba(101,215,196,.28)");
-      glow.addColorStop(1, amberOrbit ? "rgba(118,28,30,0)" : frozenConstellation ? "rgba(105,96,121,0)" : "rgba(101,215,196,0)");
+      glow.addColorStop(0, cloudChamber ? "rgba(213,190,142,.38)" : mercuryBasin ? "rgba(221,231,228,.34)" : partedVeil ? "rgba(203,228,234,.38)" : wovenCanopy ? "rgba(230,216,184,.5)" : amberOrbit ? "rgba(255,223,140,.62)" : warmSessionArchive ? "rgba(242,214,179,.5)" : coolSessionArchive ? "rgba(158,196,210,.5)" : frozenConstellation ? "rgba(220,212,228,.34)" : "rgba(232,225,216,.55)");
+      glow.addColorStop(.16, cloudChamber ? "rgba(113,132,122,.18)" : mercuryBasin ? "rgba(130,155,152,.17)" : partedVeil ? "rgba(102,120,140,.18)" : wovenCanopy ? "rgba(183,170,138,.24)" : amberOrbit ? "rgba(225,123,38,.34)" : warmSessionArchive ? "rgba(217,149,104,.28)" : coolSessionArchive ? "rgba(139,125,184,.26)" : frozenConstellation ? "rgba(151,139,171,.14)" : "rgba(101,215,196,.28)");
+      glow.addColorStop(1, cloudChamber ? "rgba(58,51,43,0)" : mercuryBasin ? "rgba(24,34,37,0)" : partedVeil ? "rgba(1,3,8,0)" : wovenCanopy ? "rgba(41,51,45,0)" : amberOrbit ? "rgba(118,28,30,0)" : warmSessionArchive ? "rgba(62,35,39,0)" : coolSessionArchive ? "rgba(32,41,67,0)" : frozenConstellation ? "rgba(105,96,121,0)" : "rgba(101,215,196,0)");
       ctx.fillStyle = glow;
       ctx.beginPath();
       ctx.arc(x, centreY, pulse * 3.4, 0, TAU);
       ctx.fill();
-      ctx.fillStyle = amberOrbit ? "rgba(255,226,151,.88)" : frozenConstellation ? "rgba(216,208,224,.52)" : "rgba(232,225,216,.78)";
+      ctx.fillStyle = cloudChamber ? "rgba(216,213,200,.62)" : mercuryBasin ? "rgba(221,231,228,.58)" : partedVeil ? "rgba(203,228,234,.6)" : wovenCanopy ? "rgba(230,216,184,.78)" : amberOrbit ? "rgba(255,226,151,.88)" : warmSessionArchive ? "rgba(242,214,179,.78)" : coolSessionArchive ? "rgba(227,236,243,.78)" : frozenConstellation ? "rgba(216,208,224,.52)" : "rgba(232,225,216,.78)";
       ctx.beginPath();
       ctx.arc(x, centreY, 1.5, 0, TAU);
       ctx.fill();
     });
     ctx.restore();
+  }
+
+  function drawGlassStrainStage(ctx, time, width, height, seed) {
+    const background = "#061016";
+    const glass = "#587582";
+    const stress = "#D8F0EC";
+    const violet = "#826B9B";
+    const warm = "#CBB377";
+    const shadow = "#15242B";
+    const drift = reduceMotion ? 0 : time;
+    const paneWidth = Math.min(width * .43, height * .73);
+    const paneHeight = paneWidth * .63;
+    const centreX = width * .5;
+    const centreY = height * .49;
+    const placements = [
+      [-.17, -.07, -.105], [.13, -.09, .08], [-.05, .12, -.035],
+      [.18, .08, .12], [-.12, .035, -.075]
+    ];
+
+    ctx.save();
+    ctx.fillStyle = background;
+    ctx.fillRect(0, 0, width, height);
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    // Five restrained panes preview the archive as offset sheets, not rings.
+    placements.forEach((placement, paneIndex) => {
+      const rand = mulberry32(seed * 211 + paneIndex * 977 + 37);
+      const cx = centreX + placement[0] * paneWidth;
+      const cy = centreY + placement[1] * paneHeight;
+      const rotation = placement[2];
+      const points = [];
+      for (let point = 0; point < 8; point++) {
+        const angle = -Math.PI / 2 + point / 8 * TAU;
+        const irregularity = .88 + rand() * .17;
+        points.push([
+          Math.cos(angle) * paneWidth * .5 * irregularity,
+          Math.sin(angle) * paneHeight * .5 * irregularity
+        ]);
+      }
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(rotation);
+      const tracePane = () => {
+        ctx.beginPath();
+        ctx.moveTo(points[0][0], points[0][1]);
+        for (let point = 1; point < points.length; point++) ctx.lineTo(points[point][0], points[point][1]);
+        ctx.closePath();
+      };
+
+      // A dark displaced shadow gives each sheet weight without a glow halo.
+      ctx.save();
+      ctx.translate(5, 7);
+      tracePane();
+      ctx.fillStyle = "rgba(21,36,43,.16)";
+      ctx.fill();
+      ctx.restore();
+
+      tracePane();
+      ctx.fillStyle = `rgba(88,117,130,${.024 + paneIndex * .008})`;
+      ctx.fill();
+      ctx.save();
+      tracePane();
+      ctx.clip();
+
+      const surface = ctx.createLinearGradient(-paneWidth * .45, -paneHeight * .35, paneWidth * .44, paneHeight * .38);
+      surface.addColorStop(0, "rgba(130,107,155,.055)");
+      surface.addColorStop(.48, "rgba(88,117,130,.018)");
+      surface.addColorStop(1, "rgba(21,36,43,.15)");
+      ctx.fillStyle = surface;
+      ctx.fillRect(-paneWidth, -paneHeight, paneWidth * 2, paneHeight * 2);
+
+      // Stable movement reads as long, clean stress arcs.
+      const arcCount = 3 + paneIndex % 3;
+      ctx.strokeStyle = paneIndex % 2 ? "rgba(216,240,236,.19)" : "rgba(216,240,236,.15)";
+      ctx.lineWidth = .55;
+      for (let arcIndex = 0; arcIndex < arcCount; arcIndex++) {
+        const u = arcIndex / Math.max(1, arcCount - 1);
+        const wobble = Math.sin(drift * .16 + paneIndex * 1.7 + arcIndex) * 2.2;
+        ctx.beginPath();
+        ctx.ellipse(
+          (rand() - .5) * paneWidth * .08,
+          (rand() - .5) * paneHeight * .08 + wobble,
+          paneWidth * (.13 + u * .24),
+          paneHeight * (.12 + u * .22),
+          -.38 + paneIndex * .07,
+          -.9 * Math.PI,
+          .18 * Math.PI + u * .13
+        );
+        ctx.stroke();
+      }
+
+      // A few fine forks hint at instability, kept subordinate in the preview.
+      const branchCount = 2 + paneIndex % 3;
+      for (let branch = 0; branch < branchCount; branch++) {
+        let x = (rand() - .5) * paneWidth * .13;
+        let y = (rand() - .5) * paneHeight * .12;
+        let angle = -Math.PI / 2 + (branch - 1) * .34 + (rand() - .5) * .18;
+        const length = paneHeight * (.16 + rand() * .12);
+        ctx.strokeStyle = branch % 2 ? "rgba(130,107,155,.24)" : "rgba(216,240,236,.23)";
+        ctx.lineWidth = .48;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        for (let segment = 0; segment < 4; segment++) {
+          angle += (rand() - .5) * .42;
+          x += Math.cos(angle) * length / 4;
+          y += Math.sin(angle) * length / 4;
+          ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        if (branch === 0) {
+          ctx.strokeStyle = "rgba(203,179,119,.16)";
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x + Math.cos(angle + .7) * length * .19, y + Math.sin(angle + .7) * length * .19);
+          ctx.stroke();
+        }
+      }
+      ctx.restore();
+
+      tracePane();
+      ctx.strokeStyle = "rgba(88,117,130,.32)";
+      ctx.lineWidth = .72;
+      ctx.stroke();
+
+      // Narrow moving refractions remain on the edge rather than blooming.
+      const edgeColors = [stress, violet, warm];
+      edgeColors.forEach((color, edgeIndex) => {
+        const edge = (paneIndex * 3 + edgeIndex * 2) % points.length;
+        const a = points[edge];
+        const b = points[(edge + 1) % points.length];
+        const travel = reduceMotion ? .34 : (drift * .055 + paneIndex * .17 + edgeIndex * .23) % .48;
+        const start = .12 + travel;
+        const end = Math.min(.92, start + .18);
+        const rgb = color === stress ? "216,240,236" : color === violet ? "130,107,155" : "203,179,119";
+        ctx.strokeStyle = `rgba(${rgb},${edgeIndex === 0 ? .5 : .34})`;
+        ctx.lineWidth = edgeIndex === 0 ? 1.15 : .72;
+        ctx.beginPath();
+        ctx.moveTo(a[0] + (b[0] - a[0]) * start, a[1] + (b[1] - a[1]) * start);
+        ctx.lineTo(a[0] + (b[0] - a[0]) * end, a[1] + (b[1] - a[1]) * end);
+        ctx.stroke();
+      });
+      ctx.restore();
+    });
+
+    // One local pause point, deliberately small and crisp.
+    const pauseRadius = Math.min(width, height) * .033;
+    const pauseX = centreX + Math.sin(drift * .11) * paneWidth * .025;
+    const pauseY = centreY - paneHeight * .015;
+    const pause = ctx.createRadialGradient(pauseX, pauseY, 0, pauseX, pauseY, pauseRadius);
+    pause.addColorStop(0, "rgba(216,240,236,.18)");
+    pause.addColorStop(.28, "rgba(203,179,119,.08)");
+    pause.addColorStop(1, "rgba(216,240,236,0)");
+    ctx.fillStyle = pause;
+    ctx.beginPath();
+    ctx.arc(pauseX, pauseY, pauseRadius, 0, TAU);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawSeismographStage(ctx, time, width, height, seed) {
+    const rand = mulberry32(seed * 173 + 41);
+    const paper = "#D5D0C3";
+    const graphite = "#292A27";
+    const lead = "#686A63";
+    const calibration = "#873B34";
+    const grid = "#718080";
+    const oldMark = "#A59C8B";
+    const left = width * .055;
+    const right = width * .955;
+    const top = height * .085;
+    const bottom = height * .92;
+    const rowHeight = (bottom - top) / 12;
+    const drift = reduceMotion ? 0 : time;
+
+    ctx.save();
+    ctx.fillStyle = paper;
+    ctx.fillRect(0, 0, width, height);
+
+    // Quiet paper fibres and age marks keep the preview tactile without
+    // competing with the recorded bands.
+    ctx.lineCap = "round";
+    for (let i = 0; i < 72; i++) {
+      const y = rand() * height;
+      const x = rand() * width;
+      ctx.strokeStyle = `rgba(165,156,139,${.018 + rand() * .025})`;
+      ctx.lineWidth = .45 + rand() * .55;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(Math.min(width, x + width * (.04 + rand() * .14)), y + (rand() - .5) * 2);
+      ctx.stroke();
+    }
+
+    ctx.strokeStyle = "rgba(113,128,128,.22)";
+    ctx.lineWidth = .55;
+    for (let row = 0; row <= 12; row++) {
+      const y = top + row * rowHeight;
+      ctx.beginPath();
+      ctx.moveTo(left, y);
+      ctx.lineTo(right, y);
+      ctx.stroke();
+    }
+    for (let column = 0; column <= 18; column++) {
+      const x = left + (right - left) * column / 18;
+      ctx.strokeStyle = column % 3 === 0 ? "rgba(113,128,128,.19)" : "rgba(113,128,128,.09)";
+      ctx.beginPath();
+      ctx.moveTo(x, top);
+      ctx.lineTo(x, bottom);
+      ctx.stroke();
+    }
+
+    for (let row = 0; row < 12; row++) {
+      const rowSeed = seed * 97 + row * 311;
+      const rowRand = mulberry32(rowSeed);
+      const steadiness = .28 + rowRand() * .66;
+      const slowness = .2 + rowRand() * .72;
+      const tilt = (rowRand() - .5) * .62;
+      const pause = rowRand();
+      const baseY = top + rowHeight * (row + .5);
+      const amplitude = rowHeight * (.08 + (1 - steadiness) * .34);
+      const frequency = 4 + (1 - slowness) * 18;
+      const fragmentChance = (1 - steadiness) * .18;
+      const traceCount = 1 + Math.floor(slowness * 2.8);
+
+      for (let trace = 0; trace < traceCount; trace++) {
+        ctx.beginPath();
+        let drawing = false;
+        const samples = 92;
+        for (let sample = 0; sample <= samples; sample++) {
+          const u = sample / samples;
+          const x = left + (right - left) * u;
+          const tremor = Math.sin(u * frequency * Math.PI * 2 + rowSeed + trace * .7 + drift * (.08 + row * .003));
+          const micro = Math.sin(u * frequency * 3.1 + rowSeed * .17) * amplitude * .23;
+          const slope = tilt * rowHeight * (u - .5);
+          const y = baseY + slope + tremor * amplitude + micro + (trace - (traceCount - 1) / 2) * .7;
+          const gap = seededPreviewUnit(rowSeed + sample * 43 + trace * 997) < fragmentChance;
+          if (gap) {
+            drawing = false;
+          } else if (!drawing) {
+            ctx.moveTo(x, y);
+            drawing = true;
+          } else {
+            ctx.lineTo(x, y);
+          }
+        }
+        ctx.strokeStyle = trace === 0 ? "rgba(41,42,39,.74)" : "rgba(104,106,99,.42)";
+        ctx.lineWidth = trace === 0 ? .8 + slowness * .55 : .45;
+        ctx.stroke();
+      }
+
+      if (pause > .28) {
+        const depositX = right - width * .015;
+        ctx.fillStyle = `rgba(41,42,39,${.2 + pause * .42})`;
+        ctx.beginPath();
+        ctx.ellipse(depositX, baseY + tilt * rowHeight * .46, 1.4 + pause * 4.2, .8 + pause * 1.7, 0, 0, TAU);
+        ctx.fill();
+      }
+    }
+
+    const scanX = left + ((drift * .018) % 1) * (right - left);
+    const scanGradient = ctx.createLinearGradient(scanX - 20, 0, scanX + 20, 0);
+    scanGradient.addColorStop(0, "rgba(135,59,52,0)");
+    scanGradient.addColorStop(.5, "rgba(135,59,52,.32)");
+    scanGradient.addColorStop(1, "rgba(135,59,52,0)");
+    ctx.fillStyle = scanGradient;
+    ctx.fillRect(scanX - 20, top, 40, bottom - top);
+    ctx.strokeStyle = "rgba(135,59,52,.5)";
+    ctx.lineWidth = .7;
+    ctx.beginPath();
+    ctx.moveTo(scanX, top);
+    ctx.lineTo(scanX, bottom);
+    ctx.stroke();
+
+    ctx.fillStyle = calibration;
+    ctx.font = `${Math.max(8, Math.min(12, width * .012))}px ui-monospace, monospace`;
+    ctx.textBaseline = "middle";
+    for (let row = 0; row < 12; row += 3) {
+      ctx.fillText(String(row + 1).padStart(2, "0"), left + 4, top + rowHeight * (row + .5));
+    }
+    ctx.fillStyle = oldMark;
+    ctx.fillText("QUALITY / 12", right - Math.min(90, width * .12), top - 8);
+    ctx.restore();
+  }
+
+  function seededPreviewUnit(value) {
+    const x = Math.sin(value * 12.9898) * 43758.5453;
+    return x - Math.floor(x);
   }
 
   function drawFibrousBleedStage(ctx, time, width, height, seed) {
