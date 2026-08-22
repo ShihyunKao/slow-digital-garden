@@ -312,14 +312,7 @@
           meaning: ["cycle / wide stretch + return", "radius / outer-to-inner order", "orbits / one memory ring", "stars / surrounding constellation"],
           variants: [
             {
-              code: "v03-cosmic-memory", displayCode: "v03.01", path: "v03-cosmic-memory-refined/variants/v03.01", title: "Cosmic Memory",
-              statement: "A two-hand breathing gesture becomes a memory of expansion and return.",
-              archiveReading: "Each completed breath becomes an orbit-like memory. Across eight cycles, the rings move from the outer field towards the centre.",
-              instructions: [["Begin", "Allow the camera and bring hands together."], ["Expand", "Open both hands fully until the field expands."], ["Return", "Return to the centre to leave one memory ring."]],
-              meaning: ["cycle / wide stretch + return", "radius / outer-to-inner order", "rings / one breath memory", "stars / surrounding constellation"]
-            },
-            {
-              code: "v03-amber-orbit", displayCode: "v03.02", path: "v03-cosmic-memory-refined/variants/v03.02", title: "Amber Orbit",
+              code: "v03-amber-orbit", displayCode: "v03.01", path: "v03-cosmic-memory-refined/variants/v03.01", title: "Amber Orbit",
               variantStyle: "amber-orbit",
               statement: "Two hands become gravitational sources, gathering tiny gold and dark-red particles into a slowly turning microscopic nebula.",
               archiveReading: "Each completed breath still enters the same eight-step sequence. The memory is held by long-lived orbital particles rather than drawn lines.",
@@ -327,7 +320,7 @@
               meaning: ["cycle / wide stretch + return", "source / two-hand gravity", "material / gold + dark-red particles", "memory / long-lived orbital drift"]
             },
             {
-              code: "v03-frozen-constellation", displayCode: "v03.03", path: "v03-cosmic-memory-refined/variants/v03.03", title: "Frozen Constellation",
+              code: "v03-frozen-constellation", displayCode: "v03.02", path: "v03-cosmic-memory-refined/variants/v03.02", title: "Frozen Constellation",
               variantStyle: "frozen-constellation",
               statement: "The same two-hand breath settles into a pale violet field where each completed expansion and return grows a persistent crystalline mesh.",
               archiveReading: "One complete opening fixes a crystal layer; camera distance sets its span.",
@@ -335,7 +328,7 @@
               meaning: ["cycle / wide stretch + return", "trigger / completed gesture", "scale / camera proximity", "memory / persistent crystal mesh"]
             },
             {
-              code: "v03-lacquer-echo", displayCode: "v03.04", path: "v03-cosmic-memory-refined/variants/v03.04", title: "Lacquer Echo",
+              code: "v03-lacquer-echo", displayCode: "v03.03", path: "v03-cosmic-memory-refined/variants/v03.03", title: "Lacquer Echo",
               variantStyle: "lacquer-echo",
               statement: "A complete two-hand breath cures one wet contour into a slow archive of offset black-lacquer slices and travelling reflections.",
               archiveReading: "Each full opening and return cures one displaced lacquer layer in the original eight-memory sequence.",
@@ -343,7 +336,7 @@
               meaning: ["cycle / wide stretch + return", "material / black lacquer + resin", "memory / eight offset cured layers", "light / slow specular sweep"]
             },
             {
-              code: "v03-paper-eclipse", displayCode: "v03.05", path: "v03-cosmic-memory-refined/variants/v03.05", title: "Paper Eclipse",
+              code: "v03-paper-eclipse", displayCode: "v03.04", path: "v03-cosmic-memory-refined/variants/v03.04", title: "Paper Eclipse",
               variantStyle: "paper-eclipse",
               statement: "Eight cut-paper memories reveal, press and settle along a diagonal archive.",
               archiveReading: "Each completed opening and return preserves the original eight-step sequence while one layered paper field compresses into a shallow emboss.",
@@ -410,6 +403,7 @@
             },
             {
               code: "v05-kinetic-mobile", displayCode: "v05.04", path: "v05-session-archive-spatial/variants/v05.04", title: "Kinetic Mobile",
+              variantStyle: "kinetic-mobile",
               statement: "Twelve two-hand gestures assemble an irregular suspended archive that responds to each new record and slowly returns to balance.",
               archiveReading: "The final midpoint suspends one plate; pause sets size, steadiness sets swing.",
               instructions: [["Begin", "Allow the camera and bring both hands together."], ["Suspend", "Open, shift the full stretch through space, pause, then return."], ["Balance", "Each new record moves the whole structure. Complete twelve to leave one mobile."]],

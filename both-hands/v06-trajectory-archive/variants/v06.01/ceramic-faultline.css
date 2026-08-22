@@ -61,7 +61,6 @@ html body.ceramic-page {
 
 @media (max-width: 720px) {
   .ceramic-page .live-top { color: rgba(228, 209, 180, 0.94); }
-  .ceramic-page .live-title { font-size: clamp(20px, 7vw, 34px); }
 }
 
 @media (prefers-reduced-motion: reduce) {

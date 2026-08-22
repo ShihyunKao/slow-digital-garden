@@ -136,16 +136,6 @@ body.paper-eclipse {
     gap: 36px;
   }
 
-  .paper-eclipse .live-help__title {
-    font-size: 44px;
-  }
-
-  .paper-eclipse .live-help__intro,
-  .paper-eclipse .live-help__reading p {
-    font-size: 10px;
-    line-height: 1.5;
-  }
-
   .paper-eclipse .live-help__archive-grid {
     margin-top: 18px;
   }
@@ -166,7 +156,6 @@ body.paper-eclipse {
 
   .paper-eclipse .live-help__parameter {
     margin-bottom: 8px;
-    line-height: 1.35;
   }
 
   .paper-eclipse .live-help__footer {

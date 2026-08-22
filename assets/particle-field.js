@@ -74,15 +74,1471 @@
     return [x0, height / 2];
   }
 
+  function previewBreath(time, phase = 0) {
+    if (reduceMotion) return .62;
+    const raw = (Math.sin(time * .42 + phase) + 1) * .5;
+    return raw * raw * (3 - 2 * raw);
+  }
+
+  function drawPreviewSources(ctx, leftX, rightX, y, colour, breath, scale = 1) {
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    [leftX, rightX].forEach((x, index) => {
+      const radius = (8 + breath * 8 + index) * scale;
+      const glow = ctx.createRadialGradient(x, y, 0, x, y, radius * 3.2);
+      glow.addColorStop(0, colour.replace("ALPHA", ".58"));
+      glow.addColorStop(.18, colour.replace("ALPHA", ".2"));
+      glow.addColorStop(1, colour.replace("ALPHA", "0"));
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(x, y, radius * 3.2, 0, TAU);
+      ctx.fill();
+      ctx.fillStyle = colour.replace("ALPHA", ".82");
+      ctx.beginPath();
+      ctx.arc(x, y, 1.35 * scale, 0, TAU);
+      ctx.fill();
+    });
+    ctx.restore();
+  }
+
+  function drawWovenCanopyStage(ctx, time, width, height, seed) {
+    const breath = previewBreath(time, -.45);
+    const rand = mulberry32(seed * 151 + 31);
+    const leftX = width * (.24 - breath * .1);
+    const rightX = width * (.76 + breath * .1);
+    const baseY = height * .63;
+
+    ctx.fillStyle = "#0b100d";
+    ctx.fillRect(0, 0, width, height);
+    const halo = ctx.createRadialGradient(width * .5, baseY * .82, 0, width * .5, baseY * .82, width * .48);
+    halo.addColorStop(0, "rgba(230,216,184,.065)");
+    halo.addColorStop(1, "rgba(11,16,13,0)");
+    ctx.fillStyle = halo;
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.save();
+    ctx.lineCap = "round";
+    const strands = 42;
+    for (let strand = 0; strand < strands; strand++) {
+      const lane = (strand - (strands - 1) / 2) / ((strands - 1) / 2);
+      const lagged = previewBreath(time, -Math.abs(lane) * .55);
+      const archHeight = height * (.19 + lagged * .19) * (1 - Math.abs(lane) * .34);
+      ctx.beginPath();
+      for (let sample = 0; sample <= 64; sample++) {
+        const u = sample / 64;
+        const envelope = Math.sin(u * Math.PI);
+        const x = leftX + (rightX - leftX) * u;
+        const weave = Math.sin(u * TAU * 5 + strand * .58 + time * .13) * 2.2 * envelope;
+        const y = baseY - archHeight * envelope + lane * height * .13 * envelope + weave;
+        if (!sample) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = strand % 7 === 0
+        ? `rgba(230,216,184,${.17 + rand() * .1})`
+        : `rgba(183,170,138,${.07 + rand() * .1})`;
+      ctx.lineWidth = strand % 7 === 0 ? .82 : .38 + rand() * .35;
+      ctx.stroke();
+    }
+
+    for (let cross = 0; cross < 27; cross++) {
+      const u = (cross + .5) / 27;
+      const envelope = Math.sin(u * Math.PI);
+      const x = leftX + (rightX - leftX) * u + Math.sin(time * .16 + cross) * 1.4;
+      const top = baseY - height * (.19 + breath * .19) * envelope - height * .11 * envelope;
+      const bottom = baseY - height * (.19 + breath * .19) * envelope + height * .11 * envelope;
+      ctx.strokeStyle = `rgba(104,122,104,${.055 + (cross % 4 === 0 ? .08 : 0)})`;
+      ctx.lineWidth = cross % 4 === 0 ? .7 : .34;
+      ctx.beginPath();
+      ctx.moveTo(x, top);
+      ctx.bezierCurveTo(x + 4, top + (bottom - top) * .33, x - 4, top + (bottom - top) * .66, x, bottom);
+      ctx.stroke();
+    }
+    ctx.restore();
+    drawPreviewSources(ctx, leftX, rightX, baseY, "rgba(230,216,184,ALPHA)", breath, .78);
+  }
+
+  function drawPartedVeilStage(ctx, time, width, height) {
+    const breath = previewBreath(time, -.25);
+    const centreX = width * .5;
+    const centreY = height * .52;
+    const gap = width * (.035 + breath * .22);
+
+    ctx.fillStyle = "#040811";
+    ctx.fillRect(0, 0, width, height);
+    ctx.save();
+    for (let sideIndex = 0; sideIndex < 2; sideIndex++) {
+      const side = sideIndex ? 1 : -1;
+      const edgeX = centreX + side * gap;
+      const outerX = centreX + side * width * .49;
+      const gradient = ctx.createLinearGradient(edgeX, 0, outerX, 0);
+      gradient.addColorStop(0, side < 0 ? "rgba(203,228,234,.2)" : "rgba(203,228,234,.16)");
+      gradient.addColorStop(.2, side < 0 ? "rgba(85,75,100,.2)" : "rgba(102,120,140,.2)");
+      gradient.addColorStop(1, "rgba(4,8,17,0)");
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.moveTo(outerX, 0);
+      for (let sample = 0; sample <= 52; sample++) {
+        const u = sample / 52;
+        const y = u * height;
+        const waist = Math.sin(u * Math.PI);
+        const ripple = Math.sin(u * TAU * 2.4 + time * .22 + sideIndex * 1.8) * width * .012 * waist;
+        const x = edgeX + side * (width * .035 * waist + ripple);
+        ctx.lineTo(x, y);
+      }
+      ctx.lineTo(outerX, height);
+      ctx.closePath();
+      ctx.fill();
+
+      for (let echo = 0; echo < 5; echo++) {
+        ctx.strokeStyle = side < 0
+          ? `rgba(85,75,100,${.1 - echo * .012})`
+          : `rgba(102,120,140,${.1 - echo * .012})`;
+        ctx.lineWidth = echo === 0 ? 1.05 : .45;
+        ctx.beginPath();
+        for (let sample = 0; sample <= 52; sample++) {
+          const u = sample / 52;
+          const y = u * height;
+          const waist = Math.sin(u * Math.PI);
+          const rebound = Math.sin(time * .32 - echo * .34) * 2.4 * waist;
+          const x = edgeX + side * (echo * 8 + width * .035 * waist + rebound);
+          if (!sample) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+    }
+    const voidGlow = ctx.createRadialGradient(centreX, centreY, 0, centreX, centreY, gap * 1.5 + 80);
+    voidGlow.addColorStop(0, "rgba(1,3,8,.92)");
+    voidGlow.addColorStop(.7, "rgba(1,3,8,.45)");
+    voidGlow.addColorStop(1, "rgba(1,3,8,0)");
+    ctx.fillStyle = voidGlow;
+    ctx.fillRect(centreX - gap * 1.6 - 90, 0, gap * 3.2 + 180, height);
+    ctx.restore();
+  }
+
+  function drawMercuryBasinStage(ctx, time, width, height, seed) {
+    const breath = previewBreath(time, -.65);
+    const rand = mulberry32(seed * 163 + 43);
+    const cx = width * .5;
+    const cy = height * .57;
+    const radius = Math.min(width * (.2 + breath * .25), height * .68);
+
+    ctx.fillStyle = "#071013";
+    ctx.fillRect(0, 0, width, height);
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.scale(1, .46);
+    const basin = ctx.createRadialGradient(0, 0, radius * .06, 0, 0, radius);
+    basin.addColorStop(0, "rgba(221,231,228,.22)");
+    basin.addColorStop(.18, "rgba(79,88,89,.2)");
+    basin.addColorStop(.62, "rgba(24,34,37,.54)");
+    basin.addColorStop(1, "rgba(7,16,19,0)");
+    ctx.fillStyle = basin;
+    ctx.beginPath();
+    ctx.arc(0, 0, radius, 0, TAU);
+    ctx.fill();
+
+    for (let ring = 0; ring < 32; ring++) {
+      const p = (ring + 1) / 32;
+      const echo = Math.sin(time * .54 - p * 8) * radius * .012;
+      ctx.strokeStyle = `rgba(${ring % 6 === 0 ? "221,231,228" : "130,155,152"},${.035 + (1 - p) * .08})`;
+      ctx.lineWidth = ring % 6 === 0 ? 1.2 : .46;
+      ctx.beginPath();
+      ctx.arc(0, 0, Math.max(2, radius * p + echo), 0, TAU);
+      ctx.stroke();
+    }
+
+    for (let arc = 0; arc < 24; arc++) {
+      const rr = radius * (.12 + rand() * .82);
+      const start = rand() * TAU + time * (.035 + rand() * .07);
+      const length = .08 + rand() * .38;
+      ctx.strokeStyle = `rgba(221,231,228,${.08 + rand() * .32})`;
+      ctx.lineWidth = .6 + rand() * 1.6;
+      ctx.beginPath();
+      ctx.arc(0, 0, rr, start, start + length);
+      ctx.stroke();
+    }
+    ctx.restore();
+    const sourceGap = Math.min(radius * .7, width * .34);
+    drawPreviewSources(ctx, cx - sourceGap, cx + sourceGap, cy, "rgba(221,231,228,ALPHA)", breath, .62);
+  }
+
+  function drawCloudChamberStage(ctx, time, width, height, seed) {
+    const breath = previewBreath(time, -.35);
+    const rand = mulberry32(seed * 181 + 71);
+    const cx = width * .5;
+    const cy = height * .52;
+    ctx.fillStyle = "#0d0d0b";
+    ctx.fillRect(0, 0, width, height);
+
+    const beamStart = { x: width * .12, y: height * .09 };
+    const beamEnd = { x: width * .86, y: height * .86 };
+    const beamDx = beamEnd.x - beamStart.x;
+    const beamDy = beamEnd.y - beamStart.y;
+    const beamLength = Math.hypot(beamDx, beamDy);
+    const beamNormalX = -beamDy / beamLength;
+    const beamNormalY = beamDx / beamLength;
+
+    // Two tapered, blurred layers keep the oblique amber light present without
+    // reading as a hard-edged rectangle behind the archive copy.
+    const drawFeatheredBeam = (startWidth, endWidth, blur, peakAlpha) => {
+      const beam = ctx.createLinearGradient(beamStart.x, beamStart.y, beamEnd.x, beamEnd.y);
+      beam.addColorStop(0, "rgba(213,190,142,0)");
+      beam.addColorStop(.16, `rgba(213,190,142,${peakAlpha * .34})`);
+      beam.addColorStop(.5, `rgba(213,190,142,${peakAlpha})`);
+      beam.addColorStop(.79, `rgba(213,190,142,${peakAlpha * .44})`);
+      beam.addColorStop(1, "rgba(213,190,142,0)");
+
+      ctx.save();
+      ctx.filter = `blur(${blur}px)`;
+      ctx.fillStyle = beam;
+      ctx.beginPath();
+      ctx.moveTo(
+        beamStart.x + beamNormalX * startWidth,
+        beamStart.y + beamNormalY * startWidth
+      );
+      ctx.lineTo(
+        beamEnd.x + beamNormalX * endWidth,
+        beamEnd.y + beamNormalY * endWidth
+      );
+      ctx.lineTo(
+        beamEnd.x - beamNormalX * endWidth,
+        beamEnd.y - beamNormalY * endWidth
+      );
+      ctx.lineTo(
+        beamStart.x - beamNormalX * startWidth,
+        beamStart.y - beamNormalY * startWidth
+      );
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    };
+
+    drawFeatheredBeam(height * .018, height * .13, 34, .1);
+    drawFeatheredBeam(height * .006, height * .062, 14, .075);
+
+    const cloudSpread = Math.min(width * .47, height * (.32 + breath * .22));
+    const cloudTilt = -.14;
+    const driftPhase = time * .024;
+
+    const drawFogVolume = (x, y, radius, scaleX, scaleY, alpha, blur, colour) => {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(cloudTilt);
+      ctx.scale(scaleX, scaleY);
+      ctx.filter = `blur(${blur}px)`;
+      const fog = ctx.createRadialGradient(-radius * .12, 0, radius * .03, 0, 0, radius);
+      fog.addColorStop(0, `rgba(${colour},${alpha})`);
+      fog.addColorStop(.42, `rgba(${colour},${alpha * .7})`);
+      fog.addColorStop(.78, `rgba(${colour},${alpha * .18})`);
+      fog.addColorStop(1, `rgba(${colour},0)`);
+      ctx.fillStyle = fog;
+      ctx.beginPath();
+      ctx.arc(0, 0, radius, 0, TAU);
+      ctx.fill();
+      ctx.restore();
+    };
+
+    // A continuous, low horizontal volume makes the chamber read as cloud
+    // before the individual particles become visible.
+    drawFogVolume(
+      cx + Math.sin(driftPhase) * cloudSpread * .035,
+      cy + cloudSpread * .03,
+      cloudSpread,
+      1.36,
+      .53,
+      .18,
+      22,
+      "58,51,43"
+    );
+    ctx.globalCompositeOperation = "screen";
+    drawFogVolume(
+      cx - cloudSpread * .05,
+      cy - cloudSpread * .015,
+      cloudSpread * .9,
+      1.4,
+      .48,
+      .13 + breath * .035,
+      17,
+      "161,157,145"
+    );
+    drawFogVolume(
+      cx + cloudSpread * .18,
+      cy - cloudSpread * .05,
+      cloudSpread * .64,
+      1.25,
+      .43,
+      .105,
+      13,
+      "113,132,122"
+    );
+
+    // Overlapping mid-scale cells supply the uneven depth and curled edges
+    // found in the live Cloud Chamber rather than a uniform fog ellipse.
+    for (let cloud = 0; cloud < 42; cloud++) {
+      const angle = rand() * TAU;
+      const distance = Math.sqrt(rand());
+      const localX = Math.cos(angle) * distance * cloudSpread * 1.08;
+      const localY = Math.sin(angle) * distance * cloudSpread * .39;
+      const flow = Math.sin(driftPhase + cloud * .73) * cloudSpread * (.012 + rand() * .026);
+      const x = cx + localX * Math.cos(cloudTilt) - localY * Math.sin(cloudTilt) + flow;
+      const y = cy + localX * Math.sin(cloudTilt) + localY * Math.cos(cloudTilt) - flow * .28;
+      const radius = cloudSpread * (.09 + rand() * .19);
+      const edgeFade = Math.pow(1 - distance, .45);
+      const isCool = cloud % 6 === 0;
+      drawFogVolume(
+        x,
+        y,
+        radius,
+        1.05 + rand() * .7,
+        .55 + rand() * .38,
+        (.075 + rand() * .085) * (.42 + edgeFade * .7),
+        5 + rand() * 8,
+        isCool ? "113,132,122" : "161,157,145"
+      );
+    }
+
+    // Dense suspended matter catches the beam; most motes stay dim and soft,
+    // with only a small warm subset sparkling in the amber light.
+    ctx.filter = "none";
+    for (let mote = 0; mote < 720; mote++) {
+      const angle = rand() * TAU;
+      const distance = Math.sqrt(rand());
+      const localX = Math.cos(angle) * distance * cloudSpread * 1.25;
+      const localY = Math.sin(angle) * distance * cloudSpread * .46;
+      const speed = 2 + rand() * 6;
+      const flow = Math.sin(time * .02 + mote * .41) * cloudSpread * .025
+        + ((time * speed + mote * 13) % 58) - 29;
+      const x = cx + localX * Math.cos(cloudTilt) - localY * Math.sin(cloudTilt) + flow;
+      const y = cy + localX * Math.sin(cloudTilt) + localY * Math.cos(cloudTilt) - flow * .18;
+      const beamProgress = Math.max(0, Math.min(1, (
+        (x - beamStart.x) * beamDx + (y - beamStart.y) * beamDy
+      ) / (beamLength * beamLength)));
+      const beamX = beamStart.x + beamDx * beamProgress;
+      const beamY = beamStart.y + beamDy * beamProgress;
+      const beamDistance = Math.hypot(x - beamX, y - beamY);
+      const beamWidth = height * (.025 + beamProgress * .14);
+      const beamAmount = Math.max(0, 1 - beamDistance / beamWidth);
+      const edgeFade = Math.pow(1 - distance, .55);
+      const warm = beamAmount > .18 && mote % 7 === 0;
+      const alpha = edgeFade * (warm
+        ? .34 + rand() * .38 + beamAmount * .16
+        : .09 + rand() * .22 + beamAmount * .17);
+      const size = warm ? 1.1 + rand() * 1.35 : .55 + rand() * .9;
+
+      ctx.fillStyle = warm
+        ? `rgba(213,190,142,${alpha})`
+        : `rgba(${mote % 8 === 0 ? "113,132,122" : "216,213,200"},${alpha})`;
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, TAU);
+      ctx.fill();
+    }
+    ctx.globalCompositeOperation = "source-over";
+  }
+
+  function drawCosmicMemoryStage(ctx, time, width, height, seed, mode) {
+    const rand = mulberry32(seed * 193 + 89);
+    const breath = previewBreath(time, -.72);
+    const cx = width * .5;
+    const cy = height * .52;
+    const maxRadius = Math.min(width * .42, height * .72);
+
+    if (mode === "lacquer") {
+      ctx.fillStyle = "#170a0b";
+      ctx.fillRect(0, 0, width, height);
+
+      const surfaceGrain = (progress, surfaceSeed, flow, octave = 1) => (
+        Math.sin(progress * TAU * (1.15 + octave * .23) + surfaceSeed * .013 + flow * 19) * .58
+        + Math.sin(progress * TAU * (2.35 + octave * .41) + surfaceSeed * .031 - flow * 13) * .27
+        + Math.sin(progress * TAU * (4.1 + octave * .17) + surfaceSeed * .007 + flow * 7) * .15
+      );
+
+      const lacquerEdgeY = (progress, halfHeight, surfaceSeed, flow, irregularity, side = -1) => {
+        const envelope = Math.pow(Math.max(0, Math.sin(progress * Math.PI)), side < 0 ? .46 : .5);
+        const grain = surfaceGrain(progress, surfaceSeed + (side > 0 ? 9.3 : 0), flow, side > 0 ? 2 : 1);
+        const drift = Math.sin(progress * TAU * (side < 0 ? 1.35 : 1.1)
+          + surfaceSeed * (side < 0 ? .013 : .009)
+          + flow * (side < 0 ? 19 : -17)) * (side < 0 ? .24 : .2);
+        return side * halfHeight * envelope * (
+          (side < 0 ? 1 : .92) + (grain + drift) * irregularity
+        );
+      };
+
+      const buildSlice = (x, y, radius, halfHeight, surfaceSeed, flow, irregularity) => {
+        ctx.beginPath();
+        for (let sample = 0; sample <= 84; sample++) {
+          const progress = sample / 84;
+          const px = x - radius + radius * 2 * progress;
+          const py = y + lacquerEdgeY(progress, halfHeight, surfaceSeed, flow, irregularity, -1);
+          if (!sample) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        for (let sample = 84; sample >= 0; sample--) {
+          const progress = sample / 84;
+          ctx.lineTo(
+            x - radius + radius * 2 * progress,
+            y + lacquerEdgeY(progress, halfHeight, surfaceSeed, flow, irregularity, 1)
+          );
+        }
+        ctx.closePath();
+      };
+
+      const ribbonGeometry = (progress, halfHeight, surfaceSeed, flow, irregularity) => {
+        const envelope = Math.pow(Math.max(0, Math.sin(progress * Math.PI)), .42);
+        const centre = Math.sin(progress * TAU * 1.15 + surfaceSeed * .01) * halfHeight * .7
+          + surfaceGrain(progress, surfaceSeed, flow, 3) * halfHeight * .46;
+        const thicknessNoise = .5 + surfaceGrain(progress, surfaceSeed + 4.1, flow, 4) * .5;
+        const thickness = halfHeight * envelope * (.72 + thicknessNoise * irregularity * 2.3);
+        return { centre, thickness };
+      };
+
+      const buildRibbon = (x, y, radius, halfHeight, surfaceSeed, flow, irregularity) => {
+        ctx.beginPath();
+        for (let sample = 0; sample <= 72; sample++) {
+          const progress = sample / 72;
+          const geometry = ribbonGeometry(progress, halfHeight, surfaceSeed, flow, irregularity);
+          const px = x - radius + radius * 2 * progress;
+          const py = y + geometry.centre - geometry.thickness;
+          if (!sample) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        for (let sample = 72; sample >= 0; sample--) {
+          const progress = sample / 72;
+          const geometry = ribbonGeometry(progress, halfHeight, surfaceSeed, flow, irregularity);
+          ctx.lineTo(
+            x - radius + radius * 2 * progress,
+            y + geometry.centre + geometry.thickness
+          );
+        }
+        ctx.closePath();
+      };
+
+      const drawTopEdge = (x, y, radius, halfHeight, surfaceSeed, flow, irregularity, alpha, widthValue) => {
+        ctx.strokeStyle = `rgba(169,87,55,${alpha})`;
+        ctx.lineWidth = widthValue;
+        ctx.beginPath();
+        for (let sample = 2; sample <= 72; sample++) {
+          const progress = sample / 74;
+          const px = x - radius + radius * 2 * progress;
+          const py = y + lacquerEdgeY(progress, halfHeight, surfaceSeed, flow, irregularity, -1);
+          if (sample === 2) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+      };
+
+      const drawSpecularSweep = (x, y, radius, halfHeight, surfaceSeed, flow, phase, alpha, widthValue) => {
+        const centre = .5 + Math.sin(phase + surfaceSeed * .017) * .27;
+        const span = .115;
+        ctx.save();
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = "rgba(232,197,162,.34)";
+        ctx.strokeStyle = `rgba(232,197,162,${alpha})`;
+        ctx.lineWidth = widthValue;
+        ctx.beginPath();
+        for (let sample = 0; sample <= 24; sample++) {
+          const local = sample / 24;
+          const progress = Math.max(.035, Math.min(.965, centre - span / 2 + span * local));
+          const px = x - radius + radius * 2 * progress;
+          const taper = Math.sin(local * Math.PI);
+          const py = y + lacquerEdgeY(progress, halfHeight, surfaceSeed, flow, .055, -1)
+            - taper * widthValue * .35;
+          if (!sample) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+        ctx.restore();
+      };
+
+      const fieldRadius = maxRadius * (.31 + breath * .67);
+      const fieldHalfHeight = fieldRadius * (.17 + breath * .12);
+      const flow = time * .014;
+
+      // Live wet field: one breathing, flowing black-lacquer slice with an
+      // inner resin body, a narrow memory streak, and a traveling reflection.
+      ctx.save();
+      ctx.filter = "blur(18px)";
+      ctx.fillStyle = `rgba(104,25,30,${.09 + breath * .08})`;
+      buildSlice(cx, cy, fieldRadius * 1.04, fieldHalfHeight * 1.1, 331, flow, .09);
+      ctx.fill();
+      ctx.restore();
+
+      const wetField = ctx.createLinearGradient(cx - fieldRadius, cy, cx + fieldRadius, cy);
+      wetField.addColorStop(0, "rgba(23,10,11,.94)");
+      wetField.addColorStop(.48, "rgba(59,17,20,.82)");
+      wetField.addColorStop(.7, "rgba(104,25,30,.48)");
+      wetField.addColorStop(1, "rgba(8,3,4,.94)");
+      ctx.fillStyle = wetField;
+      buildSlice(cx, cy, fieldRadius, fieldHalfHeight, 401, flow, .072);
+      ctx.fill();
+
+      ctx.fillStyle = "rgba(59,17,20,.5)";
+      buildSlice(
+        cx + fieldRadius * .035,
+        cy + fieldHalfHeight * .12,
+        fieldRadius * .92,
+        fieldHalfHeight * .74,
+        457,
+        flow + .017,
+        .085
+      );
+      ctx.fill();
+      ctx.fillStyle = `rgba(104,25,30,${.18 + breath * .11})`;
+      buildRibbon(
+        cx - fieldRadius * .045,
+        cy - fieldHalfHeight * .18,
+        fieldRadius * .91,
+        fieldHalfHeight * .16,
+        509,
+        flow + .031,
+        .11
+      );
+      ctx.fill();
+      drawTopEdge(cx, cy, fieldRadius * .98, fieldHalfHeight * .88, 401, flow, .072, .34 + breath * .2, 1.05 + breath * .55);
+      drawSpecularSweep(cx, cy, fieldRadius * .94, fieldHalfHeight * .86, 401, flow, time * .22, .55 + breath * .18, 2.05);
+
+      // Eight completed breaths cure into the same offset horizontal ribbons
+      // used by drawLacquerMemories(), instead of unrelated nested ellipses.
+      const horizontalOffsets = [0, .034, -.028, .022, -.034, .03, -.018, .012];
+      const verticalOrder = [0, -1, 1, -2, 2, -3, 3, -4];
+      const layerSpacing = maxRadius * .074;
+      for (let layer = 7; layer >= 0; layer--) {
+        const step = layer / 7;
+        const radius = maxRadius * (1 - step * .66);
+        const halfHeight = Math.max(8, radius * (.055 + step * .03));
+        const x = cx + maxRadius * horizontalOffsets[layer] * 1.08;
+        const y = cy + verticalOrder[layer] * layerSpacing * 1.08;
+        const surfaceSeed = 503 + layer * 71;
+        const frozenFlow = .268 + layer * .013;
+        const layerColour = layer % 2 === 0 ? "104,25,30" : "59,17,20";
+
+        ctx.fillStyle = "rgba(23,10,11,.86)";
+        buildRibbon(x, y, radius * 1.015, halfHeight * 1.18, surfaceSeed + 3, frozenFlow, .045);
+        ctx.fill();
+        ctx.fillStyle = `rgba(${layerColour},${.5 + (1 - step) * .16})`;
+        buildRibbon(x, y, radius, halfHeight, surfaceSeed + 19, frozenFlow + .013, .04);
+        ctx.fill();
+        drawTopEdge(x, y, radius * .985, halfHeight * .9, surfaceSeed + 19, frozenFlow, .04, .22 + (1 - step) * .15, .72);
+        drawSpecularSweep(
+          x,
+          y,
+          radius * .965,
+          halfHeight * .88,
+          surfaceSeed + 19,
+          frozenFlow,
+          time * .19 + surfaceSeed * .001,
+          .34 + (1 - step) * .22,
+          1.05
+        );
+      }
+      return;
+    }
+
+    if (mode === "paper") {
+      ctx.fillStyle = "#171510";
+      ctx.fillRect(0, 0, width, height);
+
+      const clamp01 = value => Math.max(0, Math.min(1, value));
+      const easeOut = value => 1 - Math.pow(1 - clamp01(value), 3);
+      const paperWarp = (angle, paperSeed, detailOffset = 0) => (
+        Math.sin(angle * 3 + paperSeed * .071) * .018
+        + Math.sin(angle * 7.1 + paperSeed * .113 + detailOffset) * .015
+        + Math.sin(angle * 13.7 - paperSeed * .047 + detailOffset * 1.7) * .011
+      );
+
+      const buildPaperContour = (radius, aspect, paperSeed, detailOffset = 0) => {
+        ctx.beginPath();
+        for (let point = 0; point <= 68; point++) {
+          const angle = point / 68 * TAU;
+          const localRadius = radius * (1 + paperWarp(angle, paperSeed, detailOffset));
+          const x = Math.cos(angle) * localRadius;
+          const y = Math.sin(angle) * localRadius * aspect;
+          if (!point) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+      };
+
+      const drawPaperDisc = (radius, aspect, paperSeed, paperColour, alpha, embossStrength, detailIndex) => {
+        const detailVisibility = Math.min(1, alpha * .92);
+        ctx.save();
+        ctx.translate(10, 12);
+        ctx.fillStyle = `rgba(81,74,63,${alpha * .34})`;
+        buildPaperContour(radius * 1.012, aspect, paperSeed);
+        ctx.fill();
+        ctx.restore();
+
+        ctx.fillStyle = `rgba(42,41,37,${alpha * .9})`;
+        buildPaperContour(radius * 1.025, aspect * 1.018, paperSeed);
+        ctx.fill();
+
+        ctx.fillStyle = `rgba(${paperColour},${alpha})`;
+        buildPaperContour(radius, aspect, paperSeed);
+        ctx.fill();
+
+        ctx.save();
+        ctx.translate(-radius * .018, -radius * .018);
+        ctx.fillStyle = `rgba(216,208,187,${alpha * .16})`;
+        buildPaperContour(radius * .962, aspect * .975, paperSeed + 11, .8);
+        ctx.fill();
+        ctx.restore();
+
+        // Three shallow paired curves reproduce the version's pressed relief.
+        ctx.lineCap = "round";
+        for (let line = 0; line < 3; line++) {
+          const y = radius * aspect * (-.26 + line * .25);
+          const span = radius * (.33 + line * .075);
+          const drift = Math.sin(paperSeed * .023 + line * 1.9) * radius * .09;
+          const bend = radius * (.045 + line * .012) * (line % 2 === 0 ? 1 : -1);
+          ctx.strokeStyle = `rgba(81,74,63,${(.2 + embossStrength * .23) * detailVisibility})`;
+          ctx.lineWidth = 1.4 + embossStrength * .8;
+          ctx.beginPath();
+          ctx.moveTo(-span + drift + 2.5, y + 3.5);
+          ctx.bezierCurveTo(
+            -span * .35 + drift, y + bend + 4,
+            span * .3 + drift, y - bend + 4,
+            span + drift + 2.5, y + 3.5
+          );
+          ctx.stroke();
+          ctx.strokeStyle = `rgba(216,208,187,${(.15 + embossStrength * .19) * detailVisibility})`;
+          ctx.lineWidth = .72 + embossStrength * .35;
+          ctx.beginPath();
+          ctx.moveTo(-span + drift - 1.5, y - 2);
+          ctx.bezierCurveTo(
+            -span * .35 + drift, y + bend - 2,
+            span * .3 + drift, y - bend - 2,
+            span + drift - 1.5, y - 2
+          );
+          ctx.stroke();
+        }
+
+        const markX = radius * .54;
+        const markY = radius * aspect * .31;
+        ctx.strokeStyle = `rgba(155,144,98,${(.42 + embossStrength * .18) * detailVisibility})`;
+        ctx.lineWidth = .9;
+        ctx.beginPath();
+        ctx.moveTo(markX - radius * .035, markY);
+        ctx.lineTo(markX + radius * .035, markY);
+        ctx.stroke();
+        ctx.fillStyle = `rgba(155,144,98,${(.46 + embossStrength * .2) * detailVisibility})`;
+        ctx.beginPath();
+        ctx.arc(markX + radius * .055, markY, Math.max(1.1, radius * .006), 0, TAU);
+        ctx.fill();
+
+        // Short fibres project from the irregular cut edge just as they do in
+        // drawPaperFibres(); their deterministic placement stays stable.
+        const fibreRand = mulberry32(Math.floor(paperSeed * 17 + detailIndex * 97));
+        ctx.lineCap = "round";
+        for (let fibre = 0; fibre < 42; fibre++) {
+          const angle = fibreRand() * TAU;
+          const length = 2.2 + fibreRand() * 6.3;
+          const warp = 1 + paperWarp(angle, paperSeed);
+          const x = Math.cos(angle) * radius * warp;
+          const y = Math.sin(angle) * radius * aspect * warp;
+          ctx.strokeStyle = `rgba(155,144,98,${alpha * (.12 + fibreRand() * .22)})`;
+          ctx.lineWidth = .35 + fibreRand() * .5;
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x + Math.cos(angle) * length, y + Math.sin(angle) * aspect * length);
+          ctx.stroke();
+        }
+      };
+
+      const fieldUnit = Math.min(width * .44, height * .7);
+
+      // Only two incomplete material hints breathe in the preview. The full
+      // five-sheet reveal remains reserved for the live experience.
+      for (const layer of [2, 1]) {
+        const delay = layer * .095;
+        const reveal = easeOut((breath - delay) / Math.max(.001, 1 - delay));
+        if (reveal <= .002) continue;
+        const spread = (layer - 1.5) * fieldUnit * .022;
+        const lift = Math.abs(layer - 2) * fieldUnit * .014;
+        const pressScale = .94 + reveal * .06;
+        const radius = fieldUnit * (.1 + reveal * .13) * (1 - layer * .018);
+        const aspect = .62 + layer * .025;
+        const paperSeed = 803 + layer * 47;
+        const colour = layer % 2 === 0 ? "216,208,187" : "166,156,137";
+        ctx.save();
+        ctx.translate(cx + spread, cy - lift);
+        ctx.rotate(-.075 + layer * .031);
+        ctx.scale(pressScale, pressScale);
+        drawPaperDisc(
+          radius,
+          aspect,
+          paperSeed,
+          colour,
+          .18 + reveal * .2,
+          .12 + reveal * .16,
+          layer
+        );
+        ctx.restore();
+      }
+
+      // Three overlapping fragments hint at compression, but neither disclose
+      // the eight-step diagonal archive nor show a finished emboss pattern.
+      const hintOffsets = [
+        { x: -.052, y: .032, scale: .86, alpha: .13 },
+        { x: .006, y: -.006, scale: .93, alpha: .18 },
+        { x: .062, y: -.038, scale: 1, alpha: .32 }
+      ];
+      const pressProgress = reduceMotion ? .5 : (time * .19) % 1;
+      const press = Math.sin(pressProgress * Math.PI);
+      hintOffsets.forEach((hint, memory) => {
+        const active = memory === hintOffsets.length - 1;
+        const x = cx + fieldUnit * hint.x;
+        const baseY = cy + fieldUnit * hint.y;
+        const radius = fieldUnit * .205 * hint.scale;
+        const aspect = .67 + memory * .018;
+        const localPress = active ? press : 0;
+        const paperSeed = 1201 + memory * 61;
+        const colour = memory % 2 === 0 ? "216,208,187" : "166,156,137";
+        ctx.save();
+        ctx.translate(x, baseY + localPress * 9);
+        ctx.rotate(-.095 + memory * .026 + localPress * .014);
+        const scale = 1 - localPress * .065;
+        ctx.scale(scale, scale);
+        if (active && localPress > .01) {
+          ctx.save();
+          ctx.translate(10 + localPress * 6, 12 + localPress * 7);
+          ctx.fillStyle = `rgba(81,74,63,${.08 + localPress * .11})`;
+          buildPaperContour(radius * 1.018, aspect * 1.01, paperSeed);
+          ctx.fill();
+          ctx.restore();
+        }
+        drawPaperDisc(
+          radius,
+          aspect,
+          paperSeed,
+          colour,
+          hint.alpha + localPress * .08,
+          .1 + localPress * .22,
+          memory
+        );
+        ctx.restore();
+      });
+      return;
+    }
+
+    const amber = mode === "amber";
+    const frozen = mode === "frozen";
+    ctx.fillStyle = amber ? "#120506" : frozen ? "#111018" : "#101917";
+    ctx.fillRect(0, 0, width, height);
+
+    if (amber) {
+      const volume = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxRadius);
+      volume.addColorStop(0, "rgba(239,168,61,.1)");
+      volume.addColorStop(.38, "rgba(110,25,30,.16)");
+      volume.addColorStop(.72, "rgba(126,25,27,.06)");
+      volume.addColorStop(1, "rgba(18,5,6,0)");
+      ctx.fillStyle = volume;
+      ctx.beginPath();
+      ctx.arc(cx, cy, maxRadius, 0, TAU);
+      ctx.fill();
+
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      const orbitExtent = .34 + breath * .24;
+      const sectorDrift = Math.sin(time * .045) * .14;
+
+      // Keep the material dense, but reveal only broken orbital sectors. The
+      // complete bilateral field and its two gravitational sources remain
+      // reserved for the live experience.
+      for (let particle = 0; particle < 820; particle++) {
+        const baseAngle = rand() * TAU;
+        const belt = particle % 9 === 0;
+        const radialSeed = belt
+          ? .48 + rand() * .44
+          : Math.pow(rand(), .68);
+        const radius = radialSeed * maxRadius * orbitExtent;
+        const direction = particle % 7 === 0 ? -1 : 1;
+        const speed = (.018 + rand() * .062) * direction;
+        const angle = baseAngle + time * speed;
+        const sectorA = Math.pow(Math.max(0, Math.cos(angle + .58 + sectorDrift)), 5);
+        const sectorB = Math.pow(Math.max(0, Math.cos(angle - 2.32 - sectorDrift)), 7) * .62;
+        const sectorVisibility = .1 + Math.max(sectorA, sectorB) * .9;
+        const flutter = Math.sin(time * .11 + particle * .83) * maxRadius * .007;
+        const x = cx + maxRadius * .035 + Math.cos(angle) * (radius + flutter) * 1.18;
+        const y = cy + maxRadius * .02 + Math.sin(angle) * (radius + flutter) * (.5 + radialSeed * .09);
+        const tone = rand();
+        const sparkle = .5 + Math.sin(time * .42 + particle * 1.37) * .5;
+        const edgeFade = Math.pow(1 - radialSeed * .68, .52);
+        const alpha = edgeFade * sectorVisibility * (
+          tone < .34
+            ? .16 + rand() * .34
+            : tone < .9
+              ? .28 + rand() * .5 + sparkle * .12
+              : .48 + rand() * .42 + sparkle * .16
+        );
+        const size = tone > .92 || particle % 37 === 0
+          ? 1.35 + rand() * 1.15
+          : .55 + rand() * .78;
+
+        ctx.fillStyle = tone < .34
+          ? `rgba(132,29,29,${alpha})`
+          : tone < .9
+            ? `rgba(255,186,62,${alpha})`
+            : `rgba(255,226,142,${alpha})`;
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, TAU);
+        ctx.fill();
+        if (tone > .955) {
+          const halo = ctx.createRadialGradient(x, y, 0, x, y, size * 5.5);
+          halo.addColorStop(0, `rgba(255,205,95,${sectorVisibility * .22})`);
+          halo.addColorStop(1, "rgba(239,168,61,0)");
+          ctx.fillStyle = halo;
+          ctx.beginPath();
+          ctx.arc(x, y, size * 5.5, 0, TAU);
+          ctx.fill();
+        }
+      }
+
+      // Only a subdued, offset fragment of the dense core is shown; its full
+      // symmetry and relationship to the two hands stay concealed.
+      const coreX = cx + maxRadius * .065;
+      const coreY = cy - maxRadius * .018;
+      const coreRadius = maxRadius * (.045 + breath * .045);
+      const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+      for (let core = 0; core < 120; core++) {
+        const normalized = (core + .5) / 120;
+        const depth = 1 - normalized;
+        const radius = Math.sqrt(normalized) * coreRadius;
+        const direction = core % 9 === 0 ? -1 : 1;
+        const angle = core * goldenAngle + time * .07 * direction * (.45 + depth * 1.4);
+        const flutter = Math.sin(time * .18 + core * .73) * (1.2 + breath * 2.4);
+        const x = coreX + Math.cos(angle) * (radius + flutter);
+        const y = coreY + Math.sin(angle) * (radius + flutter) * (.58 + breath * .16);
+        const sparkle = .5 + Math.sin(time * .52 + core * 1.31) * .5;
+        const alpha = .18 + depth * .28 + sparkle * .12;
+
+        ctx.fillStyle = core % 7 === 0
+          ? `rgba(104,30,19,${alpha * .72})`
+          : core % 11 === 0
+            ? `rgba(255,221,137,${alpha})`
+            : `rgba(255,208,105,${alpha * .92})`;
+        ctx.beginPath();
+        ctx.arc(x, y, .48 + sparkle * .65, 0, TAU);
+        ctx.fill();
+      }
+      ctx.restore();
+      return;
+    }
+
+    if (frozen) {
+      const fieldRadius = maxRadius * (.34 + breath * .66);
+      const fieldAspect = .36 + breath * .28;
+
+      const drawFacetedLoop = (radius, aspect, rotation, samples, colour, alpha, lineWidth) => {
+        ctx.strokeStyle = `rgba(${colour},${alpha})`;
+        ctx.lineWidth = lineWidth;
+        ctx.beginPath();
+        for (let sample = 0; sample <= samples; sample++) {
+          const angle = sample / samples * TAU;
+          const wobble = 1
+            + Math.sin(angle * 3 + rotation * 9) * .012
+            + Math.sin(angle * 7 - rotation * 5) * .007;
+          const x = cx + Math.cos(angle + rotation) * radius * wobble;
+          const y = cy + Math.sin(angle + rotation) * radius * aspect * wobble;
+          if (!sample) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.stroke();
+      };
+
+      // Central glow and ten translucent bodies mirror drawCentralGlow() and
+      // drawOrbitBody() from the live variant.
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(1, fieldAspect);
+      const glow = ctx.createRadialGradient(0, 0, 0, 0, 0, fieldRadius * 1.08);
+      glow.addColorStop(0, `rgba(205,197,216,${.09 + breath * .045})`);
+      glow.addColorStop(.46, `rgba(118,105,137,${.075 + breath * .035})`);
+      glow.addColorStop(1, "rgba(17,16,24,0)");
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(0, 0, fieldRadius * 1.08, 0, TAU);
+      ctx.fill();
+      for (let body = 0; body < 10; body++) {
+        const bodyRadius = fieldRadius * (1 - body / 9 * .78);
+        ctx.fillStyle = `rgba(72,65,83,${.03 - body * .0012})`;
+        ctx.beginPath();
+        ctx.arc(0, 0, bodyRadius, 0, TAU);
+        ctx.fill();
+      }
+      ctx.restore();
+
+      // The version uses 15 slowly moving 34-point faceted orbit lines.
+      for (let orbit = 0; orbit < 15; orbit++) {
+        const progress = orbit / 14;
+        const radius = fieldRadius * (.16 + progress * .94);
+        const pulse = Math.sin(time * .027 + orbit * .5) * breath * 2.8;
+        drawFacetedLoop(
+          radius + pulse,
+          fieldAspect,
+          time * .0032 + orbit * .002,
+          34,
+          "184,174,199",
+          (1 - progress * .45) * (.13 + breath * .16),
+          1.05 - progress * .58
+        );
+      }
+
+      // Retain the live variation's 224 ambient dust particles.
+      for (let dust = 0; dust < 224; dust++) {
+        const angle = rand() * TAU + time * (.001 + rand() * .0045);
+        const radius = (20 + rand() * (fieldRadius - 20)) * breath;
+        const depth = .4 + rand() * .6;
+        const x = cx + Math.cos(angle) * radius * depth;
+        const y = cy + Math.sin(angle) * radius * fieldAspect * depth;
+        const size = (.8 + rand() * 2.4) * depth * .72;
+        ctx.fillStyle = `rgba(211,203,220,${(.08 + rand() * .2) * (.42 + breath * .58)})`;
+        ctx.beginPath();
+        ctx.arc(x, y, size * .5, 0, TAU);
+        ctx.fill();
+      }
+
+      // Three completed breaths remain as four-layer, 28-point polygonal
+      // memory rings with dust points, matching drawMemoryRings().
+      const memoryRadii = [.84, .61, .4];
+      memoryRadii.forEach((memoryScale, memoryIndex) => {
+        const memoryRadius = maxRadius * memoryScale;
+        const memoryAspect = .5 + memoryIndex * .055;
+        const rotation = -.035 + memoryIndex * .028;
+        for (let layer = 0; layer < 4; layer++) {
+          drawFacetedLoop(
+            memoryRadius * (.9 + layer / 3 * .18),
+            memoryAspect,
+            rotation,
+            28,
+            "203,194,213",
+            .13 - layer * .018,
+            .62
+          );
+        }
+        for (let point = 0; point < 48; point++) {
+          const angle = point / 48 * TAU + memoryIndex * .37;
+          const radius = memoryRadius * (.83 + rand() * .3);
+          const sparkle = .5 + Math.sin(time * .056 + point * 1.7) * .5;
+          ctx.fillStyle = `rgba(221,214,228,${.12 + sparkle * .13})`;
+          ctx.beginPath();
+          ctx.arc(
+            cx + Math.cos(angle) * radius,
+            cy + Math.sin(angle) * radius * memoryAspect,
+            .42 + rand() * .48,
+            0,
+            TAU
+          );
+          ctx.fill();
+        }
+      });
+
+      // Recreate captureCrystalConnections(): each captured group adds three
+      // straight links between fixed left/right fingertip indices. Eight
+      // accumulated groups show persistence without inventing a new mesh type.
+      const fingertipY = [-.48, -.26, 0, .26, .48];
+      const connectionSpan = maxRadius * .72;
+      const connections = [];
+      for (let capture = 0; capture < 8; capture++) {
+        for (let link = 0; link < 3; link++) {
+          const leftIndex = (capture * 2 + link) % 5;
+          const rightIndex = (capture * 3 + link * 2 + 1) % 5;
+          const captureDrift = (capture - 3.5) * maxRadius * .018;
+          const left = {
+            x: cx - connectionSpan * (.5 + leftIndex * .025) + captureDrift,
+            y: cy + fingertipY[leftIndex] * connectionSpan * .92
+              + Math.sin(capture * 1.3 + leftIndex) * maxRadius * .018
+          };
+          const right = {
+            x: cx + connectionSpan * (.5 + rightIndex * .025) - captureDrift,
+            y: cy + fingertipY[rightIndex] * connectionSpan * .92
+              + Math.cos(capture * 1.17 + rightIndex) * maxRadius * .018
+          };
+          connections.push({ left, right, capture, link });
+        }
+      }
+
+      const activeCapture = reduceMotion ? 7 : Math.floor(time * .16) % 8;
+      const growth = reduceMotion ? 1 : (time * .16) % 1;
+      ctx.save();
+      ctx.lineCap = "round";
+      connections.forEach(connection => {
+        const isGrowing = connection.capture === activeCapture;
+        const reveal = isGrowing ? growth : 1;
+        const endX = connection.left.x + (connection.right.x - connection.left.x) * reveal;
+        const endY = connection.left.y + (connection.right.y - connection.left.y) * reveal;
+        ctx.strokeStyle = isGrowing
+          ? "rgba(221,214,228,.44)"
+          : "rgba(203,194,213,.23)";
+        ctx.lineWidth = isGrowing ? .88 : .62;
+        ctx.beginPath();
+        ctx.moveTo(connection.left.x, connection.left.y);
+        ctx.lineTo(endX, endY);
+        ctx.stroke();
+
+        if (reveal >= 1) {
+          ctx.fillStyle = isGrowing
+            ? "rgba(221,214,228,.62)"
+            : "rgba(221,214,228,.3)";
+          ctx.beginPath();
+          ctx.arc(connection.left.x, connection.left.y, .82, 0, TAU);
+          ctx.arc(connection.right.x, connection.right.y, .82, 0, TAU);
+          ctx.fill();
+        }
+      });
+      ctx.restore();
+      return;
+    }
+
+    const anchors = [];
+    for (let star = 0; star < 190; star++) {
+      const angle = rand() * TAU;
+      const radius = Math.sqrt(rand()) * maxRadius;
+      const x = cx + Math.cos(angle) * radius * 1.22;
+      const y = cy + Math.sin(angle) * radius * .63;
+      anchors.push([x, y]);
+      ctx.fillStyle = `rgba(238,231,198,${.05 + rand() * .34})`;
+      ctx.fillRect(x, y, rand() > .92 ? 1.8 : .8, rand() > .92 ? 1.8 : .8);
+    }
+
+    for (let ring = 0; ring < 8; ring++) {
+      const p = ring / 7;
+      const radius = maxRadius * (1 - p * .78);
+      const pulse = Math.sin(time * .22 - ring * .55) * 2.4;
+      ctx.strokeStyle = `rgba(238,232,198,${.075 + (1 - p) * .07})`;
+      ctx.lineWidth = ring === Math.floor((time * .18) % 8) ? 1.15 : .48;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, radius + pulse, (radius + pulse) * .52, ring * .025, 0, TAU);
+      ctx.stroke();
+    }
+    const sourceGap = maxRadius * (.18 + breath * .62);
+    drawPreviewSources(ctx, cx - sourceGap, cx + sourceGap, cy, "rgba(231,219,181,ALPHA)", breath, .55);
+  }
+
+  function drawSessionArchiveStage(ctx, time, width, height, seed, palette) {
+    const rand = mulberry32(seed * 227 + 101);
+    const cx = width * .5;
+    const cy = height * .52;
+    const maxRadius = Math.min(width * .39, height * .62);
+    ctx.fillStyle = palette.background;
+    ctx.fillRect(0, 0, width, height);
+
+    const anchors = [];
+    for (let ring = 0; ring < 8; ring++) {
+      const p = ring / 7;
+      const radius = maxRadius * (1 - p * .78);
+      const rotation = ring * 2.39996 + (rand() - .5) * .18;
+      const aspect = .5 + rand() * .12;
+      ctx.strokeStyle = palette.contour.replace("ALPHA", String(.09 + (1 - p) * .08));
+      ctx.lineWidth = .45 + (ring % 3 === 0 ? .3 : 0);
+      ctx.beginPath();
+      for (let sample = 0; sample <= 72; sample++) {
+        const u = sample / 72;
+        const angle = u * TAU;
+        const irregularity = 1 + Math.sin(angle * (3 + ring % 3) + ring) * .035 + Math.sin(time * .07 + ring) * .008;
+        const localX = Math.cos(angle) * radius * irregularity;
+        const localY = Math.sin(angle) * radius * aspect * irregularity;
+        const x = cx + localX * Math.cos(rotation) - localY * Math.sin(rotation);
+        const y = cy + localX * Math.sin(rotation) + localY * Math.cos(rotation);
+        if (!sample) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      const anchorAngle = -Math.PI / 2 + rotation;
+      const anchor = [cx + Math.cos(anchorAngle) * radius, cy + Math.sin(anchorAngle) * radius * aspect];
+      anchors.push(anchor);
+    }
+
+    ctx.strokeStyle = palette.path.replace("ALPHA", ".27");
+    ctx.lineWidth = .72;
+    ctx.beginPath();
+    anchors.forEach((anchor, index) => {
+      if (!index) ctx.moveTo(anchor[0], anchor[1]);
+      else ctx.lineTo(anchor[0], anchor[1]);
+    });
+    ctx.stroke();
+    anchors.forEach((anchor, index) => {
+      const pulse = 1 + Math.sin(time * .7 - index * .6) * .35;
+      const glow = ctx.createRadialGradient(anchor[0], anchor[1], 0, anchor[0], anchor[1], 13 * pulse);
+      glow.addColorStop(0, palette.star.replace("ALPHA", ".72"));
+      glow.addColorStop(1, palette.star.replace("ALPHA", "0"));
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(anchor[0], anchor[1], 13 * pulse, 0, TAU);
+      ctx.fill();
+      ctx.fillStyle = palette.star.replace("ALPHA", ".86");
+      ctx.fillRect(anchor[0] - 1, anchor[1] - 1, 2, 2);
+    });
+  }
+
+  function drawPressedHerbariumStage(ctx, time, width, height, seed) {
+    const rand = mulberry32(seed * 239 + 113);
+    const drift = reduceMotion ? 0 : time;
+    const left = width * .055;
+    const right = width * .945;
+    const top = height * .08;
+    const bottom = height * .92;
+
+    ctx.fillStyle = "#d2c9b3";
+    ctx.fillRect(0, 0, width, height);
+
+    const paperShade = ctx.createLinearGradient(left, top, right, bottom);
+    paperShade.addColorStop(0, "rgba(239,234,218,.1)");
+    paperShade.addColorStop(.48, "rgba(140,151,128,.025)");
+    paperShade.addColorStop(1, "rgba(74,82,63,.075)");
+    ctx.fillStyle = paperShade;
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.save();
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    for (let fibre = 0; fibre < 310; fibre++) {
+      const x = rand() * width;
+      const y = rand() * height;
+      const length = 5 + rand() * 27;
+      ctx.strokeStyle = rand() > .58 ? "rgba(244,238,218,.085)" : "rgba(78,91,70,.055)";
+      ctx.lineWidth = .3 + rand() * .42;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + length, y + (rand() - .5) * 2.2);
+      ctx.stroke();
+    }
+
+    ctx.strokeStyle = "rgba(47,59,46,.16)";
+    ctx.lineWidth = .65;
+    const corner = Math.min(width, height) * .018;
+    [[left, top, 1, 1], [right, top, -1, 1], [left, bottom, 1, -1], [right, bottom, -1, -1]].forEach(mark => {
+      ctx.beginPath();
+      ctx.moveTo(mark[0], mark[1] + mark[3] * corner);
+      ctx.lineTo(mark[0], mark[1]);
+      ctx.lineTo(mark[0] + mark[2] * corner, mark[1]);
+      ctx.stroke();
+    });
+
+    const unit = Math.min(width, height);
+    const fragments = [
+      { x: width * .14, y: height * .34, size: unit * .11, rotation: -.24, leaves: 5, completion: .82, dry: .84 },
+      { x: width * .35, y: height * .7, size: unit * .135, rotation: .17, leaves: 7, completion: .58, dry: .45 },
+      { x: width * .56, y: height * .31, size: unit * .12, rotation: -.1, leaves: 6, completion: .94, dry: .92 },
+      { x: width * .74, y: height * .66, size: unit * .14, rotation: .25, leaves: 8, completion: .48, dry: .3, scanning: true },
+      { x: width * .9, y: height * .4, size: unit * .105, rotation: -.2, leaves: 5, completion: .7, dry: .66 }
+    ];
+
+    fragments.forEach((fragment, fragmentIndex) => {
+      const fragmentRand = mulberry32(seed * 613 + fragmentIndex * 199);
+      const wet = 1 - fragment.dry;
+      const settle = Math.sin(drift * .18 + fragmentIndex * 1.7) * wet;
+      ctx.save();
+      ctx.translate(fragment.x + settle * 2.2, fragment.y + Math.cos(drift * .15 + fragmentIndex) * wet * 1.4);
+      ctx.rotate(fragment.rotation + settle * .022);
+
+      for (let fibre = 0; fibre < 10 + fragmentIndex * 3; fibre++) {
+        const x = (fragmentRand() - .5) * fragment.size * .8;
+        const y = (fragmentRand() - .5) * fragment.size * 1.05;
+        const length = fragment.size * (.04 + fragmentRand() * .1);
+        const angle = (fragmentRand() - .5) * 1.5;
+        ctx.strokeStyle = `rgba(132,103,74,${.09 + fragment.dry * .13})`;
+        ctx.lineWidth = .42;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + Math.cos(angle) * length, y + Math.sin(angle) * length);
+        ctx.stroke();
+      }
+
+      ctx.strokeStyle = `rgba(132,103,74,${.32 + fragment.dry * .3})`;
+      ctx.lineWidth = 2.15 - fragment.dry * .55;
+      ctx.beginPath();
+      ctx.moveTo(0, fragment.size * .5);
+      ctx.bezierCurveTo(
+        fragment.size * (.05 + fragmentIndex * .008), fragment.size * .2,
+        -fragment.size * (.06 - fragmentIndex * .006), -fragment.size * .18,
+        fragment.size * .015, -fragment.size * .5
+      );
+      ctx.stroke();
+
+      ctx.strokeStyle = `rgba(${fragment.dry > .72 ? "140,151,128" : "88,99,72"},${.62 - fragment.dry * .12})`;
+      ctx.lineWidth = 1.18 - fragment.dry * .3;
+      ctx.stroke();
+
+      const visibleLeaves = Math.max(2, Math.ceil(fragment.leaves * fragment.completion));
+      for (let leaf = 0; leaf < visibleLeaves; leaf++) {
+        const p = (leaf + 1) / (fragment.leaves + 1);
+        const side = (leaf + fragmentIndex) % 2 ? 1 : -1;
+        const anchorY = fragment.size * (.46 - p * .92);
+        const leafLength = fragment.size * (.19 + fragmentRand() * .07) * (1 - p * .2);
+        const leafWidth = leafLength * (.32 + fragmentRand() * .13);
+        const leafAngle = side * (-.52 - fragmentRand() * .28);
+        const localSway = Math.sin(drift * .21 + leaf * .8 + fragmentIndex) * wet * .04;
+
+        ctx.save();
+        ctx.translate(0, anchorY);
+        ctx.rotate(leafAngle + localSway);
+
+        const faded = fragment.dry > .7;
+        ctx.fillStyle = faded
+          ? `rgba(140,151,128,${.38 + fragment.dry * .2})`
+          : `rgba(88,99,72,${.48 + wet * .18})`;
+        ctx.strokeStyle = `rgba(132,103,74,${.28 + fragment.dry * .32})`;
+        ctx.lineWidth = .82;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.quadraticCurveTo(leafLength * .47, -leafWidth, leafLength, 0);
+        ctx.quadraticCurveTo(leafLength * .5, leafWidth * .88, 0, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.strokeStyle = `rgba(47,59,46,${.36 + fragment.dry * .22})`;
+        ctx.lineWidth = .52;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.quadraticCurveTo(leafLength * .45, 0, leafLength * .9, localSway * leafWidth * .4);
+        ctx.stroke();
+
+        for (let vein = 1; vein <= 2 + Math.round(fragment.dry * 2); vein++) {
+          const veinX = leafLength * vein / 4;
+          ctx.strokeStyle = `rgba(47,59,46,${.16 + fragment.dry * .18})`;
+          ctx.lineWidth = .38;
+          ctx.beginPath();
+          ctx.moveTo(veinX, 0);
+          ctx.lineTo(veinX + leafLength * .12, (vein % 2 ? -1 : 1) * leafWidth * .34);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      if (fragment.scanning) {
+        const scanProgress = (drift * .055) % 1;
+        const scanY = -fragment.size * .62 + scanProgress * fragment.size * 1.24;
+        const localScan = ctx.createLinearGradient(0, scanY - 8, 0, scanY + 8);
+        localScan.addColorStop(0, "rgba(239,226,190,0)");
+        localScan.addColorStop(.5, "rgba(239,226,190,.3)");
+        localScan.addColorStop(1, "rgba(239,226,190,0)");
+        ctx.fillStyle = localScan;
+        ctx.fillRect(-fragment.size * .65, scanY - 8, fragment.size * 1.3, 16);
+        ctx.strokeStyle = "rgba(132,103,74,.24)";
+        ctx.lineWidth = .55;
+        ctx.beginPath();
+        ctx.moveTo(-fragment.size * .65, scanY);
+        ctx.lineTo(fragment.size * .65, scanY);
+        ctx.stroke();
+      }
+      ctx.restore();
+    });
+    ctx.restore();
+  }
+
+  function drawKineticMobileStage(ctx, time, width, height, seed) {
+    const rand = mulberry32(seed * 251 + 127);
+    ctx.fillStyle = "#100f0d";
+    ctx.fillRect(0, 0, width, height);
+    const glow = ctx.createRadialGradient(width * .5, height * .2, 0, width * .5, height * .2, width * .54);
+    glow.addColorStop(0, "rgba(233,220,192,.1)");
+    glow.addColorStop(1, "rgba(16,15,13,0)");
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, width, height);
+
+    const root = [width * .5, height * .08];
+    const tiers = [
+      { y: .2, span: .25, count: 2 },
+      { y: .39, span: .48, count: 4 },
+      { y: .62, span: .7, count: 6 }
+    ];
+    let parents = [root];
+    tiers.forEach((tier, tierIndex) => {
+      const nodes = [];
+      for (let i = 0; i < tier.count; i++) {
+        const u = tier.count === 1 ? .5 : i / (tier.count - 1);
+        const baseX = width * (.5 - tier.span / 2 + tier.span * u);
+        const swing = Math.sin(time * (.18 + tierIndex * .025) + i * 1.8 + tierIndex) * width * (.009 + tierIndex * .004);
+        const node = [baseX + swing, height * tier.y + Math.sin(time * .15 + i) * 4];
+        nodes.push(node);
+        const parent = parents[Math.min(parents.length - 1, Math.floor(i * parents.length / tier.count))];
+        ctx.strokeStyle = "rgba(169,154,121,.38)";
+        ctx.lineWidth = .64;
+        ctx.beginPath();
+        ctx.moveTo(parent[0], parent[1]);
+        ctx.lineTo(node[0], node[1]);
+        ctx.stroke();
+      }
+      for (let i = 0; i < nodes.length - 1; i += 2) {
+        ctx.strokeStyle = "rgba(169,154,121,.58)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(nodes[i][0], nodes[i][1]);
+        ctx.lineTo(nodes[i + 1][0], nodes[i + 1][1]);
+        ctx.stroke();
+      }
+      parents = nodes;
+    });
+
+    parents.forEach((node, index) => {
+      const plateY = height * (.75 + (index % 2) * .07);
+      ctx.strokeStyle = "rgba(169,154,121,.3)";
+      ctx.beginPath();
+      ctx.moveTo(node[0], node[1]);
+      ctx.lineTo(node[0], plateY);
+      ctx.stroke();
+      const colours = ["rgba(84,123,118,.76)", "rgba(154,87,61,.72)", "rgba(101,123,133,.7)", "rgba(169,154,121,.74)"];
+      const w = 18 + rand() * 34;
+      const h = 6 + rand() * 12;
+      ctx.fillStyle = colours[index % colours.length];
+      ctx.strokeStyle = "rgba(233,220,192,.26)";
+      ctx.beginPath();
+      ctx.ellipse(node[0], plateY, w, h, Math.sin(time * .22 + index) * .18, 0, TAU);
+      ctx.fill();
+      ctx.stroke();
+    });
+  }
+
+  function drawCeramicFaultlineStage(ctx, time, width, height, seed) {
+    const rand = mulberry32(seed * 263 + 139);
+    ctx.fillStyle = "#4e4439";
+    ctx.fillRect(0, 0, width, height);
+    const marginX = width * .055;
+    const marginY = height * .08;
+    const edge = [
+      [marginX, marginY + 8], [width - marginX - 10, marginY],
+      [width - marginX, height - marginY - 12], [marginX + 8, height - marginY]
+    ];
+    const slab = ctx.createLinearGradient(marginX, marginY, width - marginX, height - marginY);
+    slab.addColorStop(0, "#d0bda3");
+    slab.addColorStop(.35, "#b7a48d");
+    slab.addColorStop(1, "#766554");
+    ctx.fillStyle = slab;
+    ctx.beginPath();
+    ctx.moveTo(edge[0][0], edge[0][1]);
+    edge.slice(1).forEach(point => ctx.lineTo(point[0], point[1]));
+    ctx.closePath();
+    ctx.fill();
+
+    for (let grain = 0; grain < 420; grain++) {
+      const x = marginX + rand() * (width - marginX * 2);
+      const y = marginY + rand() * (height - marginY * 2);
+      ctx.fillStyle = rand() > .5 ? "rgba(228,209,180,.08)" : "rgba(54,46,41,.055)";
+      ctx.fillRect(x, y, .5 + rand() * 1.4, .5 + rand());
+    }
+
+    const points = [];
+    for (let point = 0; point < 11; point++) {
+      const u = point / 10;
+      points.push([
+        width * (.12 + u * .76) + Math.sin(point * 1.7) * width * .018,
+        height * (.26 + u * .48) + Math.sin(point * 2.31) * height * .08
+      ]);
+    }
+    ctx.strokeStyle = "rgba(54,46,41,.92)";
+    ctx.lineWidth = 7.5;
+    ctx.lineJoin = "round";
+    ctx.beginPath();
+    points.forEach((point, index) => index ? ctx.lineTo(point[0], point[1]) : ctx.moveTo(point[0], point[1]));
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(45,103,98,.9)";
+    ctx.lineWidth = 3.7;
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(168,195,184,.68)";
+    ctx.lineWidth = .75;
+    ctx.stroke();
+    points.forEach((point, index) => {
+      if (index % 2) return;
+      const pulse = 1 + Math.sin(time * .4 - index) * .18;
+      ctx.fillStyle = "rgba(45,103,98,.9)";
+      ctx.beginPath();
+      ctx.ellipse(point[0], point[1], 5 * pulse, 3 * pulse, 0, 0, TAU);
+      ctx.fill();
+    });
+    const scanX = marginX + ((reduceMotion ? .45 : (time * .035) % 1)) * (width - marginX * 2);
+    const rake = ctx.createLinearGradient(scanX - 70, 0, scanX + 70, 0);
+    rake.addColorStop(0, "rgba(228,209,180,0)");
+    rake.addColorStop(.5, "rgba(228,209,180,.09)");
+    rake.addColorStop(1, "rgba(228,209,180,0)");
+    ctx.fillStyle = rake;
+    ctx.fillRect(scanX - 70, marginY, 140, height - marginY * 2);
+  }
+
+  function drawAfterimageCorridorStage(ctx, time, width, height, seed) {
+    const rand = mulberry32(seed * 277 + 151);
+    ctx.fillStyle = "#030509";
+    ctx.fillRect(0, 0, width, height);
+    const vanishX = width * .5;
+    const vanishY = height * .43;
+    const farGlow = ctx.createRadialGradient(vanishX, vanishY, 0, vanishX, vanishY, Math.min(width, height) * .42);
+    farGlow.addColorStop(0, "rgba(196,213,212,.25)");
+    farGlow.addColorStop(.13, "rgba(100,127,152,.12)");
+    farGlow.addColorStop(1, "rgba(3,5,9,0)");
+    ctx.fillStyle = farGlow;
+    ctx.fillRect(0, 0, width, height);
+
+    const anchors = [];
+    for (let pane = 9; pane >= 0; pane--) {
+      const depth = pane / 9;
+      const scale = .16 + depth * .76;
+      const paneW = width * .62 * scale;
+      const paneH = height * .68 * scale;
+      const driftX = Math.sin(pane * 1.31) * width * .018 * depth;
+      const driftY = Math.cos(pane * 1.67) * height * .025 * depth;
+      const cx = vanishX + driftX;
+      const cy = vanishY + driftY;
+      const glass = ctx.createLinearGradient(cx - paneW / 2, cy - paneH / 2, cx + paneW / 2, cy + paneH / 2);
+      glass.addColorStop(0, `rgba(159,197,199,${.016 + depth * .035})`);
+      glass.addColorStop(.5, `rgba(100,127,152,${.012 + depth * .025})`);
+      glass.addColorStop(1, `rgba(103,85,111,${.02 + depth * .035})`);
+      ctx.fillStyle = glass;
+      ctx.strokeStyle = `rgba(159,197,199,${.08 + depth * .2})`;
+      ctx.lineWidth = .45 + depth * .55;
+      ctx.fillRect(cx - paneW / 2, cy - paneH / 2, paneW, paneH);
+      ctx.strokeRect(cx - paneW / 2, cy - paneH / 2, paneW, paneH);
+      anchors.push([
+        cx + (rand() - .5) * paneW * .56,
+        cy + (rand() - .5) * paneH * .46,
+        depth
+      ]);
+    }
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    anchors.forEach((anchor, index) => index ? ctx.lineTo(anchor[0], anchor[1]) : ctx.moveTo(anchor[0], anchor[1]));
+    const path = ctx.createLinearGradient(vanishX, vanishY, width * .8, height * .78);
+    path.addColorStop(0, "rgba(196,213,212,.15)");
+    path.addColorStop(1, "rgba(159,197,199,.62)");
+    ctx.strokeStyle = path;
+    ctx.stroke();
+    anchors.forEach((anchor, index) => {
+      const pulse = 1 + Math.sin(time * .45 - index * .48) * .22;
+      ctx.fillStyle = `rgba(196,213,212,${.18 + anchor[2] * .55})`;
+      ctx.beginPath();
+      ctx.arc(anchor[0], anchor[1], (1.2 + anchor[2] * 2.1) * pulse, 0, TAU);
+      ctx.fill();
+    });
+  }
+
+  function drawBothVariantStage(ctx, time, width, height, seed, canvas) {
+    const variant = canvas.dataset.variant || "";
+    const motionTime = reduceMotion ? 0 : time;
+    if (!variant) return false;
+    if (variant === "woven-canopy") drawWovenCanopyStage(ctx, motionTime, width, height, seed);
+    else if (variant === "parted-veil") drawPartedVeilStage(ctx, motionTime, width, height);
+    else if (variant === "mercury-basin") drawMercuryBasinStage(ctx, motionTime, width, height, seed);
+    else if (variant === "cloud-chamber") drawCloudChamberStage(ctx, motionTime, width, height, seed);
+    else if (variant === "amber-orbit") drawCosmicMemoryStage(ctx, motionTime, width, height, seed, "amber");
+    else if (variant === "frozen-constellation") drawCosmicMemoryStage(ctx, motionTime, width, height, seed, "frozen");
+    else if (variant === "lacquer-echo") drawCosmicMemoryStage(ctx, motionTime, width, height, seed, "lacquer");
+    else if (variant === "paper-eclipse") drawCosmicMemoryStage(ctx, motionTime, width, height, seed, "paper");
+    else if (variant === "seismograph-skin") drawSeismographStage(ctx, motionTime, width, height, seed);
+    else if (variant === "glass-strain") drawGlassStrainStage(ctx, motionTime, width, height, seed);
+    else if (variant === "session-archive-warm") drawSessionArchiveStage(ctx, motionTime, width, height, seed, {
+      background: "#120b0d", contour: "rgba(143,61,70,ALPHA)", path: "rgba(182,92,85,ALPHA)", star: "rgba(242,214,179,ALPHA)"
+    });
+    else if (variant === "pressed-herbarium") drawPressedHerbariumStage(ctx, motionTime, width, height, seed);
+    else if (variant === "kinetic-mobile") drawKineticMobileStage(ctx, motionTime, width, height, seed);
+    else if (variant === "ceramic-faultline") drawCeramicFaultlineStage(ctx, motionTime, width, height, seed);
+    else if (variant === "afterimage-corridor") drawAfterimageCorridorStage(ctx, motionTime, width, height, seed);
+    else return false;
+    return true;
+  }
+
   function drawBothStageField(ctx, time, width, height, seed, canvas) {
-    if (canvas.dataset.variant === "seismograph-skin") {
-      drawSeismographStage(ctx, time, width, height, seed);
-      return;
-    }
-    if (canvas.dataset.variant === "glass-strain") {
-      drawGlassStrainStage(ctx, time, width, height, seed);
-      return;
-    }
+    if (drawBothVariantStage(ctx, time, width, height, seed, canvas)) return;
 
     const rand = mulberry32(seed * 83 + 29);
     const mercuryBasin = canvas.dataset.variant === "mercury-basin";

@@ -134,16 +134,6 @@ canvas {
     gap: 36px;
   }
 
-  .lacquer-echo .live-help__title {
-    font-size: 44px;
-  }
-
-  .lacquer-echo .live-help__intro,
-  .lacquer-echo .live-help__reading p {
-    font-size: 10px;
-    line-height: 1.5;
-  }
-
   .lacquer-echo .live-help__archive-grid {
     margin-top: 18px;
   }
@@ -164,7 +154,6 @@ canvas {
 
   .lacquer-echo .live-help__parameter {
     margin-bottom: 8px;
-    line-height: 1.35;
   }
 
   .lacquer-echo .live-help__footer {

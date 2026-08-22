@@ -145,7 +145,7 @@ function drawMemoryRings() {
     noFill();
     for (let ring = 0; ring < 3; ring++) {
       const rr = memory.radius * (0.92 + ring * 0.11 + grow * 0.06);
-      stroke(242, 235, 201, fade * (31 - ring * 5) + memory.flash * 35); strokeWeight(0.55 + memory.flash * 0.45);
+      stroke(242, 235, 201, fade * (36 - ring * 5) + memory.flash * 40); strokeWeight(0.7 + memory.flash * 0.6);
       beginShape();
       for (let a = 0; a < TWO_PI + 0.02; a += TWO_PI / 160) {
         const wobble = map(noise(memory.seed + cos(a) * 1.7, memory.seed + sin(a) * 1.7, ring * 0.24), 0, 1, 0.985, 1.025);
@@ -157,8 +157,13 @@ function drawMemoryRings() {
     for (let s = 0; s < memory.starCount; s++) {
       const a = s / memory.starCount * TWO_PI + memory.seed * 0.01;
       const rr = memory.radius * randomSeeded(s + memory.seed, 0.86, 1.1);
-      fill(246, 238, 198, fade * 42 + memory.flash * 36);
-      circle(cos(a) * rr, sin(a) * rr * memory.aspect, randomSeeded(s + 200, 1.4, 3.5));
+      const sparkle = sin(frameCount * 0.04 + s * 1.7) * 0.5 + 0.5;
+      fill(246, 238, 198, fade * (38 + sparkle * 28) + memory.flash * 60);
+      circle(
+        cos(a) * rr,
+        sin(a) * rr * memory.aspect,
+        randomSeeded(s + 200, 1.8, 4.6) + sparkle * 1.2
+      );
     }
     pop();
   }

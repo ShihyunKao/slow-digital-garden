@@ -59,10 +59,6 @@ html body.corridor-page {
 .corridor-help .live-help__return:hover,
 .corridor-help .live-help__return:focus-visible { border-color: var(--ice); color: var(--ice); }
 
-@media (max-width: 720px) {
-  .corridor-page .live-title { font-size: clamp(20px, 7vw, 34px); }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .corridor-page canvas { animation: none; }
 }

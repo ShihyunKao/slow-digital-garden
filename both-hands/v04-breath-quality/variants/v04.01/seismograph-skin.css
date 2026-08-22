@@ -85,13 +85,10 @@ body.seismograph-skin {
   .seismograph-skin .live-help { padding-top: 82px; padding-bottom: 86px; }
   .seismograph-skin .live-help--archive .live-help__panel { height: min(552px, 100%); padding: 26px 36px 58px; }
   .seismograph-skin .live-help__archive-summary { gap: 36px; }
-  .seismograph-skin .live-help__title { font-size: 44px; }
-  .seismograph-skin .live-help__intro,
-  .seismograph-skin .live-help__reading p { font-size: 10px; line-height: 1.5; }
   .seismograph-skin .live-help__archive-grid { margin-top: 18px; }
   .seismograph-skin .live-help__step { min-height: 138px; padding-top: 25px; padding-bottom: 22px; }
   .seismograph-skin .live-help__number { top: 21px; }
   .seismograph-skin .live-help__parameters { padding: 18px 0 15px 24px; }
-  .seismograph-skin .live-help__parameter { margin-bottom: 8px; line-height: 1.35; }
+  .seismograph-skin .live-help__parameter { margin-bottom: 8px; }
   .seismograph-skin .live-help__footer { right: 36px; bottom: 22px; left: 36px; }
 }

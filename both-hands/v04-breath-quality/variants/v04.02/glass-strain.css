@@ -86,13 +86,10 @@ body.glass-strain { background: var(--glass-bg) !important; }
   .glass-strain .live-help { padding-top: 82px; padding-bottom: 86px; }
   .glass-strain .live-help--archive .live-help__panel { height: min(552px, 100%); padding: 26px 36px 58px; }
   .glass-strain .live-help__archive-summary { gap: 36px; }
-  .glass-strain .live-help__title { font-size: 44px; }
-  .glass-strain .live-help__intro,
-  .glass-strain .live-help__reading p { font-size: 10px; line-height: 1.5; }
   .glass-strain .live-help__archive-grid { margin-top: 18px; }
   .glass-strain .live-help__step { min-height: 138px; padding-top: 25px; padding-bottom: 22px; }
   .glass-strain .live-help__number { top: 21px; }
   .glass-strain .live-help__parameters { padding: 18px 0 15px 24px; }
-  .glass-strain .live-help__parameter { margin-bottom: 8px; line-height: 1.35; }
+  .glass-strain .live-help__parameter { margin-bottom: 8px; }
   .glass-strain .live-help__footer { right: 36px; bottom: 22px; left: 36px; }
 }
