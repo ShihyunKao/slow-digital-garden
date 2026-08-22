@@ -257,7 +257,7 @@
         {
           code: "v01", displayCode: "v01.00", path: "v01-breathing-garden", title: "Breathing Garden",
           statement: "A two-hand opening gesture grows a live contour field through slow expansion and return.",
-          archiveReading: "This first study does not save individual traces yet. It establishes the near-closed centre and slow expansion that later versions turn into memory.",
+          archiveReading: "This first live study saves no traces; its near-closed centre and slow expansion become the basis for later memories.",
           instructions: [["Begin", "Allow the camera and touch index fingertips."], ["Open", "Open both hands slowly to expand the contour field."], ["Return", "Return to the centre and begin another cycle."]],
           meaning: ["distance / index fingertips", "scale / field expansion", "contours / layered response", "return / near-closed centre"],
           variants: [
@@ -265,7 +265,7 @@
               code: "v01-woven-canopy", displayCode: "v01.01", path: "v01-breathing-garden/variants/v01.01", title: "Woven Canopy",
               variantStyle: "woven-canopy",
               statement: "The same two-hand distance opens a woven canopy of linen fibres, settling into a soft suspended arch between the hands.",
-              archiveReading: "This variation keeps the live, non-recording system intact. Expansion moves from the centre through delayed fibre layers; when hands return, the outer weave is the first to soften.",
+              archiveReading: "This live variation saves no traces. Expansion passes through delayed fibre layers; the outer weave softens first on return.",
               instructions: [["Begin", "Allow the camera and touch index fingertips."], ["Open", "Open both hands slowly to unfold the woven canopy."], ["Return", "Bring the hands together to let the outer fibres relax first."]],
               meaning: ["distance / index fingertips", "material / linen + fibre", "rhythm / centre-out delay", "light / soft backlit weave"]
             },
@@ -273,7 +273,7 @@
               code: "v01-parted-veil", displayCode: "v01.02", path: "v01-breathing-garden/variants/v01.02", title: "Parted Veil",
               variantStyle: "parted-veil",
               statement: "The same two-hand distance parts two translucent veils, turning the dark central interval into the field's primary form.",
-              archiveReading: "This variation remains live and non-recording. The hands only control the opening between two dim membrane layers; their return gathers the veils with a soft visual rebound.",
+              archiveReading: "This live variation saves no traces. Hand distance opens two dim membranes; returning gathers the veils with a soft rebound.",
               instructions: [["Begin", "Allow the camera and touch index fingertips."], ["Part", "Open both hands slowly to draw the two veils apart."], ["Return", "Bring the hands together and let the membrane edges settle softly."]],
               meaning: ["distance / index fingertips", "material / translucent veil", "space / central interval", "light / restrained edge glow"]
             }
@@ -290,7 +290,7 @@
               code: "v02-mercury-basin", displayCode: "v02.01", path: "v02-breathing-cosmos/variants/v02.01", title: "Mercury Basin",
               variantStyle: "mercury-basin",
               statement: "The live breathing field becomes a low basin of viscous liquid metal, expanding through restrained ripples and moving reflections.",
-              archiveReading: "This variation remains live and non-recording. Hand distance still sets the field radius, while the visual surface follows with delayed metallic inertia and a small residual oscillation.",
+              archiveReading: "This live variation saves no traces. Hand distance sets the field radius; its metallic surface follows with delayed inertia.",
               instructions: [["Begin", "Allow the camera and bring both hands together."], ["Expand", "Open both hands slowly to widen the metallic basin."], ["Settle", "Pause or return inward and watch the surface continue to echo softly."]],
               meaning: ["distance / hands apart", "material / liquid mercury", "inertia / viscous delay", "light / moving specular arcs"]
             },
@@ -298,7 +298,7 @@
               code: "v02-cloud-chamber", displayCode: "v02.02", path: "v02-breathing-cosmos/variants/v02.02", title: "Cloud Chamber",
               variantStyle: "cloud-chamber",
               statement: "The live breathing field becomes an oblique chamber of suspended mist, dust and translucent air drifting through a partial amber beam.",
-              archiveReading: "This variation remains live and non-recording. Hand distance still determines the diffusion range, while the cloud expands unevenly and leaves a brief residual current when the hands return.",
+              archiveReading: "This live variation saves no traces. Hand distance sets the diffusion range; the cloud leaves a brief current on return.",
               instructions: [["Begin", "Allow the camera and bring both hands together."], ["Disperse", "Open both hands slowly to let the cloud drift outward."], ["Linger", "Return inward and watch the remaining air current dissolve."]],
               meaning: ["distance / hands apart", "material / mist + suspended dust", "rhythm / drift + residual current", "light / oblique amber beam"]
             }
@@ -330,7 +330,7 @@
               code: "v03-frozen-constellation", displayCode: "v03.03", path: "v03-cosmic-memory-refined/variants/v03.03", title: "Frozen Constellation",
               variantStyle: "frozen-constellation",
               statement: "The same two-hand breath settles into a pale violet field where each completed expansion and return grows a persistent crystalline mesh.",
-              archiveReading: "Each completed breath still records one memory in the same eight-step sequence. A new group of straight fingertip connections is added only after the hands fully open and return to the centre. Their span follows the hands' apparent size: closer to the camera creates a wider crystal field, while farther away keeps it concentrated.",
+              archiveReading: "One complete opening fixes a crystal layer; camera distance sets its span.",
               instructions: [["Begin", "Allow the camera and bring hands together."], ["Expand", "Open both hands fully until the violet field expands."], ["Crystallise", "Complete the return to the centre to grow the next geometric connections."]],
               meaning: ["cycle / wide stretch + return", "trigger / completed gesture", "scale / camera proximity", "memory / persistent crystal mesh"]
             },
@@ -338,7 +338,7 @@
               code: "v03-lacquer-echo", displayCode: "v03.04", path: "v03-cosmic-memory-refined/variants/v03.04", title: "Lacquer Echo",
               variantStyle: "lacquer-echo",
               statement: "A complete two-hand breath cures one wet contour into a slow archive of offset black-lacquer slices and travelling reflections.",
-              archiveReading: "Each full opening and return still records exactly one memory in the original eight-step sequence. The live field moves like wet resin; after the return, its contour settles and freezes as a slightly displaced lacquer layer.",
+              archiveReading: "Each full opening and return cures one displaced lacquer layer in the original eight-memory sequence.",
               instructions: [["Begin", "Allow the camera and bring hands together."], ["Flow", "Open both hands fully to widen the slow, wet lacquer field."], ["Cure", "Return to the centre to harden one offset memory slice."]],
               meaning: ["cycle / wide stretch + return", "material / black lacquer + resin", "memory / eight offset cured layers", "light / slow specular sweep"]
             },
@@ -363,7 +363,7 @@
               code: "v04-seismograph-skin", displayCode: "v04.01", path: "v04-breath-quality/variants/v04.01", title: "Seismograph Skin",
               variantStyle: "seismograph-skin",
               statement: "Twelve horizontal graphite records translate each complete opening-and-return gesture into density, tremor, slope and terminal sediment.",
-              archiveReading: "The horizontal axis represents one whole gesture rather than hand distance alone. Opening writes from the left edge to the centre; fully open is the midpoint. Returning writes the second half from centre to right, and only the completed return stores the band. Twelve records accumulate from top to bottom.",
+              archiveReading: "Opening writes left to centre; returning writes centre to right. Only the completed return stores one of twelve bands.",
               instructions: [["Begin", "Allow the camera and bring both hands together at the left edge of the record."], ["Open", "Open slowly as the trace travels from left to centre. Fully open is halfway through the record."], ["Return", "Pause if desired, then bring the hands together. The trace continues from centre to right and is stored only when the full return is complete."]],
               meaning: ["speed / line density", "stability / jitter amplitude", "tilt / record-band slope", "pause / terminal deposit"]
             },
@@ -371,7 +371,7 @@
               code: "v04-glass-strain", displayCode: "v04.02", path: "v04-breath-quality/variants/v04.02", title: "Glass Strain",
               variantStyle: "glass-strain",
               statement: "Each complete opening and return fixes one transparent pane whose stress reveals steadiness, tilt and pause.",
-              archiveReading: "Fully open remains the midpoint, not the finished record; only the return stores the pane. Stable motion draws smooth stress arcs, instability branches fine cracks, tilt turns their direction and pause enlarges a local highlight. Twelve panes accumulate with slight offsets.",
+              archiveReading: "Fully open is the midpoint; only the return stores a pane. Steadiness, tilt and pause shape its stress pattern.",
               instructions: [["Begin", "Allow the camera and bring both hands together."], ["Stress", "Open slowly. Fully open completes only the first half of the gesture."], ["Fix", "Return the hands together to store the displaced glass pane."]],
               meaning: ["stability / crack branching", "tilt / stress direction", "pause / centre highlight", "cycle / open + return"]
             }
@@ -380,7 +380,7 @@
         {
           code: "v05", displayCode: "v05.00", path: "v05-session-archive-spatial", title: "Session Archive Spatial",
           statement: "Eight gentle stretches record nested contours and connect them into one personal bodily star map.",
-          archiveReading: "While both hands are widely open, the system averages the midpoint between the two index fingers. Shift the whole stretch left, right, up or down; the anchor follows the same direction.",
+          archiveReading: "The midpoint between both index fingers places each anchor; shift the full stretch and the anchor follows.",
           instructions: [["Begin", "Allow the camera and bring hands together."], ["Shift", "Open slowly and shift the full stretch through space."], ["Complete", "Return and complete eight stretches to reveal the map."]],
           meaning: ["direction / two-hand midpoint", "distance / movement slowness", "size / open-palm pause", "light / steadiness", "stars / stretch duration"],
           variants: [
@@ -404,14 +404,14 @@
               code: "v05-pressed-herbarium", displayCode: "v05.03", path: "v05-session-archive-spatial/variants/v05.03", title: "Pressed Herbarium",
               variantStyle: "pressed-herbarium",
               statement: "Up to fifteen two-hand gestures become pressed botanical specimens that begin wet and restless, then slowly dry, fade and fix across one archival page.",
-              archiveReading: "The final midpoint between the two index fingertips places each specimen directly across the full rectangular page without rings or sequence-based radii. Pause controls leaf count, steadiness reveals veins, tilt rotates the specimen and duration sets its dry-fibre count.",
+              archiveReading: "The final midpoint places one specimen; the held pause sets its leaf count.",
               instructions: [["Begin", "Allow the camera and bring both hands together."], ["Press", "Open slowly, pause, then bring both hands together where the specimen should land."], ["Archive", "Continue until the page reaches fifteen specimens while each new one dries in place."]],
               meaning: ["position / final two-hand midpoint", "leaves / open-palm pause", "veins / movement steadiness", "rotation / signed hand tilt", "fibres / stretch duration"]
             },
             {
               code: "v05-kinetic-mobile", displayCode: "v05.04", path: "v05-session-archive-spatial/variants/v05.04", title: "Kinetic Mobile",
               statement: "Twelve two-hand gestures assemble an irregular suspended archive that responds to each new record and slowly returns to balance.",
-              archiveReading: "The original two-hand midpoint remains each suspension point. Tilt turns the translucent plate, steadiness controls its initial swing and one uninterrupted open-palm hold selects one of five clearly different plate sizes. Record numbers quietly preserve the twelve-part sequence.",
+              archiveReading: "The final midpoint suspends one plate; pause sets size, steadiness sets swing.",
               instructions: [["Begin", "Allow the camera and bring both hands together."], ["Suspend", "Open, shift the full stretch through space, pause, then return."], ["Balance", "Each new record moves the whole structure. Complete twelve to leave one mobile."]],
               meaning: ["position / two-hand midpoint", "plate angle / signed hand tilt", "swing / movement stability", "plate size / five hold-time levels"]
             }
@@ -420,7 +420,7 @@
         {
           code: "v06", displayCode: "v06.00", path: "v06-trajectory-archive", title: "Trajectory Archive",
           statement: "Eight gentle stretches build a quiet field, while their anchors and chronological path remain visually central.",
-          archiveReading: "At the end of each stretch, hold both hands together where you want the anchor to appear. The system samples the midpoint between the two index fingers and places the anchor in the same direction.",
+          archiveReading: "After each stretch, hold both hands together to place the next anchor at their final midpoint.",
           instructions: [["Begin", "Allow the camera and bring hands together."], ["Open + return", "Open until the contour closes, then return."], ["Complete", "Hold hands together to place each of eight anchors."]],
           meaning: ["direction / final resting midpoint", "distance / movement slowness", "size / open-palm pause", "light / steadiness", "stars / stretch duration"],
           variants: [
@@ -428,7 +428,7 @@
               code: "v06-ceramic-faultline", displayCode: "v06.01", path: "v06-trajectory-archive/variants/v06.01", title: "Ceramic Faultline",
               variantStyle: "ceramic-faultline",
               statement: "Eight chronological anchors fracture one matte ceramic surface, leaving a dark faultline filled with deep peacock-green glaze.",
-              archiveReading: "The eight-part order remains intact, but the circular scaffold is removed. The final joined-hand midpoint maps directly across the ceramic plate. Every new anchor starts a slow fracture from the previous position; steadiness controls whether the main fault stays smooth or becomes visibly jagged, while the open-palm pause determines the size of the glazed node.",
+              archiveReading: "Each returned midpoint extends the faultline; steadiness shapes its edge and pause pools the glaze.",
               instructions: [["Begin", "Allow the camera and bring both hands together."], ["Fire", "Open until the contour completes, return, then hold at the next anchor."], ["Fracture", "Repeat eight times as the faultline grows across the ceramic surface."]],
               meaning: ["sequence / fracture growth order", "edge / movement steadiness", "glaze pool / open-palm pause", "position / direct plate coordinate"]
             },
@@ -436,7 +436,7 @@
               code: "v06-afterimage-corridor", displayCode: "v06.02", path: "v06-trajectory-archive/variants/v06.02", title: "Afterimage Corridor",
               variantStyle: "afterimage-corridor",
               statement: "Ten chronological anchors become smoked-glass layers whose original trajectory recedes through a backlit spatial corridor.",
-              archiveReading: "The final joined-hand midpoint still supplies each anchor, while this corridor expands the session to ten records. Every glass layer keeps the same full positioning field, allowing later anchors to reach the lower and outer edges. Each new record occupies the front pane and slowly pushes all earlier panes towards the distant light. After the tenth record settles, a brighter line recalls the archive from anchor 01 to anchor 10. Pause controls glass brightness, while steadiness determines whether each afterimage stays compact or spreads into a soft smoke-violet trail.",
+              archiveReading: "Each returned midpoint adds a front glass pane, pushing earlier records deeper into the corridor.",
               instructions: [["Begin", "Allow the camera and bring both hands together."], ["Place", "Open until the front pane completes, return, then hold at the anchor."], ["Recede", "Repeat ten times as older glass layers retreat into depth."]],
               meaning: ["depth / chronological order", "position / full-pane joined-hand coordinate", "glass light / open-palm pause", "afterimage / movement steadiness"]
             }

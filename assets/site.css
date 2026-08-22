@@ -507,10 +507,11 @@ button, a { -webkit-tap-highlight-color: transparent; }
   letter-spacing: .11em;
 }
 .archive-reading p {
+  max-width: 34ch;
   margin: 0;
   color: var(--bone-muted);
   font-size: 12px;
-  line-height: 1.6;
+  line-height: 1.55;
 }
 .study-label { color: var(--teal); }
 .reading-title { margin: 5px 0 10px; font-family: var(--serif); font-size: clamp(43px, 3.8vw, 64px); font-weight: 300; line-height: .98; }
@@ -727,8 +728,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
   }
 
   .archive-page[data-project="both"] .archive-reading p {
-    font-size: 13px;
-    line-height: 1.65;
+    max-width: 32ch;
+    font-size: 12px;
+    line-height: 1.55;
   }
 
   .archive-page[data-project="both"] .reading-grid.has-meaning {
