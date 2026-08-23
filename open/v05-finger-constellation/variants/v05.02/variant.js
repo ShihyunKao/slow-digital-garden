@@ -12,7 +12,7 @@ window.OPEN_V05_VARIANT = (() => {
   const NIGHT = [8, 10, 19];
 
   function hash(seed) {
-    return abs(sin(seed * 91.731 + 17.413) * 43758.5453) % 1;
+    return Math.abs(Math.sin(seed * 91.731 + 17.413) * 43758.5453) % 1;
   }
 
   function ease(value) {
@@ -21,15 +21,15 @@ window.OPEN_V05_VARIANT = (() => {
   }
 
   function makeCrystalData(seed) {
-    const count = 7 + floor(hash(seed + 1.1) * 3);
-    const baseAngle = hash(seed + 2.3) * TWO_PI;
+    const count = 7 + Math.floor(hash(seed + 1.1) * 3);
+    const baseAngle = hash(seed + 2.3) * Math.PI * 2;
     const shards = [];
 
     for (let index = 0; index < count; index++) {
       shards.push({
-        angle: baseAngle + index / count * TWO_PI + (hash(seed + index * 4.17) - 0.5) * 0.35,
+        angle: baseAngle + index / count * Math.PI * 2 + (hash(seed + index * 4.17) - 0.5) * 0.35,
         radius: 0.62 + hash(seed + index * 7.31) * 0.62,
-        facet: floor(hash(seed + index * 2.71) * 3),
+        facet: Math.floor(hash(seed + index * 2.71) * 3),
         highlight: hash(seed + index * 5.19) > 0.67,
         crack: 0.28 + hash(seed + index * 3.83) * 0.48
       });
@@ -83,7 +83,7 @@ window.OPEN_V05_VARIANT = (() => {
     stroke(GREY[0], GREY[1], GREY[2], alpha * 0.78);
     strokeWeight(1.05);
     beginShape();
-    for (const vertex of vertices) vertex(vertex.x, vertex.y);
+    for (const outlineVertex of vertices) vertex(outlineVertex.x, outlineVertex.y);
     endShape(CLOSE);
 
     if (growth > 0.38) {
@@ -158,7 +158,7 @@ window.OPEN_V05_VARIANT = (() => {
       line(points[index].x, points[index].y, points[index + 1].x, points[index + 1].y);
     }
 
-    const brightIndex = floor(hash(seed + 92.4) * (points.length - 2));
+    const brightIndex = Math.floor(hash(seed + 92.4) * (points.length - 2));
     stroke(ICE[0], ICE[1], ICE[2], alpha * 0.48);
     strokeWeight(0.78);
     line(points[brightIndex].x, points[brightIndex].y, points[brightIndex + 1].x, points[brightIndex + 1].y);
@@ -176,7 +176,7 @@ window.OPEN_V05_VARIANT = (() => {
     return {
       coordinate: STRATA_COORDS[index % STRATA_COORDS.length],
       layer: index % 4,
-      column: floor(index / 4) % 3,
+      column: Math.floor(index / 4) % 3,
       label: `MA-${String(index + 1).padStart(2, "0")}`,
       mapScale: 0.88 + hash(index * 7.4 + 1.2) * 0.22,
       normalizedPoints: localPoints.map((point) => ({ x: point.x / radius, y: point.y / radius })),

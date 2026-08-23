@@ -1,4 +1,11 @@
 (() => {
+  if (!window.__sdgOfflineClientRequested && document.currentScript?.src) {
+    window.__sdgOfflineClientRequested = true;
+    const offlineClient = document.createElement("script");
+    offlineClient.src = new URL("offline-client.js", document.currentScript.src).href;
+    offlineClient.defer = true;
+    document.head.append(offlineClient);
+  }
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const TAU = Math.PI * 2;
   const openStageStates = new WeakMap();
