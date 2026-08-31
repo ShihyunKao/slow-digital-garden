@@ -1,4 +1,4 @@
-# Both Hands V06: Trajectory Archive
+# Both Hands V06.00: Trajectory Archive
 
 ## Question
 
@@ -6,7 +6,7 @@ Can reducing the visual presence of the circular scaffold make the participant's
 
 ## Change from V05
 
-V06 preserves V05's camera-space mapping and its eight-stretch session logic. Empty guide circles and completed contours become quieter, while anchor stars, duration clusters, new-memory feedback and the chronological trajectory become brighter and more distinct. The fixed scanning arc is replaced by a progressively revealed preview of the final stability contour.
+V06 preserves V05's camera-space positioning concept and its eight-stretch session logic, but changes when position is sampled. V05.00 averages the midpoint while the hands are widely open; V06 samples the near-closed phase after the hands return. Empty guide circles and completed contours become quieter, while anchor stars, duration clusters, new-memory feedback and the chronological trajectory become brighter and more distinct. The fixed scanning arc is replaced by a progressively revealed preview of the final stability contour.
 
 ## Interaction
 
@@ -19,8 +19,8 @@ Selecting **Begin** starts the camera. Hand display begins in **Points** mode. `
 - Stretch 1 records the outer contour and its quality anchor.
 - Each following stretch records a smaller inner contour.
 - Movement quality affects contour continuity, brightness, tilt and the local cluster of stars.
-- Anchor direction records the final resting midpoint between both index fingers after the hands return and briefly remain together. The system samples several frames and uses their median position, reducing the influence of single-frame tracking jumps. Holding the joined hands towards the left, right, top or bottom places the anchor in the corresponding direction around its contour.
-- When the hands remain stable near full extension, anchor direction uses the median midpoint from the final hold. Opening and returning positions are excluded. If no clear hold is detected, the system falls back to the existing wide-movement average.
+- An earlier description incorrectly referred to the anchor sample as occurring near full extension and later described it too strongly as a completely stable resting point. The current implementation samples the near-closed phase after the contour is complete: both hands must be tracked, their separation must be below the closing threshold and the frame-to-frame change in that separation must be small. It gathers fourteen qualifying midpoint samples and uses their median, reducing the influence of single-frame tracking jumps. The code does not separately test whether the whole joined-hand midpoint is motionless, so **near-closed sampled midpoint** is more exact than **stable final resting midpoint**.
+- Wide-open frames and most of the return movement are excluded from this final-position sample. A normal live record cannot be saved until fourteen qualifying near-closed samples have been collected. The quality calculation retains the older wide-movement average only as a defensive fallback for synthetic or incomplete records; it is not the normal live-completion route. Holding the joined hands towards the left, right, top or bottom places the anchor in the corresponding direction around its contour. If the resulting direction is almost exactly central, tilt and pause provide the same small directional fallback used in V05.00.
 - Anchor distance records slowness, anchor size records the pause, anchor brightness records steadiness, and the number of surrounding stars records the full stretch duration.
 - These four mappings are stated in the help screen's Visual Key so the artwork can retain its restrained visual language without adding permanent labels to the main canvas.
 - The anchor points connect only in chronological order from movement 1 to movement 8.
@@ -30,7 +30,7 @@ Selecting **Begin** starts the camera. Hand display begins in **Points** mode. `
 - Its appearance evolves as the running measurements of movement speed and steadiness become more complete.
 - Full contour completion requires both sufficient hand separation and enough time for the path to reveal.
 - A live percentage and progress line communicate the required opening range and hold time.
-- A second hold percentage confirms when the final resting midpoint has been captured.
+- A second hold percentage confirms progress towards the fourteen qualifying near-closed midpoint samples.
 
 ## Design intention
 

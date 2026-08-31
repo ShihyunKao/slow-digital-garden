@@ -1,4 +1,4 @@
-# Both Hands V02: Breathing Cosmos
+# Both Hands V02.00: Breathing Cosmos
 
 ## Question
 Can the distance between two hands control a slow visual breathing system?

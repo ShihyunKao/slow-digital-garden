@@ -6,7 +6,7 @@ Can repeated two-hand stretches accumulate into a personal visual archive of one
 
 ## Relationship to V05.02
 
-V05.02 derives anchor direction from a combination of temporal and qualitative movement data. V05.00 separates direction from those qualities: anchor direction records where the two-hand stretch takes place in camera space, while slowness remains responsible only for distance from the centre. This makes the left and right halves of the archive directly accessible through bodily position.
+V05.02 derives anchor direction from a combination of temporal and qualitative movement data. V05.00 normally separates direction from those qualities: anchor direction records where the two-hand stretch takes place in camera space, while slowness remains responsible only for distance from the centre. This makes the left and right halves of the archive directly accessible through bodily position. A small defensive exception remains when the averaged midpoint is almost exactly central: signed hand tilt and open-palm pause provide a fallback direction instead of leaving the angle undefined.
 
 ## Interaction
 
@@ -19,7 +19,7 @@ Selecting **Begin** starts the camera in **Points** mode. `P` cycles hand visibi
 - Stretch 1 records the outer contour and its quality anchor.
 - Each following stretch records a smaller inner contour.
 - Movement quality affects contour continuity, brightness, tilt and the local cluster of stars.
-- Anchor direction records the average midpoint between both index fingers while the stretch is widely open. This is the position of the whole two-hand gesture, not either hand individually. Shifting both hands together towards the left, right, top or bottom places the anchor in the corresponding direction around its contour.
+- Anchor direction records the average midpoint between both index fingers while the stretch is widely open. This is the position of the whole two-hand gesture, not either hand individually. Shifting both hands together towards the left, right, top or bottom places the anchor in the corresponding direction around its contour. Only when that average is almost exactly central does the fallback based on tilt and pause determine a direction.
 - Anchor distance records slowness, anchor size records the pause, anchor brightness records steadiness, and the number of surrounding stars records the full stretch duration.
 - These four mappings are stated in the help screen's Visual Key so the artwork can retain its restrained visual language without adding permanent labels to the main canvas.
 - The anchor points connect only in chronological order from movement 1 to movement 8.

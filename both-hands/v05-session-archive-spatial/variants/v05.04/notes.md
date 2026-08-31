@@ -6,7 +6,7 @@ Can twelve spatial records become a suspended kinetic archive whose final form r
 
 ## Change from V05.00
 
-V05.04 keeps the original two-hand midpoint coordinates and chronological record order while extending the session to twelve cycles. It removes the nested contour and planar constellation language. Each record becomes a suspension point with a thin line and translucent counterweight plate; the twelve records are assembled through an irregular hierarchy of aged-brass rods.
+V05.04 keeps the raw two-hand midpoint coordinates and chronological record order while extending the session to twelve cycles. For the displayed mobile, the central camera working range is expanded across a wider exhibition field rather than shown as a one-to-one screen coordinate. It removes the nested contour and planar constellation language. Each record becomes a suspension point with a thin line and translucent counterweight plate; the twelve records are assembled through an irregular hierarchy of aged-brass rods.
 
 ## Interaction
 
@@ -16,7 +16,7 @@ Begin with both hands close together. Open, move the full two-hand stretch throu
 
 ## Data mapping
 
-- Average two-hand midpoint while widely open → original suspension-point coordinate
+- Average two-hand midpoint while widely open → raw suspension record, remapped from the central camera working range into the wider exhibition composition
 - Signed hand tilt → counterweight plate angle
 - Movement stability → initial swing amplitude (less stable movement produces a larger swing)
 - One uninterrupted open-palm hold → five counterweight sizes; slow opening frames do not count, and the largest tier is reached in under one second of stillness

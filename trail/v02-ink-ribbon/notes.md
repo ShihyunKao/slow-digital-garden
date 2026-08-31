@@ -1,4 +1,4 @@
-# Trail V02: Soft Ink Wash
+# Trail V02.00: Soft Ink Wash
 
 ## Question
 Can slow hand movement produce a soft diffusion trace that continues to expand after the gesture?

@@ -1,4 +1,4 @@
-# Trail V03: Path Constellation
+# Trail V03.00: Path Constellation
 
 ## Question
 

@@ -2,14 +2,15 @@
 
 ## Change from V06
 
-The eight-part chronological relationship remains unchanged, but the nested circular coordinate system is removed. The final joined-hand midpoint maps directly across one matte ceramic slab. Every newly recorded anchor starts a fracture at the previous anchor; the fracture grows slowly across the surface and stops only when it reaches the new node.
+The eight-part chronological relationship remains unchanged, but the nested circular coordinate system is removed. The near-closed joined-hand midpoint maps directly across one matte ceramic slab. The first recorded anchor establishes an initial glazed node without a fracture. From the second anchor onward, each new record starts a fracture at the previous node; the fracture grows across the surface and stops only when it reaches the new node.
 
 ## Data mapping
 
 - Path order → fracture growth order
-- Movement steadiness → smooth or jagged fracture edge
+- Movement steadiness → smooth or jagged fracture edge and fracture-growth duration; steadier records reach the new node sooner
 - Open-palm pause → glazed node size
-- Final resting midpoint → direct rectangular plate coordinate
+- Near-closed sampled midpoint → direct rectangular plate coordinate
+- Signed hand tilt → a subtle rotation of the irregular glazed node
 
 During an active gesture, a high-contrast live marker follows the current two-hand midpoint. A rust-red dashed score previews the route from the latest stored anchor, and a local progress arc shows opening or final hold completion. This temporary layer disappears when the anchor is fired and the permanent fracture begins to grow.
 

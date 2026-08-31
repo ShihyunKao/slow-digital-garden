@@ -1,4 +1,4 @@
-# Open V05: Finger Constellation
+# Open V05.00: Finger Constellation
 
 ## Question
 
@@ -12,7 +12,7 @@ V04 translated an opening palm into a soft pressure field. V05 records the geome
 
 Open one hand. Five fingertip positions become five stars connected through a distance-based network. Adjust the open hand until the constellation feels right, then hold it briefly until the stars brighten and the pose is locked. Closing the hand confirms and preserves that locked arrangement; closing movement is not included in the saved shape. Each saved constellation remains in the session archive and older impressions gently separate instead of being covered by the newest one.
 
-Selecting **Begin** starts the camera; this version has no mouse interaction. `P` cycles the technical hand display between hidden, point and skeleton. `R` clears the constellation archive. `?` opens the help screen.
+Selecting **Begin** starts the camera; this version has no mouse interaction. The technical hand display begins in **Points** mode, and `P` cycles **Points → Skeleton → Hidden**. `R` clears the constellation archive. `?` opens the help screen.
 
 ## Design intention
 

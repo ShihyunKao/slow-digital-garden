@@ -1,4 +1,4 @@
-# Trail V01: Hand Trail
+# Trail V01.00: Hand Trail
 
 ## Question
 Can a slow hand movement create an elegant visual trace without relying on literal plant graphics?

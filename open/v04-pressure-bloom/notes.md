@@ -1,4 +1,4 @@
-# Open V04: Pressure Bloom
+# Open V04.00: Pressure Bloom
 
 ## Question
 
@@ -12,7 +12,7 @@ V03 recorded a held palm as a constellation-like imprint. V04 removes the palm o
 
 Open one palm to create a live pressure field. Close the hand before opening again to leave another soft circular imprint.
 
-`M` switches between Mouse and HandPose input. `P` cycles hand visibility between hidden, point and skeleton. `R` clears the field. `?` opens the help screen.
+The early prototype used `M` to switch between Mouse and HandPose input. In the refined exhibition flow, the public input toggle is removed and **Begin** starts the camera directly. `P` cycles **Points → Skeleton → Hidden**, `R` clears the field and `?` opens the field guide. This reduces setup choices without changing the pressure-bloom interaction itself.
 
 ## Design intention
 

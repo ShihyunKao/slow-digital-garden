@@ -6,8 +6,8 @@ This is the primary V03 study. It preserves the successful cosmic-memory interac
 ## Refinements
 - The field contracts to a much smaller centre when hands are close together.
 - Its maximum radius is reduced so the full form remains inside the frame.
-- The sketch opens with a dedicated help screen, so instructions do not remain over the artwork.
-- `?` reopens or closes the help screen at any time.
+- An earlier interface refinement introduced a dedicated help screen so instructions would not remain over the artwork. In the current exhibition flow, selecting **Begin** enters the live field directly; the guide remains available without covering the artwork permanently.
+- `?` opens or closes the help screen at any time.
 - A quiet exhibition-style caption remains visible during the experience: the title is on the left and keyboard controls are on the right.
 - The camera starts when the visitor selects **Begin**; mouse mode is removed.
 - `P` cycles through hand display modes: index-finger points, full hand skeleton, then hidden.

@@ -1,4 +1,4 @@
-# Both Hands V01: Breathing Garden
+# Both Hands V01.00: Breathing Garden
 
 ## Question
 Can the distance between two hands become a slow and calming upper-body movement exercise?
