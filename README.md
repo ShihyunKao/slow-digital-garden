@@ -51,17 +51,7 @@ All study pages load their libraries directly from a CDN, so there is no package
 
 ## How to Run / Install
 
-Clone the repository and serve it from a local web server:
-
-```bash
-git clone https://github.com/ShihyunKao/slow-digital-garden.git
-cd slow-digital-garden
-python3 -m http.server 8000
-```
-
-Then open [http://localhost:8000](http://localhost:8000) in a browser.
-
-Opening `index.html` directly may prevent camera access. Use `localhost` during development, or HTTPS when deploying the project online.
+Open [https://github.com/ShihyunKao/slow-digital-garden] in a browser.
 
 ## Requirements
 
@@ -246,16 +236,6 @@ The complete visual archive contains 56 screenshots: 4 website views, 18 Palm Im
 </table>
 
 </details>
-
-## Credits / Acknowledgements
-
-Created by [Shihyun Kao](https://github.com/ShihyunKao) for Computational Arts Practice.
-
-Built with the open-source creative coding communities around [p5.js](https://p5js.org/) and [ml5.js](https://ml5js.org/).
-
-## License
-
-No open-source licence is currently included. Unless a licence is added, the project and its original visual assets remain under the author's copyright.
 
 ## Contact / Links
 
